@@ -7,7 +7,10 @@ include 'Limestone.php';
 
 $test = new Limestone();
 $mama = $test->getFolderFiles('../templates');
-
+$arrayLine = [];
 foreach ($mama as $file) {
-    $test->parseFile($file);
+    $arrayLine[] =  $test->parseFile($file);
 }
+
+$test->htmlToYaml($arrayLine);
+$test->htmlToXml($arrayLine);

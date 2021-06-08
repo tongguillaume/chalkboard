@@ -33,35 +33,101 @@ class Limestone
     public function parseFile($path) //
     {
         $fileContent = file_get_contents($path);
-        $test = new Html2Text($fileContent);
-        $arrayTest = explode("\n", $test->getText());
+        $content = new Html2Text($fileContent);
+        $arrayContent = explode("\n", $content->getText());
         $arrayRes = [];
-        $stringTest = "";
+        $stringLine = "";
 
-        foreach ($arrayTest as $line) {
+        foreach ($arrayContent as $line) {
             if ($line != "") {
-                if ($stringTest != "") {
-                    $arrayRes[] = $stringTest;
-                 $stringTest = "";
+                if ($stringLine != "") {
+                    $arrayRes[] = $stringLine;
+                    $stringLine = "";
                 }
-                $stringTest .= $line;
+                $stringLine .= $line;
             } else {
-                $arrayRes[] = $stringTest;
-                $stringTest = "";
+                $arrayRes[] = $stringLine;
+                $stringLine = "";
             }
         }
-        var_dump($stringTest);
-        $arrayRes[] = $stringTest;
-       var_dump($arrayRes);
+        $arrayRes[] = $stringLine;
+        $arrayRes = self::parseLine($arrayRes);
+
+        return $arrayRes;
+    }
+    public function deletePartOfLine($line, $elem, $lastOrFirst)
+    {
+        if (strstr($line, $elem) === false)
+            return $line;
+      return strstr($line, $elem, $lastOrFirst);
     }
 
-    public function htmlToXml($html)
+
+    public function parseLine($arrayLine)
     {
+        $arrayRes = [];
+        foreach ($arrayLine as $line) {
+            $line = trim($line);
+            $line = str_replace(" __ ", "", $line);
+            $line = str_replace("__", "", $line);
+            $line = self::deletePartOfLine($line, "{{", true);
+            $line = self::deletePartOfLine($line, "}}", false);
+            $line = self::deletePartOfLine($line, "%}", false);
+            $line = self::deletePartOfLine($line, "{%", true);
+
+            $line = str_replace("%}", "", $line);
+            $line = str_replace("}} ) }}", "", $line);
+            $line = str_replace("}}) }}", "", $line);
+            $line = trim($line);
+
+            if ($line != "") {
+                $arrayRes [] = $line;
+            }
+        }
+
+        return $arrayRes;
+    }
+
+    public function htmlToXml($array)
+    {
+        file_put_contents("messages.fr.xml",'<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>
+     ');
+        foreach ($array as $key =>$arrayline ) {
+            foreach ($arrayline as $line) {
+                $strToWordTab = explode(' ',trim($line));
+                if (count($strToWordTab) == 1) {
+                    $keyWord = $strToWordTab[0];
+                } else if (count($strToWordTab) > 1) {
+                    $keyWord = $strToWordTab[0].'_'.$strToWordTab[1];
+                } else {
+                    $keyWord = "fin frero, tu es cringe";
+                }
+                file_put_contents("messages.fr.xml", '<trans-unit id="'.$keyWord.'">'."\n",FILE_APPEND);
+                file_put_contents("messages.fr.xml", '<source>'.$keyWord.'</source>'."\n",FILE_APPEND);
+                file_put_contents("messages.fr.xml", '<target>'.$line.'</target>'."\n",FILE_APPEND);
+                file_put_contents("messages.fr.xml", ' </trans-unit>'."\n",FILE_APPEND);
+            }
+        }
+
+        file_put_contents("messages.fr.xml",'</trans-unit>
+                                                        </body>
+                                                    </file>
+                                                </xliff>', FILE_APPEND
+        );
+
+
 
     }
 
-    public function htmlToYaml($html)
+    public function htmlToYaml($array)
     {
-
+        foreach ($array as $key => $arrayLine) {
+            foreach ($arrayLine as $key2 => $line) {
+                file_put_contents("messages.fr.yaml", $key2.$key .': '.$line. "\n", FILE_APPEND );
+            }
+        }
     }
 }
