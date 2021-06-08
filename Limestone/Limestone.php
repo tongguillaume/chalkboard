@@ -30,12 +30,29 @@ class Limestone
         return $arrayRes;
     }
 
-    public function parseFile($fileContent)
+    public function parseFile($path) //
     {
-
+        $fileContent = file_get_contents($path);
         $test = new Html2Text($fileContent);
-        return $test->getText();
-//        var_dump($content);
+        $arrayTest = explode("\n", $test->getText());
+        $arrayRes = [];
+        $stringTest = "";
+
+        foreach ($arrayTest as $line) {
+            if ($line != "") {
+                if ($stringTest != "") {
+                    $arrayRes[] = $stringTest;
+                 $stringTest = "";
+                }
+                $stringTest .= $line;
+            } else {
+                $arrayRes[] = $stringTest;
+                $stringTest = "";
+            }
+        }
+        var_dump($stringTest);
+        $arrayRes[] = $stringTest;
+       var_dump($arrayRes);
     }
 
     public function htmlToXml($html)
