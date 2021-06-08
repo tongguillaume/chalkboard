@@ -8,13 +8,11 @@ class Limestone
         $arrayRes = [];
         $scanned_directory = array_diff(scandir($path), array('..', '.'));
         foreach ($scanned_directory as $filename) {
-            $arrayRes[] = $filename;
-            var_dump($filename);
-            if ( is_array(scandir($filename))) {
-                $test = scandir($filename);
-                var_dump($test);die;
+            $arrayRes[] = $path . "/" . $filename;
+            if (is_array(scandir($path. "/". $filename))) {
+                $test = array_diff(scandir($path. "/". $filename), array('..', '.'));
                 foreach ($test as $filename) {
-                        $arrayRes[] = $filename;
+                        $arrayRes[] = $path . "/" . $filename;
                 }
             }
         }
@@ -22,6 +20,8 @@ class Limestone
         foreach ($arrayRes as $key => $filename) {
             echo $key . "  :  ". $filename. " \n";
         }
+
+        return $arrayRes;
     }
 
     public function parseFile($fileContent)
