@@ -3,23 +3,39 @@
 
 class Limestone
 {
-    private function getFolderFiles($path)
+    public function getFolderFiles($path)
     {
+        $arrayRes = [];
         $scanned_directory = array_diff(scandir($path), array('..', '.'));
+        foreach ($scanned_directory as $filename) {
+            $arrayRes[] = $filename;
+            var_dump($filename);
+            if ( is_array(scandir($filename))) {
+                $test = scandir($filename);
+                var_dump($test);die;
+                foreach ($test as $filename) {
+                        $arrayRes[] = $filename;
+                }
+            }
+        }
+
+        foreach ($arrayRes as $key => $filename) {
+            echo $key . "  :  ". $filename. " \n";
+        }
     }
 
-    private function parseFile($fileContent)
+    public function parseFile($fileContent)
     {
 
     }
 
-    private function htmlToXml()
+    public function htmlToXml($html)
     {
 
     }
 
-    private function htmlToYaml()
+    public function htmlToYaml($html)
     {
-        
+
     }
 }
