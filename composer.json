@@ -1,0 +1,8 @@
+{
+  "name": "Limestone/Limestone",
+  "description": "Create file of traduction for project",
+  "require": {
+    "php": ">=7.1",
+    "html2text/html2text": "^4.3"
+  }
+}
