@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Index{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <!-- Start Sale Statistic area-->
+    <div class="sale-statistic-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12">
+                    <div class="sale-statistic-inner notika-shadow mg-tb-30">
+                        <div class="curved-inner-pro">
+                            <div class="curved-ctn">
+                                <h2>Bienvenue sur la plateforme</h2>
+                                <p><a href="https://aude.ausy.fr/" style="color:blue">Site de formation d'Ausy</a></p>
+                            </div>
+                        </div>
+                        <!--<div id="curved-line-chart" class="flot-chart-sts flot-chart"></div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Sale Statistic area-->
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

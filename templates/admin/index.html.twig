@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ asset('css/dashboard/jquery.dataTables.min.css') }}">
+{% endblock %}
+
+{% block body %}
+
+    <!-- Data Table area Start-->
+    <div class="data-table-area" style="margin-bottom: 5%">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="data-table-list">
+                        <div class="basic-tb-hd"></div>
+                        <div class="table-responsive">
+
+                            <table id="data-table-index" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Prenom</th>
+                                        <th>Nom</th>
+                                        <th>Email</th>
+                                        <th>Disponibilité</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for etatCivil in  etatsCivil %}
+                                        <tr>
+                                            <td>{{ etatCivil.firstname }}</td>
+                                            <td>{{ etatCivil.lastname }}</td>
+                                            <td>{{ etatCivil.email }}</td>
+                                            <td>{{ etatCivil.disponibilite | date("d/m/Y") }}</td>
+                                            <td>
+                                                <a data="{{ etatCivil.email }}" class="btn btn-primary btn-mail" data-toggle="modal" data-target="#custom-mail">
+                                                    <i class="material-icons">
+                                                        mail
+                                                    </i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Data Table area End-->
+
+    <!-- Modal area Start-->
+    <div class="modal fade" id="custom-mail" role="dialog" aria-hidden="true" style="margin-top: 10%;">
+        <div class="modal-dialog" role="document" style="background-color:#F0F8FF;">
+            <div class="modal-content" style="margin-bottom:22px;">
+                <div class="modal-header" style="text-align:center;">
+                    <h>Mail personnalisé à <span id="modal-title"></span></h>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form action="{{ path('app_custom_mail') }}" method="post">
+                    <input id="adress" hidden name="mail" value="">
+                    <label class="label" for="subject" style="font-size:12px; color: black;">Objet :</label>
+                    <input class="form-control" id="subject" name="subject">
+                    <label class="label" for="text" style="font-size:12px; color: black;">Contenu du mail :</label>
+                    <textarea class="form-control" id="text" name="text" rows="10"></textarea>
+                    <button id="envoie" class="btn btn-primary" type="submit" style="color:white; margin-top:10px;">Envoyer</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal area End-->
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script>
+         $('#envoie').submit(function () {
+            Swal.fire(
+                'Mail envoyé',
+                'Vous pouvez retourner sur la page'
+            )
+        })
+
+ 
+
+        $('.btn-mail').click(function () {
+            $('#modal-title').text($(this).attr('data'));
+            $('#adress').val($(this).attr('data'));
+        })
+    </script>
+        
+{% endblock %}

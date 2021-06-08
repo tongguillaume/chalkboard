@@ -1,0 +1,7 @@
+{% block body %}
+    {{ form_start(form) }}
+    <label>Fichier</label>
+    {{ form_widget(form.filename, {'attr': {'class': 'form-control'}}) }}
+    {{ form_widget(form.Enregistrer, {'attr': {'class': 'btn btn-primary', 'style': 'margin-top: 10px'}}) }}
+    {{ form_end(form) }}
+{% endblock %}

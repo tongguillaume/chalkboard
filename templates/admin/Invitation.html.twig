@@ -1,0 +1,64 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <!-- Inbox area Start-->
+    <div class="inbox-area" style="margin-bottom: 5%">
+        <div class="container">
+            <div class="row">
+
+                <!-- Left box-->
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" >
+                    <div class="inbox-left-sd">
+						<div class="compose-ml">
+                            <a class="btn" href="#">Personne reçevant le mail aujourd'hui</a>  
+                        </div>
+                        <div class="inbox-status" style="overflow-y: auto; height: 200px;">
+                            <ul class="inbox-st-nav inbox-ft">
+                                {% for user in users %}
+                                    <li><span class="pull-center">{{ user.email }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+
+                <!-- Right box-->
+                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                    <div class="view-mail-list sm-res-mg-t-30" style="height: 320px;">
+                        <div class="view-mail-hd">
+                            <div class="view-mail-hrd">
+                                <h2>Visualisation de l'email</h2>
+                            </div>
+                            <div class="view-ml-rl"></div>
+                        </div>
+                        <div class="mail-ads mail-vw-ph">
+                            <p class="first-ph"><b>Objet: </b>Invitation à la formation</p>
+                            <p><b>Email:</b> <a href="#">{{ mail }}</a></p>
+                            <p class="last-ph"><b>Date:</b> {{ "now"|date("m/d/Y") }}</p>
+                        </div>
+                        <div class="view-mail-atn">
+                            {% include 'mail/invitation.html.twig' %}
+                        </div>
+                        <a href="{{ path('app_invitation') }}" class="btn btn-primary btn-sm hec-button waves-effect" style="float: right; margin-top:30px;" >Envoyer le mail manuellement</a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <!-- Inbox area End-->
+{% endblock body %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <script>
+           $('#envoie').click(function () {
+            Swal.fire(
+                'Mail envoyé',
+                'Vous pouvez retourner sur la page'
+            )
+        })
+    </script>
+{% endblock %}
