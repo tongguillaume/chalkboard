@@ -78,6 +78,8 @@ class Limestone
             $line = str_replace("%}", "", $line);
             $line = str_replace("}} ) }}", "", $line);
             $line = str_replace("}}) }}", "", $line);
+            $line = str_replace('"', "", $line);
+            $line = str_replace('"', "", $line);
             $line = trim($line);
 
             if ($line != "") {
@@ -105,17 +107,16 @@ class Limestone
                 } else {
                     $keyWord = "fin frero, tu es cringe";
                 }
-                file_put_contents("messages.fr.xml", '<trans-unit id="'.$keyWord.'">'."\n",FILE_APPEND);
-                file_put_contents("messages.fr.xml", '<source>'.$keyWord.'</source>'."\n",FILE_APPEND);
-                file_put_contents("messages.fr.xml", '<target>'.$line.'</target>'."\n",FILE_APPEND);
-                file_put_contents("messages.fr.xml", ' </trans-unit>'."\n",FILE_APPEND);
+                file_put_contents("messages.fr.xml", '            <trans-unit id="'.$keyWord.'">'."\n",FILE_APPEND);
+                file_put_contents("messages.fr.xml", '                <source>'.$keyWord.'</source>'."\n",FILE_APPEND);
+                file_put_contents("messages.fr.xml", '                <target>'.$line.'</target>'."\n",FILE_APPEND);
+                file_put_contents("messages.fr.xml", '             </trans-unit>'."\n",FILE_APPEND);
             }
         }
 
-        file_put_contents("messages.fr.xml",'</trans-unit>
-                                                        </body>
-                                                    </file>
-                                                </xliff>', FILE_APPEND
+        file_put_contents("messages.fr.xml",'        </body>
+   </file>
+</xliff>', FILE_APPEND
         );
 
 
