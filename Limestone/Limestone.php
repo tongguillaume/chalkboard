@@ -9,7 +9,7 @@ class Limestone
         $scanned_directory = array_diff(scandir($path), array('..', '.'));
         foreach ($scanned_directory as $filename) {
             $arrayRes[] = $path . "/" . $filename;
-            if (is_array(scandir($path. "/". $filename))) {
+            if (is_dir($path. "/". $filename)) {
                 $test = array_diff(scandir($path. "/". $filename), array('..', '.'));
                 foreach ($test as $filename) {
                         $arrayRes[] = $path . "/" . $filename;
