@@ -1,0 +1,105 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}">{{ app.session.get("evaluation") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/rapport/dash">{{ app.session.get("document") }}</a>
+                </li>
+                <li class="breadcrumb-item active">Tableau de bord</li>
+            </ol>
+
+
+            <h3>Tableau de bord</h3>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Paragraphes</h5>
+                            <p class="card-text">Paragraphes : 19<br>
+                                Paragraphes en cours d'édition : 10<br>
+                                Paragraphes validés : 9<br>
+                            Taux de progression :
+                            </p>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: 52%;" aria-valuenow="52" aria-valuemin="0" aria-valuemax="100">52%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Notes</h5>
+                            <p class="card-text">Notes : 38<br>
+                                Notes à résoudre : 8<br>
+                                Notes résolus : 30<br>
+                                Taux de progression :
+                            </p>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: 78%;" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100">78%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Etat du document</h5>
+                            <p class="card-text">
+                                Etape 2 - Pièces complémentaires
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Collaborateurs</h5>
+                            <p class="card-text">
+                                Chargé(e) d’expertise : 15<br>
+                                Chargé(e) de gestion des évaluations : 2<br>
+                                Gestionnaire administratif(ve) : 3<br>
+                                Chargé(e) de mission scientifique : 8<br>
+                                Chargé(e) de projets : 1<br>
+                                Conseiller(ère) scientifique : 8<br>
+                                Conseiller(ère) scientifique coordinateur(trice) : 1<br>
+                                Conseiller(ère) scientifique pilote :2<br>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Président du comité</h5>
+                            <p class="card-text">
+                                Nathalie DOSPITAL
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

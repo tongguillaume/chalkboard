@@ -1,0 +1,165 @@
+{% extends "home/base.html.twig" %}
+
+{% block title %}
+    {{ 'users.index.title' | trans | desc('Users') }} - {{ parent() }}
+{% endblock %}
+
+{% block page_title_text %}
+    {{ 'users.index.page_title' | trans | desc('Users') }}
+{% endblock %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">{{ app.session.get("evaluation") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ path('document_evaluation_choice', {'idEval': app.session.get("evaluation_id"), 'idDoc': app.session.get("document_id"),'page' : 'dashboard_document'}) }}">{{ app.session.get("document") }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.attribution_des_contributeurs | trans  }}</li>
+            </ol>
+
+            <h3>{{ traduction.attribution_des_contributeurs_au_document | trans }} {{ document.nom }}</h3>
+
+            {% if users|length == 0 %}
+                <div class="alert alert-info mt-5" role="alert">
+                    <h4 class="alert-heading">{{ traduction.aucun_membres_actif_dans_le_dossier | trans }} :  {{ app.session.get("evaluation") }} </h4>
+                    <p> {{ traduction.pour_ajouter_des_membres_il_faut_ce_rendre_dans | trans }} <a href="{{ path('gestion_member_attribution') }}" class="btn btn-custom-hceres">{{ traduction.gerer_les_membres |trans}}</a></p>
+                </div>
+            {% else %}
+            <table class="table table-sm mt-5" id="dataTable6">
+                <thead>
+                <tr>
+                    <th scope="col">Id ged</th>
+                    <th scope="col">{{traduction.nom | trans}}</th>
+                    <th scope="col">{{ traduction.prenom | trans}}</th>
+                    <th scope="col">E-mail</th>
+                    <th scope="col">{{ traduction.roles | trans }}</th>
+                    <th scope="col">{{ traduction.actions | trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set index = 1 %}
+                {% for user in users %}
+                    {% set userCon = false %}
+                    <tr>
+                        <th scope="row">{{ user.id_ged }}</th>
+                        <td>{{ user.lastname | upper }} </td>
+                        <td>{{ user.firstname }} </td>
+                        <td>{{ user.email }} </td>
+                        <td>
+                            <div id="btn-group{{ index }}" class="btn-group" role="group">
+                            {#}
+                            {% for userEvaluation in user.userEvaluations %}
+                                {% if userEvaluation.evaluationId.id == evaluation.id %}
+                                    {% for userRoleDocument in userEvaluation.userRoleDocuments %}
+                                        {% if userRoleDocument.documentId.id == document.id %}
+                                            {% for roleHceres in userRoleDocument.roles %}
+                                                {% if roleHceres.nom|lower == "contributeur" %}
+                                                    {% set userCon = true %}
+                                                {% endif %}
+                                            <a id="role{{ roleHceres.id }}user{{ user.id }}" href="{{ path('role_show', {'id': roleHceres.id}) }}" class="btn btn-outline-info" >{{ roleHceres.nomAbrege }}</a>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                            {#}
+                            {% for role in user.roles %}
+                                {% if role[2]|lower == "contributeur" %}
+                                    {% set userCon = true %}
+                                {% endif %}
+                                <div id="role{{ role[0] }}user{{ user.id }}" class="btn btn-outline-info" >{{ role[1] }}</div>
+                            {% endfor %}
+                            </div>
+                        </td>
+                        {% if user.id != "" %}
+                        <td id="action{{ index }}">
+{#                            {% if userCon == true %}#}
+{#                                <a onclick="dismiss({{ index }}, {{ user.id }}, {{ roleContributorId }})" id="dismiss{{ index }}" class="attribution-dismiss-contrib" style="cursor: pointer; color: red;">{{ traduction.retirer_des_contributeurs | trans}}</a>#}
+{#                                <br>#}
+{#                            {% else %}#}
+{#                                <a onclick="attribution({{ index }}, {{ user.id }}, {{ roleContributorId }})" id="attribution{{ index }}" class="attribution-add-contrib"  style="cursor: pointer; color: #5C2D91;">{{ traduction.ajouter_aux_contributeurs | trans}}</a>#}
+{#                                <br>#}
+{#                            {% endif %}#}
+                            <a id="gestion{{ index }}" href="{{ path('gestionnaire_user_role_document_attribution', {'user': user.id, 'evaluation': evaluationId }) }}" style="color: #5C2D91;">{{ traduction.attribuer_les_droits_du_contributeur | trans}}</a>
+                        {% endif %}
+                            <br>
+                            {#<a href="{{ path('user_delete', {'user': user.id}) }}" style="color: red;"><i class="fas fa-fw fa-trash"></i></a>#}
+                        </td>
+                    </tr>
+                    {% set index = index + 1 %}
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+{% block javascripts %}
+
+{#    <script#}
+{#            src="https://code.jquery.com/jquery-3.4.1.min.js"#}
+{#            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="#}
+{#            crossorigin="anonymous"></script>#}
+{#    <script>#}
+{#        let currFFZoom = 1;#}
+{#        let currIEZoom = 100;#}
+
+{#        $(document).ready(function () {#}
+
+{#            if ($.browser.mozilla){#}
+{#                let step = 0.02;#}
+{#                currFFZoom += step;#}
+{#                $('body').css('MozTransform','scale(' + currFFZoom + ')');#}
+{#            }#}
+{#        );#}
+{#    </script>#}
+
+<script type="text/javascript">
+        {#function attribution(index, idUser, idRole){#}
+        {#    $("#attribution" + index ).hide()#}
+        {#    $('#attribution'+index).remove();#}
+        {#    $('#attribution'+index).remove();#}
+
+        {#    $.ajax({#}
+        {#        url: "{{ app.request.getBaseURL() }}/gestion/contributorAttribution/" + idUser,#}
+        {#        type: "POST",#}
+        {#        dataType: 'JSON',#}
+        {#        complete: function()#}
+        {#        {#}
+        {#            $('#action'+index).prepend("<a onclick=\"dismiss("+ index +","+ idUser + ","+ idRole +")\" id=\"dismiss"+ index +"\" style=\"cursor: pointer; color: red;\">Retirer des contributeurs</a>");#}
+        {#            $('#gestion'+index).show();#}
+        {#            $('#btn-group'+index).append("<a id=\"role"+ idRole +"user"+ idUser+"\" href=\"/gestion/role/"+ idRole +"\" class=\"btn btn-outline-info\">CONT</a>");#}
+        {#        },#}
+        {#    });#}
+        {#}#}
+
+        {#function dismiss(index, idUser, idRole){#}
+        {#    $.ajax({#}
+        {#        url: "{{ app.request.getBaseURL() }}/gestion/contributorDismiss/"+ idUser,#}
+        {#        type: "POST",#}
+        {#        dataType: 'JSON',#}
+        {#        complete: function()#}
+        {#        {#}
+        {#            $('#dismiss'+index).remove();#}
+        {#            $('#role'+ idRole +'user'+idUser).remove();#}
+        {#            $('#gestion'+index).hide();#}
+        {#            $('#action'+index).prepend("<a onclick=\"attribution("+ index +","+ idUser + ","+ idRole +")\" id=\"attribution"+ index +"\" style=\"cursor: pointer; color: #5C2D91;\">Ajouter aux contributeurs</a>");#}
+        {#        },#}
+        {#    });#}
+        {#}#}
+</script>
+{% endblock %}

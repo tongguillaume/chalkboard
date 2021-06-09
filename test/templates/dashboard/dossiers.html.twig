@@ -1,0 +1,67 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+        {% for label, flashes in app.session.flashbag.all %}
+            {% for flash in flashes %}
+                {% if ( label == 'success' ) %}
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        {{ flash }}
+                    </div>
+                {% elseif ( label == 'error' ) %}
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        {{ flash }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item">
+                    <a href="{{ app.request.getBaseURL() }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+                <li class="breadcrumb-item active">Tableau de bord par dossier/document</li>
+            </ol>
+            <div class="row">
+                <div class="col-md-11 mx-auto">
+                    <h3>TABLEAU DE BORD PAR DOSSIER/ DOCUMENT</h3>
+                    <div class="row mt-5">
+                        <div class="col-sm-8 col-md-8">
+                            {% for evaluation in evaluations %}
+                                <div class="card">
+                                    <div class="card-body">
+                                        {{ evaluation.nom }}
+                                        {% if evaluation.state == 1 %}
+                                            <span class="badge badge-pill badge-pill-custom ml-4 mt-2 custom-edition">{{ traduction.en_edition|trans }}</span>
+                                        {% elseif evaluation.state == 2 %}
+                                            <span class="badge badge-pill badge-pill-custom ml-4 mt-2 custom-validation">{{ traduction.en_validation|trans }}</span>
+                                        {% elseif evaluation.state == 3 %}
+                                            <span class="badge badge-pill badge-pill-custom ml-4 mt-2 custom-publication">{{ traduction.publie|trans }}</span>
+                                        {% endif %}
+                                        <a href="#" class="btn btn-custom-hceres float-right mr-1">{{ traduction.voir_le_tableau_de_bord|trans }}</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Sticky Footer -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

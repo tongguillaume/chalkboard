@@ -1,0 +1,125 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">{{ app.session.get("evaluation") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ path('document_evaluation_choice', {'idEval': app.session.get("evaluation_id"), 'idDoc': app.session.get("document_id"),'page' : 'dashboard_document'}) }}">{{ app.session.get("document") }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.affichage |trans }}</li>
+            </ol>
+
+            <h3>{{ document.nom }} ({{ traduction.mode_apercue |trans }})</h3>
+            <div class="row ml-2">
+                <div class="col-xl-8 col-lg-6 col-sm-12">
+                    <p>
+                        <i>{{ traduction.etat_du_document |trans }} : {% if document.state == 1 %}{{ traduction.en_validation |trans }}{% elseif document.state == 2 %}{{ traduction.en_edition |trans }}{% elseif document.state == 3 %}{{ traduction.publie |trans }}{% endif %} <br>
+                            {{ traduction.cree_le |trans }} : {{ document.date_creation|date("d/m/Y") }} <br>
+                            {{ traduction.derniere_modification_le |trans }} : {{ document.date_modification|date("d/m/Y") }} <br>
+                        </i>
+                    </p>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-sm-12">
+                    <div class="mt-4 ml-4 btn-group report-controls">
+                        <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_edit">
+                            <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.modifier_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/rapport_edit.svg" width="40" height="40">
+                        </a>
+
+                        <a href="{{ path('api_create_file_document') }}/{{ document.id }}">
+                            <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.telecharger_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/telecharger.svg" width="40" height="40"/>
+                        </a>
+                        <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/dashboard_document"
+                        >
+                            <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.voir_le_tableau_de_bord|trans }}" src="{{ app.request.getBaseURL() }}/images/tableau-de-bord.svg" width="40" height="40"/>
+                        </a>
+                        {% if hasAccess %}
+                        <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_flux">
+                        <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.acceder_flux_de_travail|trans }}" src="{{ app.request.getBaseURL() }}/images/flux-de-travail.svg" width="40" height="40"/>
+                        </a>
+                        <div class="other-menu">
+                        <a class="" id="extend_menu_hceres" onclick="event.preventDefault(); this.classList.toggle(`open-other-menu`); " href="#" role="tab" aria-selected="true">
+                            <img data-toggle="tooltip" data-placement="bottom" src="{{ app.request.getBaseURL() }}/images/autres.svg" title="{{ traduction.autre |trans }}" width="40" height="40">
+                        </a>
+
+                        <div class="mt-2 tab-content dropdown-menu-hceres" id="nav-tabContent">
+                            <div class="" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                                <a href="/document/{{ evaluation.id }}/{{ document.id }}/edit"
+                                   class="dropdown-item">{{ traduction.renommer_le_document|trans }}</a>
+                                <a href="{{ path('document_duplicate') }}/{{ document.id }}"
+                                   class="dropdown-item">{{ traduction.dupliquer_le_document|trans }}</a>
+                                <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/gestion_user_attribution"
+                                   class="dropdown-item">{{ traduction.gerer_les_droits_des_contributeurs|trans }}</a>
+                                <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_template"
+                                   class="dropdown-item">{{ traduction.modifier_le_template|trans }}</a>
+                            </div>
+                        </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            {% for bloc in blocs %}
+                <div class="row ml-1 mt-3">
+                    {% if bloc.ordre == 1 %}
+                        <div class="col-lg-12 titre1-word">{{ bloc.name }}</div>
+                    {% elseif bloc.ordre == 2 %}
+                        <div class="col-lg-12 titre2-word">{{ bloc.name }}</div>
+                    {% elseif bloc.ordre == 3 %}
+                        <div class="col-lg-12 titre3-word">{{ bloc.name }}</div>
+                    {% elseif bloc.ordre == 4 %}
+                        <h4 class="col-lg-12 titre4-word">{{ bloc.name }}</h4>
+                    {% endif %}
+                    {% if bloc.ordre == 0 %}
+                        {% if bloc.content is not null %}
+                    <div class="col-lg-12 p-word">{{ bloc.content|raw }}</div>
+                        {% else %}
+                            <p class="col-lg-12 p-word"><u>{{ traduction.non_redige |trans }}</u></p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            {% if endNotes |length  > 0 %}
+            <div class="row ml-1 mt-3">
+                <div class="col-lg-12 titre1-word">
+                    <a id="bloc_">{{ traduction.note_fin_document | trans }}</a>
+                </div>
+                <div class="col-lg-12 p-word">
+                    <p class="collapse" style="text-align: justify" id="collapseSummary387">
+                        {% for key, note in endNotes %}
+                    <p> <sup>{{ note.exposant }}</sup> {{ note.description }} </p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            {% if glossaires |length  > 0 %}
+                <div class="row ml-1 mt-3">
+                    <div class="col-lg-12 titre1-word">
+                        <a id="bloc_">{{ traduction.glossaire | trans }}</a>
+                    </div>
+                    <div class="col-lg-12 p-word">
+                        <p class="collapse" style="text-align: justify" id="collapseSummary387">
+                         {% for key, glossaire in glossaires %}
+                            <h3> {{ key }} </h3>
+                            {% for mot in glossaire %}
+                                <p> {{ mot }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

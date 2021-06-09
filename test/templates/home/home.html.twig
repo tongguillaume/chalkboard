@@ -1,0 +1,97 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+        {% for label, flashes in app.session.flashbag.all %}
+            {% for flash in flashes %}
+                {% if ( label == 'success' ) %}
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        {{ flash }}
+                    </div>
+                {% elseif ( label == 'error' ) %}
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        {{ flash }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+            </ol>
+            <div class="row">
+                <div class="col-md-11 mx-auto">
+                    <h3 class="mb-2"> {{ traduction.home_dossierdoc|trans }}</h3>
+
+                        <div class="overflow-panel-sub-div">
+
+                            <div class="card">
+                            <div class="card-body">
+                                <ul class="list-group">
+{#                                    {% if hasAccessPercent == true %}#}
+{#                                        {% if ordre == null or ordre == "asc" %}#}
+{#                                        <a href="{{ path("home_ordre", { ordre : "desc" }) }}" class="btn dropdown-button-custom col-3 ml-auto" style="color:#000;font-weight:bold">#}
+{#                                            {{ traduction.tri_par_ordre_decroissant | trans }}#}
+{#                                        </a>#}
+{#                                        {% elseif ordre == "desc" %}#}
+{#                                            <a href="{{ path("home_ordre", { ordre : "asc" }) }}" class="btn dropdown-button-custom col-3 ml-auto" style="color:#000;font-weight:bold">#}
+{#                                                {{ traduction.tri_par_ordre_croissant | trans }}#}
+{#                                            </a>#}
+{#                                        {% endif %}#}
+{#                                    {% endif %}#}
+                                    {% if hasAccessDownload and nbEval > 5 or app.request.attributes.get('_route') == 'home_campagne'  %}
+                                        <div style="text-align: right">{{ traduction.filtrer | trans }} :
+                                            <select id="selectbox" class="btn dropdown-button-custom col-3 ml-auto"  name="" onchange="javascript:location.href = this.value;" style="width: 400px">
+                                                <option value="{{ path('home_campagne', {campagne : 'horsVague' }) }}">{{ traduction.hors_vague | trans }}</option>
+
+                                                {% if selected == null %}
+                                                    {% for campagne in campagnes %}
+                                                        <option value="{{ path('home_campagne', {campagne : campagne.campagne }) }}">{{  campagne.campagne }}</option>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% for campagne in campagnes %}
+                                                        {% if selected == campagne.campagne %}
+                                                            <option value="{{ path('home_campagne', {campagne : campagne.campagne }) }}" selected>{{  campagne.campagne }}</option>
+                                                        {% else %}
+                                                            <option value="{{ path('home_campagne', {campagne : campagne.campagne }) }}">{{  campagne.campagne }}</option>
+
+                                                        {% endif %}
+                                                  {% endfor %}
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                    {% endif %}
+                                    {% for evaluation in evaluations %}
+                                        {% include 'home/Components/_list_eval.html.twig' %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.content-wrapper -->
+
+    </div>
+    <style>
+        .loadingMessage, .warningNoDocInFolder { text-indent: 40px;padding-bottom: 60px }
+        .warningNoDocInFolder { color: #C71817 }
+        .listDocsFromDroit { display:none }
+        .listDocsFromDroit.show { display:block }
+    </style>
+    <!-- /#wrapper -->
+{% endblock %}
+{% block javascripts %}
+    {% include 'home/Components/_list_doc.html.twig' %}
+{% endblock %}

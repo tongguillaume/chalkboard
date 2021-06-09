@@ -1,0 +1,140 @@
+{% extends "home/base.html.twig" %}
+
+{% block content %}
+<div id="content-wrapper">
+
+    <div class="container-fluid">
+
+        <!-- Breadcrumbs-->
+        <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ app.request.getBaseURL()  }}/">Accueil</a>
+            </li>
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ app.request.getBaseURL()  }}/admin/users">Administration</a>
+            </li>
+            <li class="breadcrumb-item active">{{ traduction.supprimer_des_documents | trans }}</li>
+        </ol>
+
+        {% for label, flashes in app.session.flashbag.all %}
+            {% for flash in flashes %}
+                {% if ( label == 'success' ) %}
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        {{ flash }}
+                    </div>
+                {% elseif ( label == 'error' ) %}
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        {{ flash }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        <h3>{{ traduction.supprimer_des_documents | trans }}</h3>
+
+        <form action="{{ path('list_delete') }}" id="formfield">
+
+            <table class="table table-sm mt-5" id="dataTableDocumentation">
+                <thead>
+                <tr>
+                    <th scope="col">{{ traduction.nom_du_fichier | trans }}</th>
+                    <th scope="col">{{ traduction.nom_du_dossier |trans  }}</th>
+                    <th scope="col">{{ traduction.systeme_de_droit |trans }}</th>
+                    <th scope="col">{{ traduction.date_de_creation |trans }}</th>
+                    <th scope="col"><input type="button" class="btn nav-link-collapser" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;" data-toggle="modal" data-target="#confirm-delete" value="{{ traduction.supprimer | trans }}">
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for key, document in  documents %}
+                    <tr>
+                        <td>{{ document.nom }}</td>
+                        <td>{{ document.evaluations.nom }}</td>
+                        <td>{{ document.idSystemDroit.name }}</td>
+                        <td>{{ document.dateCreation | date('d/m/Y') }}</td>
+                        <td><input type="checkbox" id="{{ document.id }}" name="id[{{ loop.index }}]" value="{{ document.id }}"> </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </form>
+        <!-- Sticky Footer -->
+    </div>
+    <!-- /.content-wrapper -->
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    {{ traduction.supprimer_des_documents | trans }}
+                </div>
+                <div class="modal-body">
+                    {{ traduction.etes_vous_sur_de_vouloir_supprimer_ces_documents |trans }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ traduction.annuler |trans }}</button>
+                    <a class="btn btn-danger btn-ok" id="submit">{{ traduction.supprimer |trans }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /#wrapper -->
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function() {
+            $('#submit').click(function(){
+                $('#formfield').submit();
+            });
+            var table = $('#dataTableDocumentation').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+                },
+                "columnsDefs" : [
+                    null,
+                    null,
+                    null,
+                    { "searchable" : false},
+                    { "searchable" : false},
+                ],
+                pageLength: 25,
+                processing: true,
+                responsive: false,
+            });
+
+            $('#confirm-delete').on('show.bs.modal', function(e) {
+                $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+            });
+
+
+            $('#formfield').on('submit', function(e){
+                var form = this;
+
+                // Encode a set of form elements from all pages as an array of names and values
+                var params = table.$('input,select,textarea').serializeArray();
+
+                // Iterate over all form elements
+                $.each(params, function(){
+                    // If element doesn't exist in DOM
+                    if(!$.contains(document, form[this.name])){
+                        // Create a hidden element
+                        $(form).append(
+                            $('<input>')
+                                .attr('type', 'hidden')
+                                .attr('name', this.name)
+                                .val(this.value)
+                        );
+                    }
+                });
+            });
+
+        });
+
+    </script>
+{% endblock %}

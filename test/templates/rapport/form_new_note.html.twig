@@ -1,0 +1,65 @@
+  <div class="modal fade" id="modalNoteCreate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">{{ traduction.nouvelle_note |trans }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+         
+            <div class="form-group">
+              <label for="recipient-name" class="col-form-label">{{ traduction.titre |trans }} : </label>
+              <input id="CreateNoteTitle"/>
+              <div class="noTitle">
+       </div>
+            </div>
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">{{ traduction.notes |trans }} : </label>
+              <textarea id="CreateNoteComment" name="newComment">  </textarea>
+            
+            </div>
+{#            <div class="form-group">#}
+{#                <label for="message-text" class="col-form-label">{{ traduction.attribuer_a |trans }} : </label>#}
+{#                <select id="attributeTo" class="form-control form-input-hceres select2-hceres select2" name="newAttributeTo" label="attribute">#}
+{#                    {% for user in documentUsers %}#}
+{#                        <option value="{{ user.id }}" data-select2-id="2">{{ user.username }}</option>#}
+{#                    {% endfor %}#}
+{#                </select>#}
+{#            </div>#}
+             <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ traduction.annuler |trans }}</button>
+        <button id="createNoteConfirm" type="submit" class="btn btn-custom-hceres" data-comId="{{id_bloc}}" data-dismiss="modal">{{ traduction.confirmer |trans }}</button>
+      
+      </div>
+                    
+        </div>
+
+      </div>
+    </div>
+  </div>
+  
+ {# {% block javascripts %}
+ {# {{parent()}} #}
+    {# <script src="{{ app.request.getBaseURL()  }}/js/etherpad/etherpad.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/farbtastic.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/select2.min.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/bootstrap.min.js"></script>
+    <script type="text/javascript"> #}
+   {# $(document).ready(function() {
+     
+      $('#createNoteConfirm').click(function(){
+
+        var titre = $('CreateNoteTitle').val();
+        var messageError = "Merci d'ajouter un titre à votre commentaire avant de valider.";
+        if(titre.trim() = ""){
+          $('.noTitle').append('<h5 class="alert alert-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>'+' '+messageError+'</h5>');
+        }
+      })
+   })
+  </script>
+   {% endblock %} #} 
+
+
+

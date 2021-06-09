@@ -1,0 +1,56 @@
+{% extends 'home/base.html.twig' %}
+
+{% block title %}Ajouter un document{% endblock %}
+
+{% block body %}
+    <h1>Create new Document</h1>
+
+    {{ include('document/_form.html.twig') }}
+
+    <a href="{{ path('document_index') }}">back to list</a>
+{% endblock %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/bloc/admin/">{{ traduction.documents|trans }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.ajouter_un_document | trans }}</li>
+            </ol>
+            <h1>{{ traduction.ajouter_un_document | trans }}</h1>
+            <!-- /.container-fluid -->
+            {# form_widget(form) #}
+            {{ form_start(form) }}
+            {{ form_errors(form) }}
+            <div class="ml-5 col-md-8 mb-5" id ="accordion">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <a class="btn btn-link plusandminus"  href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="fas fa-minus"></i> {{ traduction.fiche_document | trans }}
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                            {{ form_row(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

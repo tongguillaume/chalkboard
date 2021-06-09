@@ -1,0 +1,71 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item">{{ traduction.administration |trans }}</li>
+                <li class="breadcrumb-item active">{{ traduction.commande_import_tableau | trans}}</li>
+            </ol>
+
+            <h3>{{ traduction.gestions_de_la_commande_tableau | trans}}</h3>
+
+            {{ form_start(form) }}
+
+            {{ form_widget(form.filePath) }}
+
+            {{ form_widget(form.save, {'attr' : {'label' : traduction.enregister | trans}}) }}
+
+            {{ form_end(form) }}
+
+            <hr>
+
+            {% if tab is null  %}
+            {{ traduction.pas_de_fichier_a_importe |trans }}
+            {% else %}
+                {{ traduction.le_fichier | trans }}<b> {{ tab.Name }}</b> {{ traduction.sera_importe_le | trans}} {{ "now"|date_modify("+1 day")|date("d/m/Y") }} {{ traduction.a_deux_h_du_matin | trans }}.
+            {% endif %}
+
+            {#<h4>Fichiers déposé</h4>
+            <table class="table table-sm mt-5" id="dataTable">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Fichier</th>
+                    <th scope="col">{{ traduction.auteur |trans }}</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for file in spreadsheets %}
+                    <tr>
+                        <th scope="row">{{ file.Id }}</th>
+                        <td>
+                            <a href="{{ app.request.getBaseURL() }}/admin/spreadsheets/download/{{ file.Id }}">
+                                {{ file.Name }}</a></td>
+                        <td>{{ file.UserId.UsernameCanonical }}</td>
+                        <td>{{ file.DateCreation|date('d/m/Y') }}</td>
+                        <td>
+                            <a href="{{ app.request.getBaseURL() }}/admin/spreadsheets/download/{{ file.Id }}"
+                               style="color: #0069d9;"> <span class="fas fa-fw fa-download"></span></a>
+                            <a href="{{ app.request.getBaseURL() }}/admin/spreadsheets/delete/{{ file.Id }}"
+                               style="color: red;"> <i class="fas fa-fw fa-trash"></i></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table> #}
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    {{ traduction.administration | trans}}
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.tableau_de_bord | trans}}</li>
+            </ol>
+
+            <h2>{{ traduction.tableaux_de_bord_administrateur | trans}}</h2>
+            <div class="table-responsive" style="height: 650px">
+                <table class="table table-sm table-bordered table-striped table-hover w-auto">
+                    <thead>
+                    <tr>
+                        <th scope="col">{{ traduction.site | trans}}</th>
+                        <th scope="col">{{ traduction.etablissement | trans}}</th>
+                        <th scope="col">{{ traduction.groupe | trans}}</th>
+                        <th scope="col">{{ traduction.domaine | trans}}</th>
+                        <th scope="col">{{ traduction.sous_domaine | trans}}</th>
+                        <th scope="col">{{ traduction.evaluations | trans}}</th>
+                        <th scope="col">Code ged</th>
+                        <th scope="col">{{ traduction.langue_rapport | trans}}</th>
+                        <th scope="col">{{ traduction.nom_comite | trans}}</th>
+                        <th scope="col">{{ traduction.experts | trans}}</th>
+                        <th scope="col">{{ traduction.nb_experts | trans}}</th>
+                        <th scope="col">{{ traduction.nb_experts_femme | trans}}</th>
+                        <th scope="col">{{ traduction.nb_experts_etrangers | trans}}</th>
+                        <th scope="col">{{ traduction.nom_president_du_comite | trans}}</th>
+                        <th scope="col">{{ traduction.genre_president | trans}}</th>
+                        <th scope="col">{{ traduction.nationalite_president | trans}}</th>
+                        <th scope="col">{{ traduction.type_object_evalue | trans}}</th>
+                        <th scope="col">{{ traduction.sous_type_objet_evalue | trans}}</th>
+                        <th scope="col">{{ traduction.conseiller_scientifique | trans}}</th>
+                        <th scope="col">{{ traduction.chargee_de_projet | trans}}</th>
+                        <th scope="col">{{ traduction.date_debut_visite | trans}}</th>
+                        <th scope="col">{{ traduction.date_fin_visite | trans}}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for evaluation in evaluations %}
+                    <tr>
+                        <td>{{ evaluation.site }}</td>
+                        <td>{{ evaluation.etablissement }}</td>
+                        <td>{{ evaluation.groupe }}</td>
+                        <td>{{ evaluation.domaineHceres }}</td>
+                        <td>{{ evaluation.sousDomaineHceres }}</td>
+                        <td>{{ evaluation.nom }}</td>
+                        <td>{{ evaluation.code }}</td>
+                        <td>{{ evaluation.langueRapport }}</td>
+                        <td>{{ evaluation.nomComite }}</td>
+                        <td>{{ evaluation.expertComite | raw }}</td>
+                        <td>{{ evaluation.expert }}</td>
+                        <td>{{ evaluation.expertFemme }}</td>
+                        <td>{{ evaluation.expertEtranger }}</td>
+                        <td>{{ evaluation.President }}</td>
+                        <td>{{ evaluation.presidentGenre }}</td>
+                        <td>{{ evaluation.presidentNationalite }}</td>
+                        <td>{{ evaluation.typeEvaluation }}</td>
+                        <td>{{ evaluation.sousTypeEvaluation }}</td>
+                        <td>{{ evaluation.CS | raw }}</td>
+                        <td>{{ evaluation.CP | raw }}</td>
+                        <td>{{ evaluation.dateDebut }}</td>
+                        <td>{{ evaluation.dateFin }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <a class="float-right mt-3 mr-3 btn-primary col-2 form-btn-hceres btn" href="{{ path('export_dashboard') }}">Export CSV</a>
+    </div>
+
+
+    <!-- Sticky Footer -->
+
+
+    </div>
+    <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

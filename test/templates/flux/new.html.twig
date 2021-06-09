@@ -1,0 +1,80 @@
+ {% extends 'home/base.html.twig' %}
+
+{% block title %}New Flux{% endblock %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            {#//////////////////////////////////////////////////////////////////////#}
+            {#//////////////////////////////////////////////////////////////////////#}
+            {#//////////////////////////////////////////////////////////////////////#}
+            {#//////////////////////////////////////////////////////////////////////#}
+            {#//////////////////////////////////////////////////////////////////////#}
+            {#//////////////////////////////////////////////////////////////////////#}
+            {#//////////////////////////////////////////////////////////////////////#}
+            {#//////////////////////////////////////////////////////////////////////#}
+            {#//////////////////////////////////////////////////////////////////////#}
+            {#//////////////////////////////////////////////////////////////////////#}
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/systemDroit">{{ traduction.systeme_de_droit|trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    {{ systemDroit.name }}
+                </li>
+                <li class="breadcrumb-item  breadcrumb-item-custom">
+                    <a href="{{ path('flux_index', {'systemDroit' : systemDroit.id}) }}">
+                    {{ traduction.flux_de_travail|trans }}</a></li>
+                <li class="breadcrumb-item active">{{ traduction.ajouter_une_etape_dans_le_flux}}</li>
+            </ol>
+
+            <h1>{{ traduction.ajouter_une_etape_dans_le_flux | trans }}</h1>
+            <!-- /.container-fluid -->
+            {# form_widget(form) #}
+            {{ form_start(form) }}
+            {{ form_errors(form) }}
+            <div class="ml-5 col-md-8 mb-5" id ="accordion">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <a class="btn btn-link plusandminus"  href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="fas fa-minus"></i> {{ traduction.fiche_flux | trans }} {{ systemDroit.name }}
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                            {{ traduction.nom | trans }}
+                            {{ form_widget(form.name, { 'attr' : { 'placeholder' : traduction.nom | trans}}) }} <br>
+                            {{ traduction.ordre | trans }}
+                            {{ form_widget(form.ordre, { 'attr' : { 'placeholder' : traduction.ordre | trans}}) }} <br>
+                            {{ traduction.description | trans }}
+                            {{ form_widget(form.description, { 'attr' : { 'placeholder' : traduction.description | trans}}) }} <br>
+                            {{ traduction.date_cible | trans }}
+                            {{ form_widget(form.date_cible) }}
+                            <br>
+                            {{ traduction.etapeged | trans }}
+                            {{ form_widget(form.stateGed) }} <br>
+                            {{ traduction.roles_a_notifier | trans }}
+                            {{ form_widget(form.RolesNotifications) }} <br>
+                            {{ traduction.roles_a_notifier_mail | trans }}
+                            {{ form_widget(form.RolesMail) }} <br>
+                            {{ form_widget(form.save, { 'label': traduction.enregister|trans } ) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

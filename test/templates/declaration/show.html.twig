@@ -1,0 +1,125 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="#">{{ traduction.accueil |trans }}</a>
+                </li>
+                <!-- <li class="breadcrumb-item active">Overview</li> -->
+            </ol>
+
+
+            <h1>Liste des déclaration</h1>
+            <!-- /.container-fluid -->
+            <table id="example" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                <tr>
+                    <th class="filterhead">Titre</th>
+                    <th class="filterhead">Focus transfert</th>
+                    <th class="filterhead">Intitule</th>
+                    <th class="filterhead">Résumé</th>
+                    <th class="filterhead">Descriptif</th>
+                    <th class="filterhead">Question</th>
+                    <th class="filterhead">Probleme technique</th>
+                    <th class="filterhead">Date obtention</th>
+                    <th></th>
+                    {# <th>Direction référente</th>
+                     <th>Charge convention</th>
+                     <th>Intitule structure</th>
+                     <th>Responsable structure</th>
+                     <th>Theme</th>
+                     <th>Date de signature</th>
+                     <th>Actions</th> #}
+                </tr>
+                <tr>
+                    <th>Titre</th>
+                    <th>Focus transfert</th>
+                    <th>Intitule</th>
+                    <th>Résumé</th>
+                    <th>Descriptif</th>
+                    <th>Question</th>
+                    <th>Probleme technique</th>
+                    <th>Date obtention</th>
+                    <th>{{ traduction.actions |trans }}</th>
+                    {# <th>Direction référente</th>
+                     <th>Charge convention</th>
+                     <th>Intitule structure</th>
+                     <th>Responsable structure</th>
+                     <th>Theme</th>
+                     <th>Date de signature</th>
+                     <th>{{ traduction.actions |trans }}</th> #}
+                </tr>
+                </thead>
+                <tbody>
+                {% for declaration in declarations %}
+                    <tr>
+                        <td>{{ declaration.Titre }}</td>
+                        <td>{{ declaration.FocusTransfert }}</td>
+                        <td>{{ declaration.Intitule }}</td>
+                        <td>{{ declaration.Resume }}</td>
+                        <td>{{ declaration.Descriptif }}</td>
+                        <td>{{ declaration.Question }}</td>
+                        <td>{{ declaration.ProblemeTech }}</td>
+                        <td>{{ declaration.DateObtention|date('d-m-Y') }}</td>
+                        <td>
+                            <a href="{{ app.request.getBaseURL()  }}/declaration/view/{{ declaration.Id }}">
+                                <i class="fas fa-fw fa-file-alt"></i>
+                            </a>
+                            <a href="{{ app.request.getBaseURL()  }}/declaration/edit/{{ declaration.Id }}">
+                                <i class="fas fa-fw fa-pen-alt"></i>
+                            </a>
+                            <a style="color: red;" href="{{ app.request.getBaseURL()  }}/declaration/delete/{{ declaration.Id }}">
+                                <i class="fas fa-fw fa-trash-alt"></i>
+                            </a>
+                        </td>
+                        {# <td>{{ convention.DirectionReferente }}</td>
+                         <td>{{ convention.ChargeConvention }}</td>
+                         <td>{{ convention.IntituleStructure }}</td>
+                         <td>{{ convention.ResponsableStructure }}</td>
+                         <td>{{ convention.Theme }}</td>
+                         <td>{{ convention.DateDeSignature|date('d-m-Y') }}</td>
+                         <td><a href="{{ app.request.getBaseURL()  }}/convention/delete/{{ convention.Id }}">
+                                 <i class="fas fa-fw fa-trash-alt"></i>
+                             </a></td>
+                             #}
+                    </tr>
+                {% endfor %}
+                </tbody>
+                {# <tfoot>
+                 <tr>
+                     <th>Parenaire</th>
+                     <th>Nature</th>
+                     <th>Type</th>
+                     <th>Objet</th>
+                     <th>Date ouverture</th>
+                     <th>Numero</th>
+                 </tr>
+                 </tfoot> #}
+            </table>
+
+
+
+
+
+
+
+            <!-- Sticky Footer -->
+            <footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright © Your Website 2018</span>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

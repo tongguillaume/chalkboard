@@ -1,0 +1,122 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="#">{{ traduction.accueil |trans }}</a>
+                </li>
+                <!-- <li class="breadcrumb-item active">Overview</li> -->
+            </ol>
+
+            {#
+            <td>{{ convention.DateOuverture|date('d-m-Y') }}</td>
+                                    <td>{{ convention.Nature }}</td>
+                                    <td>{{ convention.Type }}</td>
+                                    <td>{{ convention.Objet }}</td>
+                                    <td>{{ convention.DirectionReferente }}</td>
+                                    <td>{{ convention.ChargeConvention }}</td>
+                                    <td>{{ convention.IntituleStructure }}</td>
+                                    <td>{{ convention.ResponsableStructure }}</td>
+                                    <td>{{ convention.Partenaire }}</td>
+                                    <td>{{ convention.Theme }}</td>
+                                    <td>{{ convention.DateDeSignature|date('d-m-Y') }}</td>
+            #}
+            <h1>{{ traduction.creer_une_declaration |trans }}</h1>
+            <!-- /.container-fluid -->
+            {# form_widget(form) #}
+            {{ form_start(form) }}
+            {{ form_errors(form) }}
+            <div class="ml-5 col-md-8 mb-5" id ="accordion">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <a class="btn btn-link plusandminus"  href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="fas fa-minus"></i> {{ traduction.partie_1_-_de_l_invention |trans }}
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                            {{ form_row(form.Titre) }}
+                            {{ form_row(form.FocusTransfert) }}
+                            {{ form_row(form.Intitule) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0">
+                            <a class="btn btn-link plusandminus" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                <i class="fas fa-plus"></i> {{ traduction.descriptif_de_l_invention | trans }}
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                        <div class="card-body">
+                            {{ form_row(form.Resume) }}
+                            {{ form_row(form.Descriptif) }}
+                            {{ form_row(form.Question) }}
+                            {{ form_row(form.ProblemeTech) }}
+                            {{ form_row(form.DateObtention) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
+
+            {#   <div id="accordion">
+                   <div class="card">
+                       <div class="card-header" id="headingOne">
+                           <h5 class="mb-0">
+                               <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                   Collapsible Group Item #1
+                               </button>
+                           </h5>
+                       </div>
+
+                       <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                           <div class="card-body">
+                               Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                           </div>
+                       </div>
+                   </div>
+                   <div class="card">
+                       <div class="card-header" id="headingTwo">
+                           <h5 class="mb-0">
+                               <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                   Collapsible Group Item #2
+                               </button>
+                           </h5>
+                       </div>
+                       <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                           <div class="card-body">
+                               Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               #}
+
+
+
+
+            <!-- Sticky Footer -->
+            <footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright © Your Website 2018</span>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

@@ -1,0 +1,31 @@
+<div class="stepcontainer">
+<button type="button" class="btn btn-custom-hceres btn-sm btn-block col-8 offset-2 stepwrapper" id="stepwrapper{{ step.id }}"
+        data-toggle="modal" data-target="#exampleModal" data-idstep="{{step.id}}" data-stepdate="{{step.date_cible}}" data-ordre="{{ step.ordre }}" data-flux_id="{{ step.flux_id }}">
+    {{traduction.modifierdatecible|trans}}
+</button>
+</div>
+
+{#
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{traduction.nouvelledatecible|trans}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-dark">
+                {{ traduction.nouvelledatecible|trans}}
+            </div>
+            <input type="date" id="step_targetdate{{step.id}}" name="step_targetdate"
+                   min="2018-01-01" max="2099-12-31" data-stepdate="{{ step.date_cible }}">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ traduction.annuler|trans}}</button>
+                <button type="button" class="btn btn-primary modalStepDateConfirm" id="modalStepDateConfirm{{step.id}}" data-dismiss="modal" data-idstep="{{step.id}}" data-stepdate="{{ step.date_cible }}">{{traduction.confirmer|trans}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+#}
+

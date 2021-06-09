@@ -1,0 +1,60 @@
+{% extends "home/base.html.twig" %}
+
+{% block title %}
+    {{ 'user.show_user.title' | trans({'%username%': user.username }) | desc('User %username%') }} - {{ parent() }}
+{% endblock %}
+
+{% block page_title_text %}
+    {{ 'user.show_user.page_title' | trans({'%username%': user.username }) | desc('User %username%') }}
+{% endblock %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+    <div class="container-fluid">
+
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+        <li class="breadcrumb-item breadcrumb-item-custom">
+            <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil|trans }}</a>
+        </li>
+        <li class="breadcrumb-item breadcrumb-item-custom">
+            <a href="{{ app.request.getBaseURL()  }}/admin/users">{{ traduction.administration|trans }}</a>
+        </li>
+        <li class="breadcrumb-item active">{{ user.username }}</li>
+    </ol>
+        <br>
+        <div class="row">
+            <div class="col-sm-2 col-xs-12">
+                <img src="{{ gravatar(user.email, 200) }}" alt="Profile image" class="img-circle img-fluid ">
+            </div>
+            <div class="col-sm-10 col-xs-12">
+                <h4>
+                    {{ user.username }}
+                    <br>
+                    <small class="text-muted">{{ user.email }}</small>
+                </h4>
+                {#<hr>#}
+                {#<div class="btn-group" role="group" aria-label="Basic example">#}
+                    {#{%  for role in user.roleHceres %}#}
+                        {#<button type="button" class="btn btn-outline-info" >{{ role.nomAbrege }}</button>#}
+                    {#{% endfor %}#}
+                {#</div>#}
+                <hr>
+                <div class="btn-group">
+                    <a href="{{ path('admin_user_edit', {'user': user.id}) }}" class="btn btn-info">
+                        <i class="fa fa-pencil-alt"></i>
+                        {{ traduction.modifier|trans }} {{ traduction.utilisateurs|trans }}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Footer -->
+    </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+{% endblock %}

@@ -1,0 +1,73 @@
+{% block footer %}
+
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    {% if traduction is defined %}
+        <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">{{ traduction.pret_a_partir |trans}}</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">{{ traduction.selectionnez_deconnexion_ci_dessous_si_vous_etes_pret_a_terminer_votre_session_en_cours | trans}}</div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">{{ traduction.annuler | trans}}</button>
+                        <a class="btn btn-primary" href="{{ app.request.getBaseURL()  }}/logout" onclick='localStorage.setItem("sideBar", "true")'>{{ traduction.deconnexion | trans }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Bootstrap core JavaScript-->
+    
+    <script src="{{ app.request.getBaseURL()  }}/js/jquery.min.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/popper.min.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/bootstrap.min.js"></script>
+
+   {# <script src="{{ app.request.getBaseURL()  }}/vendor/jquery/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/vendor/bootstrap/js/bootstrap.bundle.min.js"></script> #}
+
+    <!-- Core plugin JavaScript-->
+    <script src="{{ app.request.getBaseURL()  }}/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Page level plugin JavaScript-->
+    {#<script src="{{ app.request.getBaseURL()  }}/vendor/datatables/jquery.dataTables.js"></script>#}
+    {#<script src="{{ app.request.getBaseURL()  }}/vendor/datatables/dataTables.bootstrap4.js"></script>#}
+
+    <!-- Custom scripts for all pages-->
+    <script src="{{ app.request.getBaseURL()  }}/js/sb-admin.js"></script>
+
+    <link href="{{ app.request.getBaseURL()  }}/css/bootstrap4-toggle.min.css" rel="stylesheet">
+    {#<link href="{{ app.request.getBaseURL()  }}/css/datatable.css" rel="stylesheet">#}
+    <link href="{{ app.request.getBaseURL()  }}/css/dataTable-Bootstrap4.min.css" rel="stylesheet">
+    <link href="{{ app.request.getBaseURL()  }}/css/responsive-bootstrap4.min.css" rel="stylesheet">
+
+    <!-- Demo scripts for this page-->
+    <script id="dataLang" src="{{ app.request.getBaseURL()  }}/js/dataTable/datatables-demo.js?v=1" lang="{{ app.session.get('lang') }}"></script>
+
+    <script src="{{ app.request.getBaseURL()  }}/js/dataTable/jquery-dataTables.min.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/dataTable/dataTables-bootstrap4.min.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/dataTable/dataTables-responsive.min.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/dataTable/responsive-bootstrap.min.js"></script>
+
+    <script src="{{ app.request.getBaseURL()  }}/js/script.js"></script>
+
+
+
+    <script src="{{ app.request.getBaseURL()  }}/js/bootstrap4-toggle.min.js"></script>
+    <link href="{{ app.request.getBaseURL()  }}/css/muli.css" rel="stylesheet">
+
+    </body>
+
+    </html>
+{% endblock %}

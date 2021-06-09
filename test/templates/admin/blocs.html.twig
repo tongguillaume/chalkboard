@@ -1,0 +1,71 @@
+{% extends 'home/base.html.twig' %}
+
+{% block title %}Bloc index{% endblock %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+                <li class="breadcrumb-item active">Block</li>
+            </ol>
+
+            <h3>Block</h3>
+
+            <table class="table table-sm mt-5" id="dataTable">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">{{ traduction.nom|trans }}</th>
+                    <th scope="col">{{ traduction.type|trans }}</th>
+                    <th scope="col">{{ traduction.statut|trans }}</th>
+                    <th scope="col">{{ traduction.actif|trans }}</th>
+                    <th scope="col">{{ traduction.document|trans }}</th>
+                    <th scope="col">{{ traduction.ordre|trans }}</th>
+                    <th scope="col">{{ traduction.cree_le|trans }}</th>
+                    <th scope="col">{{ traduction.derniere_modification_le|trans }}</th>
+                    <th scope="col">{{ traduction.actions |trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for bloc in blocs %}
+                    <tr>
+                        <th scope="row">{{ bloc.id }}</th>
+                        <td><a href="{{ path('bloc_show', {'id': bloc.id}) }}">{{ bloc.name }}</a></td>
+                        <td>{{ bloc.type }}</td>
+                        <td>{{ bloc.status }}</td>
+                        <td>{{ bloc.actif }}</td>
+                        <td>{{ bloc.idDocument.nom }}</td>
+                        <td>{{ bloc.ordre }}</td>
+                        <td>{{ bloc.dateCreation|date('Y-m-d H:i:s') }}</td>
+                        <td>{% if bloc.dateModification %} {{ bloc.dateModification|date('Y-m-d H:i:s') }} {% endif %}</td>
+                        <td>
+                            <form method="post" class="ml-0" action="{{ path('bloc_delete', {'id': bloc.id}) }}" onsubmit="return confirm('{{ traduction.confirmation_supression|trans }}');">
+                                <a href="{{ path('bloc_edit', {'id': bloc.id}) }}" style="color: #0069d9;"> <span class="fas fa-fw fa-edit"></span></a>
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ bloc.id) }}">
+                                <button style="color: red;" class="btn"><i class="fas fa-fw fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <a href="{{ path('bloc_new') }}" class="btn btn-custom-hceres float-right mt-5 mr-1"><i class="fas fa-fw fa-plus"></i> {{ traduction.ajouter|trans }} block</a>
+
+
+            <!-- Sticky Footer -->
+
+
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

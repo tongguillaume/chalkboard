@@ -1,0 +1,84 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}">{{ app.session.get("evaluation") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/rapport/dash">{{ app.session.get("document") }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.utilisateurs | trans  }}</li>
+            </ol>
+
+
+            <h3>{{ traduction.utilisateurs | trans  }}</h3>
+
+            <table class="table table-sm mt-5" id="dataTable">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">{{ traduction.utilisateur | trans  }}</th>
+                    <th scope="col">E-mail</th>
+                    {#<th scope="col">Rôles Hceres</th>#}
+                    <th scope="col">{{ traduction.roles |trans }}</th>
+                    {%  if is_granted('ROLE_ADMIN') or is_granted("ROLE_GESTIONNAIRE")  %}
+                        <th scope="col">{{ traduction.actions |trans }}</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <th scope="row">{{ user.id }}</th>
+                        <td><a href="#">{{ user.username }}</a></td>
+                        <td>{{ user.email }} </td>
+                        <td>
+                            {% for role in user.roles %}
+                                {% if role == "ROLE_USER" %}
+                                    {{ traduction.utilisateur | trans  }}
+                                {% elseif role == "ROLE_GESTIONNAIRE" %}
+                                    {{ traduction.gestionnaire | trans  }}
+                                {% elseif role == "ROLE_ADMIN" %}
+                                    {{ traduction.administrateur | trans  }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        {#<td>#}
+                            {#<div class="btn-group" role="group" aria-label="Basic example">#}
+                                {#{% for role in user.roleHceres %}<a href="{{ path('role_show', {'id': role.id}) }}" class="btn btn-outline-info" >{{ role.nomAbrege }}</a>{% endfor %}#}
+                            {#</div>#}
+                        {#</td>#}
+                        {%  if is_granted('ROLE_GESTIONNAIRE')  %}
+                            <td>
+                                <a href="{{ path('gestionnaire_user_role_document_attribution', {'evaluation' : app.session.get("evaluation_id"), 'user': user.id}) }}" style="color: #0069d9;"> <span class="fas fa-fw fa-user-lock"></span></a>
+                            </td>
+                        {% endif %}
+                        {%  if is_granted('ROLE_ADMIN')  %}
+                            <td>
+                                <a href="{{ path('admin_user_edit', {'user': user.id}) }}" style="color: #0069d9;"> <span class="fas fa-fw fa-user-edit"></span></a>
+                                <a href="{{ path('gestionnaire_user_role_document_attribution', {'evaluation' : app.session.get("evaluation_id"), 'user': user.id}) }}" style="color: #0069d9;"> <span class="fas fa-fw fa-user-lock"></span></a>
+                                <a href="{{ path('user_delete', {'user': user.id}) }}" style="color: red;"><i class="fas fa-fw fa-trash"></i></a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

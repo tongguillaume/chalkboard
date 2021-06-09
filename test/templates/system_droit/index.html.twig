@@ -1,0 +1,100 @@
+{% extends 'home/base.html.twig' %}
+
+{% block title %}SystemDroit index{% endblock %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }} </a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    {{ traduction.administration |trans }}
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.système_de_droit |trans }} </li>
+            </ol>
+
+            <h3>{{ traduction.système_de_droit|trans }}</h3>
+
+            <table class="table table-sm mt-5" id="dataTable3" style="width: 100%";>
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">{{ traduction.nom |trans }} </th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for system_droit in system_droits %}
+                    <tr>
+                        <th scope="row">{{ system_droit.id }}</th>
+                        <td><a href="{{ path('system_droit_show', {'id': system_droit.id}) }}">{{ system_droit.name }}</a></td>
+                        <td>
+                            <a class="ml-3" href="{{ path('system_droit_edit', {'id': system_droit.id}) }}" style="color: #0069d9;"> <span class="fas fa-fw fa-edit"></span> {{ traduction.modifier_systeme |trans }} </a><br>
+                            <button style="color: red;" class="btn" data-toggle="modal" data-target="#modal_delete_{{ system_droit.id }}" ><i class="fas fa-fw fa-trash"></i> {{ traduction.supprimer_systeme |trans }}</button><br>
+                            <a class="ml-3" href="{{ path('gestion_permissions', {'systemDroit': system_droit.id }) }}" style="color: #0069d9;"><span class="fas fa-fw fa-users"></span>{{ traduction.affiner_droit |trans }}</a><br>
+                            <a class="ml-3" href="{{ path('roles_admin', {'systemDroit': system_droit.id }) }}" style="color: #0069d9;"><span class="fas fa-fw "></span>{{ traduction.gestion_des_roles |trans }}</a><br>
+                            <a class="ml-3" href="{{ path('flux_index', {'systemDroit': system_droit.id }) }}" style="color: #0069d9;"><span class="fas fa-fw "></span>{{ traduction.repertoire_des_etapes |trans }}</a><br>
+
+                            <div class="modal fade" id="modal_delete_{{ system_droit.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">{{ traduction.confirmation_supression |trans }}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ traduction.attention_systeme_suppression |trans }} : <b>{{ system_droit.name }}</b> {{ traduction.implique_la_suppression|trans }},  {{ traduction.des_etapes_des_roles|trans }}.
+                                            <br>
+                                            {{ traduction.documents_associe|trans }} :
+                                            <ul>
+                                                {% for document in system_droit.documents %}
+                                                    <li>
+                                                        {{ document.nom }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ traduction.annuler |trans }}</button>
+                                            <form method="post" class="ml-0" action="{{ path('system_droit_delete', {'id': system_droit.id}) }}" onsubmit="return confirm('Êtes vous sur de vouloir supprimer ce système de droit ?');">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ system_droit.id) }}">
+                                                <button class="btn btn-danger"><i class="fas fa-fw fa-trash"></i>{{ traduction.supprimer |trans }}</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <a href="{{ path('system_droit_new') }}" class="btn btn-custom-hceres float-right mt-5 mr-1"><i class="fas fa-fw fa-plus"></i> {{ traduction.ajouter |trans }}</a>
+
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+
+
+{% block javascripts %}
+
+    <script>
+/*        $(document).ready( function(){
+            $.fn.modal.Constructor.prototype.enforceFocus = function() {};
+        } );*/
+    </script>
+{% endblock %}

@@ -1,0 +1,50 @@
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title overflow-panel-title">
+                        <li
+                            class="list-group-item {% if app.session.get("evaluation_id") == evaluation.id %}list-group-item-success{% endif %} overflow-panel-list-item"
+                            style="padding:5px 0">
+                            <div class="row">
+                                <div class="col-md-9 col-sm-8">
+                                    <a class="mt-2 evalToLoad collapsed" {#href="{{ path('evaluation_choice', {'id': evaluation.id}) }}"#}
+                                    data-toggle="collapse"
+                                    data-parent="#accordion"
+                                    href="#collapse{{ evaluation.id }}" data-eval-toggle="{{ evaluation.id }}"
+                                    style="display:inline-block">
+                                        <h5 class="home-eval-title">{{ evaluation.nom }}</h5>
+                                    </a>
+                                    {% if hasAccessDownload == true %}
+                                       <a href="{{ path('download_all_rapport', {'id' : evaluation.id }) }}"><i class="fas fa-file-download fa-fw"></i></a>
+                                    {% endif %}
+                                    {% if evaluation.state == 1 %}
+                                        <span class="badge badge-pill badge-pill-custom ml-4 mt-2 custom-edition">{{ traduction.en_edition|trans }}</span>
+                                    {% elseif evaluation.state == 2 %}
+                                        <span class="badge badge-pill badge-pill-custom ml-4 mt-2 custom-validation">{{ traduction.en_validation|trans }}</span>
+                                    {% elseif evaluation.state == 3 %}
+                                        <span class="badge badge-pill badge-pill-custom ml-4 mt-2 custom-publication">{{ traduction.publie|trans }}</span>
+                                    {% endif %}
+                                </div>
+{#                                {%  if hasAccessPercent == true %}#}
+                                <div class="col-md-3 col-sm-4">
+                                    <div class="row" style="padding-top: 8px">
+                                        <div class="col-9 progress progress-custom">
+                                            <div class="progress-bar progress-bar-custom" role="progressbar" style="width:{{ evaluation.percent }}%"></div>
+                                        </div>
+                                        <div class="col-3 ml-auto percent-custom">{{ evaluation.percent }} %</div>
+                                    </div>
+                                </div>
+{#                                {%  endif %}#}
+                            </div>
+                        </li>
+                    </div>
+                </div>
+                <div id="collapse{{ evaluation.id }}" class="panel-collapse collapse evalToDisplay" data-eval-display="{{ evaluation.id }}">
+                    <div class="loadingMessage">{{ traduction.requete_documents|trans }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

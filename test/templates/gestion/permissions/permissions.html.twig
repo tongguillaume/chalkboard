@@ -1,0 +1,42 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    {{ traduction.administration | trans }}
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/systemDroit">{{ traduction.systeme_de_droit | trans}}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                     {{ system_droit.name }}
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.permissions | trans }}</li>
+            </ol>
+
+
+            <h3>{{ traduction.permissions | trans }}</h3>
+
+            <ul>
+                <li><a href="{{ path("gestion_permissions_global", {'systemDroit': system_droit.id }) }}">{{ traduction.attribuer_les_permissions_de_façon_global | trans}}</a></li>
+                <li><a href="{{ path("gestion_permissions_etapes", {'systemDroit': system_droit.id }) }}">{{ traduction.attribuer_les_permissions_par_etapes_blocs | trans}}</a></li>
+                <li><a href="{{ path("gestion_permissions_roles", {'systemDroit': system_droit.id }) }}">{{ traduction.attribuer_les_permissions_par_roles_blocs | trans}}</a></li>
+                {#<li><a href="{{ path("gestion_user_attribution") }}">Assigner des contributeurs</a></li>#}
+            </ul>
+
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

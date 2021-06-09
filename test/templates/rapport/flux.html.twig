@@ -1,0 +1,232 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style=" padding-left: 3px;">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">{{ app.session.get("evaluation") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ path('document_evaluation_choice', {'idEval': app.session.get("evaluation_id"), 'idDoc': app.session.get("document_id"),'page' : 'dashboard_document'}) }}">{{ app.session.get("document") }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.flux_de_travail |trans }}</li>
+            </ol>
+            <div class="row">
+            <div class="col-xl-8">
+                                    <h3>{{ traduction.flux_de_travail |trans }}</h3>
+
+            </div>
+            <div class="col-12 col-md-12 col-l-12 col-lg-12 col-xl-4" style="text-align: right; margin-bottom: 10px" >
+                <div class="btn-group report-controls" style="margin-right: 50px !important;">
+                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_edit">
+                        <img title="{{ traduction.modifier_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/rapport_edit.svg" width="40" height="40">
+                    </a>
+                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}">
+                        <img title="{{ traduction.afficher_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/apercu-du-doc.svg" width="40" height="40">
+                    </a>
+                    <a href="{{ path('api_create_file_document') }}/{{ document.id }}">
+                        <img title="{{ traduction.telecharger_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/telecharger.svg" width="40" height="40"/>
+                    </a>
+                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/dashboard_document">
+                        <img title="{{ traduction.voir_le_tableau_de_bord|trans }}" src="{{ app.request.getBaseURL() }}/images/tableau-de-bord.svg" width="40" height="40"/>
+                    </a>
+
+                    {% if hasAccess %}
+                        <div class="other-menu">
+                            <a class="" id="extend_menu_hceres" onclick="event.preventDefault(); this.classList.toggle('open-other-menu');" role="tab" aria-selected="true">
+                                <img src="{{ app.request.getBaseURL() }}/images/autres.svg" title="{{ traduction.autre |trans }}" width="40" height="40">
+                            </a>
+                            <div class="mt-2 tab-content dropdown-menu-hceres" id="nav-tabContent">
+                                <div class="" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                                    <a href="/document/{{ evaluation.id }}/{{document.id}}/edit"
+                                       class="dropdown-item">{{ traduction.renommer_le_document|trans }}</a>
+                                    <a href="{{ path('document_duplicate') }}/{{document.id}}"
+                                       class="dropdown-item">{{ traduction.dupliquer_le_document|trans }}</a>
+                                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/gestion_user_attribution"
+                                       class="dropdown-item">{{ traduction.gerer_les_droits_des_contributeurs|trans }}</a>
+                                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_template"
+                                       class="dropdown-item">{{ traduction.modifier_le_template|trans }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+        </div>
+
+                <div class="panel-body">
+                    <div class="hpanel">
+                       {% if fluxes|length == 0 %}
+                        <div class="alert alert-info mt-5" role="alert">
+                            <h4 class="alert-heading">{{ traduction.aucun_flux_dans_systeme |trans }} : {{ systemDroit.name }}</h4>
+                            <p>{{ traduction.aucun_flux_dans_systeme |trans }} <a href="{{ path('flux_index', {systemDroit : systemDroit.id }) }}" class="btn btn-custom-hceres">{{ traduction.repertoire_des_etapes |trans }}</a></p>
+                        </div>
+                        {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-condensed" cellspacing="1" cellpadding="1">
+                                <thead>
+                                <tr>
+                                    <th>{{ traduction.etapes |trans }}</th>
+                                    <th>{{ traduction.date_cible |trans }}</th>
+                                    <th>{{ traduction.etat |trans }}</th>
+                                    <th>{{ traduction.etapeged |trans }}</th>
+                                    <th>{{ traduction.document |trans }}</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for key , flux in fluxes %}
+                                <tr class="{% if flux.current_flux is defined %}
+                                                {% if flux.current_flux is defined and flux.current_flux and flux.state != 1 %}
+                                                        text-warning
+                                                {% elseif flux.state == 1 %}
+                                                        text-success
+                                                {% elseif flux.state == 2 or flux.state is null %}
+                                                        text-info
+                                                {% elseif flux.state == 3 %}
+                                                        text-danger
+                                                {% endif %}
+                                            {% else %}
+                                            text-info
+                                        {% endif %}">
+                                    <td>{{ traduction.etape |trans }} {{ flux.ordre }} - {{ flux.name }}</td>
+                                    <td>{{ flux.date_cible|date('d/m/Y') }}</td>
+                                    <td>
+                                        {% if flux is defined %}
+                                            {% if flux.current_flux is defined and flux.current_flux and flux.state != 1 %}
+                                                En cours
+                                            {% elseif flux.state == 1 %}
+                                                Confirmé
+                                            {% elseif flux.state == 2 or flux.state is null %}
+                                                En attente
+                                            {% elseif flux.state == 3 %}
+                                                Refusé
+                                            {% else %}
+                                                En attente
+                                            {% endif %}
+                                            {% if flux.username %}
+                                                Par: <span class="font-bold">{{ flux.username }}</span>
+                                            {% endif %}
+                                            {% if flux.modify_at %}
+                                                {{ flux.modify_at|date('Y/m/d H:i:s') }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ flux.state_ged }}</td>
+                                    <td>{% for documentFinal in documentsFinal %}
+                                            {% if documentFinal.etapeGed == flux.state_ged %}
+                                                <a href="{{ app.request.getBaseURL() }}/rapport/documentFinal/download/{{ documentFinal.id }}">
+                                                    {{ documentFinal.name }}</a>
+                                            {% endif %}
+                                    {% endfor %}</td>
+                                    <td>
+
+                                       {% if flux.state == 1 %}
+                                           {% if lastKeyStateRefuse == key %}
+
+                                            <a href="{{ path('fluxDismiss', {'id': flux.id}) }}" class="btn btn-xs btn-danger">
+                                                <i class="fas fa-fw fa-thumbs-down"></i>
+                                                {{ traduction.revenir_a_cette_etape |trans }}
+                                            </a>
+                                           {% else %}
+                                               <a href="#" class="btn btn-xs btn-danger isDisabled">
+                                                   <i class="fas fa-fw fa-thumbs-down"></i>
+                                                   {{ traduction.revenir_a_cette_etape |trans }}
+                                               </a>
+                                           {% endif %}
+                                        {% elseif flux.state == 2 or flux.state == 3 or flux.state is null %}
+                                            {% if firstKeyStateConfirme == key %}
+                                                    {% if flux.state_ged != NULL %}
+                                                <a href="{{ path('fluxConfirmed', {'id': flux.id}) }}" class="btn btn-xs btn-success" id="test"  data-toggle="modal" data-target="#basicModal_{{ flux.id }}"  data-id="{{ flux.id }}">
+                                                    <i class="fas fa-fw fa-thumbs-up"></i>
+                                                    {{ traduction.confirmer_l_etape |trans }}
+                                                </a>
+                                                    {% else %}
+                                                        <a href="{{ path('fluxConfirmed', {'id': flux.id}) }}" class="btn btn-xs btn-success">
+                                                            <i class="fas fa-fw fa-thumbs-up"></i>
+                                                            {{ traduction.confirmer_l_etape |trans }}
+                                                        </a>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <a href="#" class="btn btn-xs btn-success isDisabled">
+                                                        <i class="fas fa-fw fa-thumbs-up"></i>
+                                                        {{ traduction.confirmer_l_etape |trans }}
+                                                    </a>
+                                                {% endif %}
+                                            {% endif %}
+                                    </td>
+                                </tr>
+
+                                <div class="modal fade" id="basicModal_{{ flux.id }}" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true" id="test">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            <p>{{ traduction.la_validation_de_cette_etape | trans}}</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger">{{ traduction.fermer | trans }}</button>
+                                            <a href="{{ path('fluxConfirmed', {'id': flux.id}) }}" class="btn btn-success">
+                                                <i class="fas fa-fw fa-thumbs-up"></i>
+                                                {{ traduction.confirmer_l_etape |trans }}
+                                            </a>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            {% endif %}
+                        </div>
+                        {% for label, flashes in app.session.flashbag.all %}
+                            {% for flash in flashes %}
+                                <div class="toast" data-autohide="false">
+                                    <div class="toast-header">
+                                        {% if label == "success" %}
+                                            <strong class="mr-auto text-success">{{ traduction.le_document_a_bien_ete_depose |trans }}</strong>
+                                        {% else %}
+                                        <strong class="mr-auto text-danger">{{ traduction.erreur_validation_etape |trans }}</strong>
+                                        {% endif %}
+                                        <small class="text-muted"></small>
+                                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+                                    </div>
+                                    <div class="toast-body">
+                                        {{ flash|raw }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                        <h4 style="padding-left: 5px"><a href="{{ path('depotDocumentFinal') }}">{{ traduction.deposeruneversiondufichieravanttransmissiondanslaged | trans }}</a></h4>
+                        <hr>
+                        {% if fluxHisto|length != 0 %}
+                        <h5 style="padding-left: 5px">{{ traduction.historique_des_transitions |trans }}</h5>
+                        <ul>
+                            {% for flux in fluxHisto %}
+                                <li>Etape {{ flux.ordre }} - {{ flux.name }} - <b>{% if flux.state == 1 %}Confirmé{% elseif flux.state == 2 %}En attente{% elseif flux.state == 3 %}Refusé{% endif %}</b>
+                                    {% if flux.username is not null %}Par :
+                                        <span class="font-bold">{{ flux.username }}</span>
+                                    {% endif %}
+                                    {% if flux.modify_at %}{{ flux.modify_at|date('Y/m/d H:i:s') }}{% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            <!-- Sticky Footer -->
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

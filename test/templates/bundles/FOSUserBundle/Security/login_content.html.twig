@@ -1,0 +1,53 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+<div class="row justify-content-md-center py-3">
+    <div class="col-md-6">
+        <form action="{{ path("fos_user_security_check") }}" method="post">
+            {% if csrf_token %}
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
+            {% endif %}
+{##ED145B#}
+            <div class="card bg-light">
+                <div class="card-header bg-primary text-white   " style="background-color: #00AAB5 !important;">
+                    <i class="fa fa-user"></i>
+                    Connexion
+                </div>
+                <div class="card-body">
+                    <img class="navbar-nav img-icone-univ mx-auto d-block" style='height: 200px;' src="{{ app.request.getBaseURL() }}/icons/LogoHceres.png">
+                    {% if error %}
+                        <div class="alert alert-warning">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
+                    <div class="form-group">
+                        <label for="Login">{# 'security.login.username'|trans #}Identifiant</label>
+                        <input type="text" id="username" name="_username" value="{{ last_username }}"
+                               required="required" autocomplete="username" class="form-control">
+
+                    </div>
+                    <div class="form-group">
+                        <label for="Mot de passe">{# 'security.login.password'|trans #}Mot de passe</label>
+                        <input type="password" id="password" name="_password" required="required"
+                               autocomplete="current-password" class="form-control">
+
+                    </div>
+                    <button type="submit" class="btn btn-custom-hceres">
+                        <i class="fa fa-sign-in-alt"></i>
+                        {# 'security.login.submit'|trans #}Se connecter
+                    </button>
+                </div>
+                {#<div class="card-footer text-muted">#}
+                    {#<div class="text-md-center">#}
+                        {#<p>#}
+                            {#<a href="{{ path('fos_user_resetting_request') }}">#}
+                                {#Mot de passe oublié#}
+                            {#</a>#}
+                        {#</p>#}
+                        {#<p>#}
+                            {#Pas de compte ? <a href="{{ path('fos_user_registration_register') }}">créer un compte</a>#}
+                        {#</p>#}
+
+                    {#</div>#}
+                {#</div>#}
+            </div>
+        </form>
+    </div>
+</div>

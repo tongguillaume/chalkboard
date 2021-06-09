@@ -1,0 +1,128 @@
+{% extends 'home/base.html.twig' %}
+
+{% block title %}{{ traduction.creer_un_nouveau|trans }} {{ traduction.dossier_document|trans }}{% endblock %}
+
+{% block content %}
+
+    <link href="{{ app.request.getBaseURL()  }}/css/select2.min.css" rel="stylesheet" />
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.creer_un_nouveau|trans }} {{ traduction.dossier_document|trans }}</li>
+            </ol>
+            <!-- /.container-fluid -->
+            {# form_widget(form) #}
+            {#{{ form_start(form) }}#}
+            {#{{ form_errors(form) }}#}
+            <h1 style="padding-left: 10px">{{ traduction.creer_un_nouveau|trans }} {{ traduction.dossier_document|trans }}</h1>
+
+            <div class="ml-5 col-md-8 mb-5">
+                <div class="row my-4">
+                   
+                    <div class="col-4">
+                        <label class="radio-inline form-check-label"><input class="form-check-input" type="radio" id="docCheck" name="optradio" checked >{{ traduction.creer_un_document|trans }}</label>
+                    </div>
+                     <div class="col-4 ml-4">
+                        <label class="radio-inline form-check-label"><input class="form-check-input" type="radio" id="evalCheck" name="optradio">{{ traduction.creer_un_dossier |trans }}</label>
+                    </div>
+                </div>
+                <div id="evalCard" class="row" style="display: none">
+                    <div class="col-md-12">
+                            {{ form_start(formEval) }}
+                            {{ form_errors(formEval) }}
+                            <div class="form-group">
+                                <div class="label-custom">{{ traduction.nom_du_dossier | trans }}</div>
+                                <div class="row"> {{ form_widget(formEval.nom, {attr : {'placeholder' : traduction.nom_du_dossier | trans }}) }} </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-custom">{{ traduction.code_du_dossier | trans }}</div>
+                                <div class="row"> {{ form_widget(formEval.code, { attr : {'placeholder' : traduction.code | trans }}) }} </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-custom">{{ traduction.president | trans }}</div>
+                                <div class="row"> {{ form_widget(formEval.president, {attr : { 'placeholder' : traduction.president | trans}}) }} </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-custom">{{ traduction.etat_du_dossier | trans }}</div>
+                                <div class="row"> {{ form_widget(formEval.state, { 'placeholder' : traduction.etat_du_dossier | trans}) }} </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-custom">{{ traduction.famille_d_evaluations | trans  }}</div>
+                                <div class="row"> {{ form_widget(formEval.famille) }} </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-10"></div>
+                                {{ form_widget(formEval.save, { 'label' : traduction.enregister | trans }) }}
+                            </div>
+                            {{ form_end(formEval) }}
+                    </div>
+                </div>
+                <div id="docCard" class="row">
+                    <div class="col-md-12">
+                            {{ form_start(formDoc) }}
+                            {{ form_errors(formDoc) }}
+                            <div class="form-group">
+                                <div class="label-custom">{{ traduction.nom | trans }}</div>
+                                <div class="row"> {{ form_widget(formDoc.nom, { attr : { 'placeholder' : traduction.nom_du_document | trans}}) }} </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-custom">{{ traduction.evaluations | trans}}</div>
+                                <div class="row"> {{ form_widget(formDoc.evaluations) }} </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-custom">{{ traduction.systeme_de_droit | trans }}</div>
+                                <div class="row"> {{ form_widget(formDoc.id_SystemDroit) }} </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-custom">{{ traduction.date_de_mise_a_dispotition | trans}}</div>
+                                <div class="row"> {{ form_widget(formDoc.date_mad) }} </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-custom">{{ traduction.date_d_echeance | trans}}</div>
+                                <div class="row"> {{ form_widget(formDoc.deadline) }} </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-10"></div>
+                                    {{ form_widget(formDoc.save, { 'label' : traduction.enregister | trans }) }}
+                            </div>
+                            {{ form_end(formDoc) }}
+                    </div>
+                </div>
+            </div>
+            {#{{ form_end(form) }}#}
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ app.request.getBaseURL()  }}/js/select2.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            $('.select2').select2();
+            $("form[name*=\'document\']").submit(function(){
+                $("#document_save", this)
+                    .val("Veuillez patienter...")
+                    .attr('disabled', 'disabled');
+                return true;
+            });
+
+           
+            $('#docCheck').click(function(){
+                $('#docCard').show();
+                $('#evalCard').hide();
+            });
+             $('#evalCheck').click(function(){
+                $('#evalCard').show();
+                $('#docCard').hide();
+            });
+        });
+        </script>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+                {#<li class="breadcrumb-item breadcrumb-item-custom">#}
+                    {#<a href="{{ app.request.getBaseURL()  }}">{{ app.session.get("evaluation") }}</a>#}
+                {#</li>#}
+                {#<li class="breadcrumb-item breadcrumb-item-custom">#}
+                    {#<a href="{{ app.request.getBaseURL()  }}/rapport/dash">{{ app.session.get("document") }}</a>#}
+                {#</li>#}
+                <li class="breadcrumb-item active">{{ traduction.attribution_d_evaluation_pour_l_utilisateurs|trans }} {{ userMember.username }}</li>
+            </ol>
+
+            <h3>{{ traduction.attribution_d_evaluation_pour_l_utilisateurs|trans }} {{ userMember.username }}</h3>
+
+            <table class="table table-sm mt-5" id="dataTable">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">{{ traduction.code | trans }}</th>
+                    <th scope="col">{{ traduction.nom|trans }}</th>
+                    <th scope="col">{{ traduction.president|trans }}</th>
+                    <th scope="col">{{ traduction.statut|trans }}</th>
+                    <th scope="col">{{ traduction.actions|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set index = 1 %}
+                {% for evaluation in evaluations %}
+                    {% set userEval = false %}
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>{{ evaluation.code }}</td>
+                        <td>{{ evaluation.nom }}</td>
+                        <td>{{ evaluation.president }}</td>
+                        <td>
+                            {% if evaluation.state == 1 %}
+                                <span class="badge badge-primary badge-pill">{{ traduction.en_edition|trans }}</span>
+                            {% elseif evaluation.state == 2 %}
+                                <span class="badge badge-info badge-pill">{{ traduction.en_validation|trans }}</span>
+                            {% elseif evaluation.state == 3 %}
+                                <span class="badge badge-success badge-pill">{{ traduction.publie|trans }}</span>
+                            {% endif %}
+                        </td>
+                        {% for userEvaluation in evaluation.userEvaluations %}
+                            {% if userEvaluation.userId.id == userMember.id %}
+                                {% set userEval = true %}
+                            {% endif %}
+                        {% endfor %}
+                        <td id="action{{ index }}">
+                            {% if userEval == true %}
+                                <a onclick="dismiss({{ index }}, {{ evaluation.id }}, {{ userMember.id }})" id="dismiss{{ index }}" class="attribution-dismiss-members" style="cursor: pointer; color: red;">{{ traduction.retirer_des_membres|trans }}</a>
+                                <br>
+                            {% else %}
+                                <a onclick="attribution({{ index }}, {{ evaluation.id }}, {{ userMember.id }})" id="attribution{{ index }}" class="attribution-add-members"  style="cursor: pointer; color: #5C2D91;">{{ traduction.ajouter_aux_membres|trans }}</a>
+                                <br>
+                            {% endif %}
+                            <br>
+                        </td>
+                    </tr>
+                    {% set index = index + 1 %}
+                {% endfor %}
+                </tbody>
+            </table>
+            {#<a href="{{ path('evaluation_new') }}" class="btn btn-custom-hceres float-right mt-5 mr-1"><i class="fas fa-fw fa-plus"></i> Ajouter</a>#}
+
+
+            <!-- Sticky Footer -->
+
+
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript">
+        function attribution(index, idEval, idUser){
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/admin/memberAttribution/" + idEval +"/"+ idUser,
+                type: "POST",
+                dataType: 'JSON',
+                complete: function()
+                {
+                    $('#attribution'+index).remove();
+                    $('#action'+index).prepend("<a onclick=\"dismiss("+ index +", "+ idEval +", "+ idUser +")\" id=\"dismiss"+ index +"\" style=\"cursor: pointer; color: red;\">{{ traduction.retirer_des_membres|trans }}</a>");
+                },
+            });
+        }
+
+        function dismiss(index, idEval, idUser){
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/admin/memberDismiss/" + idEval +"/"+ idUser,
+                type: "POST",
+                dataType: 'JSON',
+                complete: function()
+                {
+                    $('#dismiss'+index).remove();
+                    $('#action'+index).prepend("<a onclick=\"attribution("+ index +", "+ idEval +", "+ idUser +")\" id=\"attribution"+ index +"\" style=\"cursor: pointer; color: #5C2D91;\">{{ traduction.ajouter_aux_membres|trans }}</a>");
+                },
+            });
+        }
+    </script>
+{% endblock %}

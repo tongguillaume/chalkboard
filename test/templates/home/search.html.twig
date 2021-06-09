@@ -1,0 +1,167 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.recherche|trans }}</li>
+            </ol>
+
+
+            <h3>{{ traduction.resultat_de_la_recherche|trans }}</h3>
+            {% set nbEval = evaluations|length %}
+            <h4>{{ nbEval }} {% if nbEval > 1 %}{{ traduction.dossiers|trans }}{% else %}{{ traduction.dossier|trans }}{% endif %}</h4>
+            <hr>
+            {% if nbEval > 0 %}
+                {% for evaluation in evaluations %}
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="row">
+                                <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ evaluation.id }}" style="color: black;">
+                                    <u class="list-group-item-heading overflow-panel-title-bloc">{{ evaluation.nom }}</u>
+                                </a>
+                                {% if hasAccessDownload == true %}
+                                    <a href="{{ path('download_all_rapport', {'id' : evaluation.id }) }}"><i class="fas fa-file-download fa-fw"></i></a>
+                                {% endif %}
+                            </div>
+                            <div class="float-right mr-5">
+                                <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ evaluation.id }}"
+                                    class="btn dropdown-button-custom pt-2"
+                                    style="color: black">
+                                    <b>{{ traduction.acceder_au_dossier|trans }}</b>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <hr>
+            {% endif %}
+            {% set nbDoc = documents|length %}
+            <h4>{{ nbDoc }} {% if nbDoc > 1 %}{{ traduction.documents|trans }}{% else %}{{ traduction.document|trans }}{% endif %}</h4>
+            {% if nbDoc > 0 %}
+                <hr>
+                {% for document in documents %}
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <div class="row">
+                            <a href="{{ path('document_evaluation_choice', {'idEval': document.eval_id, 'idDoc': document.id,'page' : 'rapport_edit'}) }}"
+                               style="color: black;">
+                                <u class="list-group-item-heading overflow-panel-title-bloc">{{ document.nom }}</u>
+                            </a>
+                            <div class="col-md-3 ml-auto">
+                                <div class="row">
+                                    <div class="col-9 progress progress-custom">
+                                        <div class="progress-bar progress-bar-custom" role="progressbar" style="width: {{ document.percent }}%"></div>
+                                    </div>
+                                    <div class="col-3 ml-auto percent-custom">
+                                        {{ document.percent }} %
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-9 list-group-item-text pl-0">
+                                {{ traduction.evaluations|trans }} : {{ document.eval_name }} <br>
+                                Statut :
+                                {% if document.percent <= 40 %}
+                                    <span class="badge badge-pill badge-pill-custom mt-2 custom-validation">{% if document.flux_name is null %}En édition{% else %}{{ document.flux_name }}{% endif %}</span>
+                                {% elseif document.percent > 40 and document.percent < 75 %}
+                                    <span class="badge badge-pill badge-pill-custom mt-2 custom-edition">{% if document.flux_name is null %}En édition{% else %}{{ document.flux_name }}{% endif %}</span>
+                                {% elseif document.percent >= 75 %}
+                                    <span class="badge badge-pill badge-pill-custom mt-2 custom-publication">{% if document.flux_name is null %}En édition{% else %}{{ document.flux_name }}{% endif %}</span>
+                                {% endif %}
+                                <br>
+                                {{ traduction.cree_le|trans }}
+                                : {{ document.date_creation|date('d/m/Y') }}
+                                {% if document.date_modification is not null %}
+                                    <br>
+                                    {{ traduction.derniere_modification_le|trans }} : {{ document.date_modification|date('d/m/Y') }}
+                                {% endif %}
+                                <br>
+                                {{ traduction.date_d_echeance|trans }}
+                                : {% if document.deadline is not null %}{{ document.deadline|date('d/m/Y') }}{% else %}Aucune date d'échéance{% endif %}
+                                <br>
+                                {{ traduction.type_de_document|trans }}
+                                : {{ document.sysd_name }}
+                            </div>
+                            <div class="col-3">
+{#                                <div class="mt-4 ml-4 btn-group">#}
+{#                                    <a href="{{ path('document_evaluation_choice', {'idEval': document.eval_id, 'idDoc': document.id,'page' : 'rapport_edit'}) }}"#}
+{#                                       class="btn dropdown-button-custom pt-2"#}
+{#                                       style="color: black"><b>{{ traduction.modifier_le_document|trans }}</b> </a>#}
+{#                                    <a class="btn nav-link dropdown-toggle dropdown-button-custom"#}
+{#                                       id="dropdown09"#}
+{#                                       data-toggle="dropdown"><span#}
+{#                                                class="caret"></span></a>#}
+{#                                    <div class="dropdown-menu dropdown-menu-hceres float-right"#}
+{#                                         aria-labelledby="dropdown09">#}
+{#                                        <a href="{{ path('document_evaluation_choice', {'idEval': document.eval_id, 'idDoc': document.id}) }}"#}
+{#                                           class="dropdown-item">{{ traduction.afficher_le_document|trans }}</a>#}
+{#                                        <a href="{{ path('document_evaluation_choice', {'idEval': document.eval_id, 'idDoc': document.id,'page' : 'dashboard_document'}) }}"#}
+{#                                           class="dropdown-item">{{ traduction.voir_le_tableau_de_bord|trans }}</a>#}
+{#                                        <a href="{{ path('api_create_file_document', {'document' : document.id}) }}"#}
+{#                                           class="dropdown-item">{{ traduction.telecharger_le_document|trans }}</a>#}
+{#                                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTIONNAIRE') %}#}
+{#                                            <a href="{{ path('document_edit', {'idEval': document.eval_id, 'idDoc': document.id}) }}"#}
+{#                                               class="dropdown-item">{{ traduction.renommer_le_document|trans }}</a>#}
+{#                                            <a href="{{ path('document_evaluation_choice', {'idEval': document.eval_id, 'idDoc': document.id,'page' : 'gestion_user_attribution'}) }}"#}
+{#                                               class="dropdown-item">{{ traduction.gerer_les_droits_des_contributeurs|trans }}</a>#}
+{#                                            <a href="{{ path('document_evaluation_choice', {'idEval': document.eval_id, 'idDoc': document.id,'page' : 'rapport_template'}) }}"#}
+{#                                               class="dropdown-item">{{ traduction.modifier_le_template|trans }}</a>#}
+{#                                        {% endif %}#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="col-12 col-md-12 col-xl-4" style="text-align: right;">#}
+                                    <div class="mt-4 ml-4 mr-4 btn-group report-controls" onclick="deleteCookie()">
+                                        <a href="{{ path('document_evaluation_choice', {'idEval': document.eval_id, 'idDoc': document.id,'page' : 'rapport_edit'}) }}">
+                                            <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.modifier_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/rapport_edit.svg" width="40" height="40">
+                                        </a>
+                                        <a href="{{ path('document_evaluation_choice', {'idEval': document.eval_id, 'idDoc': document.id}) }}">
+                                            <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.afficher_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/apercu-du-doc.svg" width="40" height="40">
+                                        </a>
+                                        <a href="{{ path('api_create_file_document', {'document' : document.id}) }}">
+                                            <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.telecharger_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/telecharger.svg" width="40" height="40"/>
+                                        </a>
+                                        <a href="{{ path('document_evaluation_choice', {'idEval': document.eval_id, 'idDoc': document.id,'page' : 'dashboard_document'}) }}">
+                                            <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.voir_le_tableau_de_bord|trans }}" src="{{ app.request.getBaseURL() }}/images/tableau-de-bord.svg" width="40" height="40"/>
+                                        </a>
+                                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTIONNAIRE') %}
+                                        <div class="other-menu">
+                                            <a class="" id="extend_menu_hceres_custom" href="#" onclick="toggle_hceres('{{ document.id }}');event.preventDefault(); this.classList.toggle('open-other-menu');" role="tab" aria-selected="true">
+                                                <img src="{{ app.request.getBaseURL() }}/images/autres.svg" data-toggle="tooltip" data-placement="bottom" title="{{ traduction.autre |trans }}" width="40" height="40">
+                                            </a>
+                                            {% endif %}
+                                            <div class="mt-2 tab-content dropdown-menu-hceres" id="nav-tabContent-{{ document.id }}">
+                                                <div class="" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                                                    <a href="{{ path('document_edit', {'idEval': document.eval_id, 'idDoc': document.id}) }}"
+                                                       class="dropdown-item">{{ traduction.renommer_le_document|trans }}</a>
+                                                    <a href="{{ path('document_evaluation_choice', {'idEval': document.eval_id, 'idDoc': document.id,'page' : 'gestion_user_attribution'}) }}"
+                                                       class="dropdown-item">{{ traduction.gerer_les_droits_des_contributeurs|trans }}</a>
+                                                    <a href="{{ path('document_evaluation_choice', {'idEval': document.eval_id, 'idDoc': document.id,'page' : 'rapport_template'}) }}"
+                                                       class="dropdown-item">{{ traduction.modifier_le_template|trans }}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+                <hr>
+            {% endif %}
+
+
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

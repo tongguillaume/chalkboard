@@ -1,0 +1,69 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/admin/roles/">{{ traduction.roles|trans }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.modifier_un_role |trans }}</li>
+            </ol>
+            <h1>{{ traduction.modifier_un_role |trans }}</h1>
+            <!-- /.container-fluid -->
+            {# form_widget(form) #}
+            {{ form_start(form) }}
+            {{ form_errors(form) }}
+            <div class="ml-5 col-md-8 mb-5" id ="accordion">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <a class="btn btn-link plusandminus"  href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="fas fa-minus"></i> {{ traduction.fiche_role|trans }}
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                            {{ traduction.nom_abrege | trans }}
+                            <br>
+                            {{ form_widget(form.name_abstract) }}
+                            <br>
+
+                            {# {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTIONNAIRE')  %}
+                                {{ traduction.systeme_de_droit | trans }}
+                                <br>
+                                {{ form_widget(form.id_systemDroit) }}
+                                <br>
+                            {% endif %} #}
+
+
+                            {{ traduction.nom | trans }}
+                            <br>
+
+                            {{ form_widget(form.name) }}
+                            <br>
+
+                            {{ traduction.ordre | trans }}
+                            {{ form_widget(form.ordre) }}
+
+                            <br>
+                            {{ form_widget(form.save, {'attr' : {'placeholder' : traduction.enregister | trans}}) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

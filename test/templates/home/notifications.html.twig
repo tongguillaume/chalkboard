@@ -1,0 +1,41 @@
+{% extends 'home/base.html.twig' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div id="content-wrapper">
+    <div class="container-fluid">
+        <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ app.request.getBaseURL() }}/">{{ traduction.accueil|trans }}</a>
+            </li>
+            <li class="breadcrumb-item active"> {{ traduction.mes_notifications | trans}}</li>
+        </ol>
+        <h1 class="ml-3">
+            {{ traduction.mes_notifications | trans}}
+        </h1>
+        <dl class="ml-3 mt-2 ">
+        {% for notif in notifs %}
+            <div id="notif_all_id_{{ notif.id }}">
+                {% for seenTest in notif.notifiableNotifications %}
+                    <h5>
+                        {{ notif.subject }} {% if seenTest.seen == true %}<i>(Vu)</i>{% endif %}
+                    </h5>
+                {% endfor %}
+                <a href="{{ notif.link }}" class="pull-left">
+                    <div class="pull-left" >{{ notif.message | raw }}</div>
+                </a>
+                <button
+                    onclick="deleteNotif({{ notif.id }})"
+                    style="background: transparent; color: red; padding-left: 0px;"
+                    class="btn btn-link small pull-left">
+                    <i class="fas fa-fw fa-trash"></i>{{ traduction.supprimer |trans }}
+                </button>
+                <hr>
+            </div>
+        {% endfor %}
+        </dl>
+    </div>
+</div>
+{% endblock %}
+

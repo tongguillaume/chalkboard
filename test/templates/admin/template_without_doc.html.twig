@@ -1,0 +1,102 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item">{{ traduction.administration |trans }}</li>
+                <li class="breadcrumb-item active">{{ traduction.maquette_non_reliee |trans }}</li>
+            </ol>
+
+
+            <h3>{{ traduction.maquette_non_reliee |trans }}</h3>
+
+
+            {# ... #}
+
+            <div class="ml-5 col-md-12 mb-5">
+                <div id="docCard" class="row">
+                    <div class="col-md-11">
+            {{ form_start(form) }}
+             <div class="form-group">
+                <div class="row"> {{ form_widget(form.ficher_path, {'attr' : { 'placeholder': traduction.parcourir_maquette|trans }} ) }} </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row"> {{ form_widget(form.nom, {'attr' : { 'placeholder': traduction.nom_maquette|trans }} ) }} </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row"> {{ form_widget(form.save, { 'label': traduction.enregister|trans } ) }} </div>
+            </div>
+            {# <div class="form-group files">
+                <label>Téléverser votre fichier </label> #}
+            {# {{ form_widget(form.ficher_path, { 'attr' : { 'label' : traduction.parcourir | trans}}) }} #}
+            {# {{ form_widget(form.nom, { 'attr' : { 'label' : traduction.parcourir | trans}}) }} #}
+            {{ form_widget(form.save,  { 'label' : traduction.enregister | trans }) }}
+            {# </div> #}
+            {{ form_end(form) }}
+            </div>
+                </div>
+            </div>
+
+            {% for label, flashes in app.session.flashbag.all %}
+                {% for flash in flashes %}
+                    <div class="toast" data-autohide="false">
+                        <div class="toast-header">
+                            <strong class="mr-auto text-danger">{{ traduction.erreur |trans }}</strong>
+                            <small class="text-muted"></small>
+                            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+                        </div>
+                        <div class="toast-body">
+                            {{ flash|raw }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+
+            <table class="table table-sm mt-5" id="dataTable">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">{{ traduction.nom |trans }}</th>
+                    <th scope="col">{{ traduction.auteur |trans }}</th>
+                    <th scope="col">{{ traduction.date |trans }}</th>
+                    <th scope="col">{{ traduction.actions |trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for template in templates %}
+                    <tr>
+                        <th scope="row">{{ template.Id }}</th>
+                        <td>
+                            <a href="{{ app.request.getBaseURL() }}/admin/template/download/{{ template.Id }}">
+                                {{ template.DisplayName == "" ? template.Nom : template.DisplayName }}
+                            </a>
+                        </td>
+                        <td>{{ template.IdUserId.UsernameCanonical }}</td>
+                        <td><span style="display: none;">{{ template.DateDepot|date('Y/m/d') }}</span>{{ template.DateDepot|date('d/m/Y') }}</td>
+                        <td>
+                            <a href="{{ app.request.getBaseURL() }}/admin/template/download/{{ template.Id }}"
+                               style="color: #0069d9;"> <span class="fas fa-fw fa-download"></span></a>
+                            <a href="{{ app.request.getBaseURL() }}/admin/template/delete/{{ template.Id }}"
+                               style="color: red;"> <i class="fas fa-fw fa-trash"></i></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

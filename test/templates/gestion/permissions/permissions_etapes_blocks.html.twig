@@ -1,0 +1,59 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">{{ app.session.get("evaluation") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ path('document_evaluation_choice', {'idEval': app.session.get("evaluation_id"), 'idDoc': app.session.get("document_id"),'page' : 'dashboard_document'}) }}">{{ app.session.get("document") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom"><a href="{{ app.request.getBaseURL()  }}/gestion/permissions">{{ traduction.permissions | trans }}</a></li>
+                <li class="breadcrumb-item breadcrumb-item-custom"><a href="{{ app.request.getBaseURL()  }}/gestion/permissions/etapes">{{ traduction.etape | trans }}</a></li>
+                <li class="breadcrumb-item active">{{ traduction.instructions | trans }}</li>
+                <li class="breadcrumb-item active">{{ traduction.blocs | trans }}</li>
+            </ol>
+
+
+            <h3>{{ traduction.permissions_par_blocs_pour_l_etape | trans }} : {{ flux.name }}</h3>
+
+            <table class="table table-sm mt-5" id="dataTable">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">{{ traduction.nom | trans }}</th>
+                    <th scope="col">{{ traduction.type | trans }}</th>
+                    <th scope="col">{{ traduction.status | trans }}</th>
+                    <th scope="col">{{ traduction.actions |trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for block in blocks %}
+                    <tr>
+                        <th scope="row">{{ block.id }}</th>
+                        <td><a href="#">{{ block.name }}</a></td>
+                        <td>{{ block.type }}</td>
+                        <td>{{ block.status }}</td>
+                        <td><a href="{{ path('gestion_permissions_etapes_blocks_tab', {'idF': flux.id, 'idB': block.id}) }}">{{ traduction.attribuer_les_permissions | trans }}</a></td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

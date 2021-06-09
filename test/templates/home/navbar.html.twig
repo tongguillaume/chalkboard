@@ -1,0 +1,258 @@
+{% block navbar %}
+
+    <nav class="navbar navbar-expand navbar-dark navbar-custom-grey static-top">
+        {% if app.request.attributes.get('_route') != 'home_choiceConnexion' %}
+            <div class="ml-3">
+                <a href="#top" data-toggle="sidebar-colapse"  id="button-collapse" onclick="openNav('false')" class=" list-group-item list-group-item-action d-flex align-items-center sidebar_extend">
+                    <div class="d-flex w-100 justify-content-start align-items-center">
+                        <i class="fas fa-arrow-left" id="icon-collapse"></i>
+                    </div>
+                </a>
+            </div>
+        {% endif %}
+        <a class="navbar-brand mr-1 ml-5" href="{{ app.request.getBaseURL()  }}/">
+            <img class="navbar-nav img-icone-univ" style='height: 50px;' src="{{ app.request.getBaseURL()  }}/images/logo_SARALI.png" />
+        </a>
+        {#<button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">#}
+            {#<i class="fas fa-bars" style="color: black"></i>#}
+        {#</button>#}
+
+        {#{% if app.user %}#}
+        {#<div class="m-auto">#}
+            {#<h3 class="mr-5" style="color: black">#}
+                {#Bienvenue {{ app.user.firstname }} {{ app.user.lastname }}#}
+                {#</h3>#}
+            {#</div>#}
+        {#{% endif %}#}
+        {#<div class="m-auto">#}
+        {#{%  if app.session.get("evaluation") %}#}
+            {#<h2 class="mr-5" style="color: black">#}
+                {#Bienvenue {{ app.user.username }}#}
+            {#</h2>#}
+        {#{%  endif %}#}
+    {#</div>#}
+        <!-- Navbar Search -->
+        {#<form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Recherche" aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form> #}
+
+        <script>
+
+            const roleUser = document.getElementById("role1");
+            if(roleUser){
+                roleUser.value = 1;
+            }
+            const roleManager = document.getElementById("role2");
+            if(roleManager){
+                roleManager.value = 2;
+            }
+            const roleAdmin = document.getElementById("role3");
+            if(roleAdmin){
+                roleAdmin.value = 3;
+            }
+
+        </script>
+
+        <!-- Navbar -->
+        <ul class="navbar-nav ml-auto">
+            {% if app.user %}
+
+                {#<div class="mr-5 mt-1 input-group search-bar-group">#}
+                {#<input class="form-control search-bar-input" type="text" placeholder="Rechercher" aria-label="Search" id="mysearch">#}
+                {#<div class="input-group-addon search-bar-input-button">#}
+                    {#<button class="btn btn-sm search-bar-button" type="submit"  id="search-btn"><i class="fa fa-search"></i></button>#}
+                {#</div>#}
+                <div id="search-input">
+                    <div class="input-group">
+                        <input id="search_content" type="text" class="search-query form-control" placeholder="{{ traduction.parcourir_dossier_document|trans }}" />
+                        <span class="input-group-btn">
+                            <button id="search_btn" class="btn btn-search" type="button">
+                               <i style="color: #fff" class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
+            {#https://forum.pinegrow.com/t/bootstrap-4-multilingual-site-menu/1720#}
+            {# https://symfony.com/doc/current/translation.html #}
+            {# https://symfony.com/doc/current/translation/locale.html#translation-locale-url #}
+            {% set langClass = 'flag-icon-fr' %}
+            {% if app.session.get('lang') %}
+                {% if app.session.get('lang') == 'fr' %}
+                    {% set langClass = 'flag-icon-fr' %}
+                {% endif %}
+                {% if app.session.get('lang') == 'en' %}
+                    {% set langClass = 'flag-icon-gb' %}
+                {% endif %}
+                {% if app.session.get('lang') == 'es' %}
+                    {% set langClass = 'flag-icon-es' %}
+                {% endif %}
+            {% endif %}
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: black"><span class="flag-icon {{ langClass }}"> </span> </a>
+                <div class="dropdown-menu float-right" aria-labelledby="dropdown09">
+                    <a class="dropdown-item" href="{{ app.request.getBaseURL()  }}/choiceFr"><span class="flag-icon flag-icon-fr"> </span>  Français</a>
+                    <a class="dropdown-item" href="{{ app.request.getBaseURL()  }}/choiceEn"><span class="flag-icon flag-icon-gb"> </span>  English</a>
+                    <a class="dropdown-item" href="{{ app.request.getBaseURL()  }}/choiceEs"><span class="flag-icon flag-icon-es"> </span>  Español</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                {% if app.session.get('lang') == 'fr' %}
+
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdown10" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: black">Aide </a>
+                {% else %}
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdown10" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: black">Help </a>
+
+                {% endif %}
+                <div class="dropdown-menu float-right" aria-labelledby="dropdown10">
+
+                    {% if app.session.get('lang') == 'fr' or  app.session.get('lang') == 'en' %}
+
+                        {% if (is_granted('ROLE_USER')) and not (is_granted('ROLE_GESTIONNAIRE')) and not (is_granted('ROLE_ADMIN')) %}
+                            <a class="dropdown-item support-role-user" id="role1" data-is-user="1" href="#" onClick="MyWindow=window.open('{{ app.request.getBaseURL() }}/aide?current_role=1','MyWindow','width=800,height=800'); return false;"> Support </a>
+                        {% endif %}
+
+                        {% if (is_granted('ROLE_GESTIONNAIRE')) and not (is_granted('ROLE_ADMIN')) %}
+                            <a class="dropdown-item support-role-user" id="role2" data-is-manager="2" href="#" onClick="MyWindow=window.open('{{ app.request.getBaseURL() }}/aide?current_role=2','MyWindow','width=800,height=800'); return false;"> Support </a>
+                        {% endif %}
+
+                        {% if (is_granted('ROLE_ADMIN')) %}
+                            <a class="dropdown-item support-role-user" id="role3" data-is-admin="3"href="#" onClick="MyWindow=window.open('{{ app.request.getBaseURL() }}/aide?current_role=3','MyWindow','width=800,height=800'); return false;"> Support </a>
+                        {% endif %}
+                        <a type="button" class="dropdown-item support-role-user" data-toggle="modal" data-target="#ModalMail" data-whatever="aide.sarali@hceres.fr">Contact</a>
+                    {% endif %}
+                </div>
+            </li>
+        {% if app.user %}
+
+                <li class="nav-item dropdown no-arrow mx-1">
+                  <a class="nav-link dropdown-toggle" href="#" id="alertsDropdownButton" role="button" aria-haspopup="true" style="color: black">
+                    <i class="fas fa-bell fa-fw"></i>
+                    <span id="notif_num" class="badge badge-danger">{{ mgilet_notification_unseen_count(app.user) }}</span>
+                  </a>
+                  <div id="alertsDropdown" class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown" style="color: black">
+                      {% for notif in app.user.notifications %}
+                          {% for seenTest in notif.notifiableNotifications %}
+                              {% if seenTest.seen == false %}
+                          <div id="notif_id_{{ notif.id }}" class="mx-3">
+                                  <b>{{ notif.subject }}</b>
+                              {#<a class="float-right" href="{{ path('notification_see', {'id': notif.id }) }}">╳</a>#}
+                              <a class="float-right" href="#" onclick="seeNotif({{ notif.id }})">╳</a>
+                              <a href="{{ notif.link }}" class="pull-left">
+                                  <div class="pull-left" >{{ notif.message | raw }}</div>
+                              </a>
+
+
+                          <hr>
+                                  </div>
+                              {% else %}
+                              {% endif %}
+                              {% endfor %}
+                      {% endfor %}
+                      <a class="ml-2" style="vertical-align: middle;" href="{{ path('show-notifications') }}">{{ traduction.voir_toutes_les_notifications | trans}}</a>
+                  </div>
+                </li>
+                <li class="nav-item dropdown no-arrow">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: black">
+                        {{ app.user.firstname }} {{ app.user.lastname }} <i class="fas fa-user-circle fa-fw" style="color: black"></i>
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+{#                        <a class="dropdown-item" href="{{ app.request.getBaseURL()  }}/profile">{{ traduction.parametre | trans }}</a>#}
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">{{ traduction.deconnexion | trans }}</a>
+                    </div>
+                </li>
+
+                {# <li class="nav-item dropdown no-arrow mx-1">
+                  <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-envelope fa-fw"></i>
+                    <span class="badge badge-danger">7</span>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="messagesDropdown">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                  </div>
+                </li> #}
+            {% else %}
+                    <li class="nav-item no-arrow">
+                        <a class="nav-link" href="{{ app.request.getBaseURL()  }}/login" id="userDropdown" role="button"  aria-haspopup="true" aria-expanded="false">
+                            Connexion <i class="fas fa-sign-in-alt fa-fw"></i>
+                        </a>
+                    </li>
+
+            {% endif %}
+        </ul>
+
+        <div class="modal fade" id="ModalMail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    {% if app.session.get('lang') == 'fr'%}
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Contact support :</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ path('sendMailToSupport') }}" method="post">
+
+                            <div class="form-group">
+                                <label for="subject-text" class="col-form-label">Objet :</label>
+                                <input type="text" class="form-control" name="subject" id="subject-text">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="message-text" class="col-form-label">Message :</label>
+                                <textarea class="form-control" name="message" id="message-text"></textarea>
+                            </div>
+                            <input type="submit" class="btn btn-primary" value="Envoyer le mail"/>
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    </div>
+                    {% else %}
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Contact support :</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ path('sendMailToSupport') }}" method="post">
+
+                                <div class="form-group">
+                                    <label for="subject-text" class="col-form-label">Subject :</label>
+                                    <input type="text" class="form-control" name="subject" id="subject-text">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="message-text" class="col-form-label">Message :</label>
+                                    <textarea class="form-control" name="message" id="message-text"></textarea>
+                                </div>
+                                <input type="submit" class="btn btn-primary" value="Send email"/>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+

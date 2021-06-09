@@ -1,0 +1,7 @@
+{#BLOC_ATTRIBUTION#}
+{% if (droitPerm[bloc.id] is defined and droitPerm[bloc.id].gestion == true) or droits.gestion == true %}
+    <a class="dropdown-item" href="{{ app.request.getBaseURL() }}/gestion/permissions/blocks/global/{{ bloc.id }}">
+        {{ traduction.attribuer_les_permissions |trans }}
+    </a>
+{% endif %}
+{#BLOC_ATTRIBUTION#}

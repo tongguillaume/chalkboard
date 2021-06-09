@@ -1,0 +1,35 @@
+{#BLOC_EDITION#}
+{% if (droitPerm[bloc.id] is defined and droitPerm[bloc.id].ecriture == true) or droits.ecriture == true %}
+<div class="mt-4 ml-4 btn-group">
+    {% if bloc.is_tab == true %}
+        <a href="{{ app.request.getBaseURL()  }}/rapport/actionsTab/{{ bloc.id }}"
+            target="_blank" style="color: #000"
+            class="btn dropdown-button-custom pt-2">
+            <b>{{ traduction.modifier_le_tableau |trans }}</b>
+        </a>
+    {% else %}
+{#        167#}
+{#        {% if bloc.paragraphe_edit == 1 %}#}
+        <a href="{{ app.request.getBaseURL()  }}/rapport/actions/{{ bloc.id }}"
+            target="_blank" style="color: #000"
+            class="btn dropdown-button-custom pt-2">
+            <b>{{ traduction.editer_le_paragraphe |trans }}</b>
+        </a>
+{#            {% else %}#}
+{#                <button onclick="editParagraph({{ bloc.id }})" class="btn dropdown-button-custom pt-2"> <b>{{ traduction.editer_le_paragraphe |trans }}</b></button>#}
+{#            {% endif %}#}
+    {% endif %}
+    {% if (droitPerm[bloc.id] is defined and droitPerm[bloc.id].gestion == true or droits.gestion == true)
+        or (droitPerm[bloc.id] is defined and droitPerm[bloc.id].modificationEtat == true or droits.modificationEtat == true) %}
+        <a class="btn nav-link dropdown-toggle dropdown-button-custom"
+            id="dropdown09"data-toggle="dropdown">
+            <span class="caret"></span>
+        </a>
+        <div id="btnGroupBloc{{ bloc.id }}" class="dropdown-menu dropdown-menu-hceres float-right"
+        aria-labelledby="dropdown09">
+            {% include 'rapport/Components/edit/bloc_elem_attribution_validation.html.twig' %}
+        </div>
+    {% endif %}
+</div>
+{% endif %}
+{#BLOC_EDITION#}

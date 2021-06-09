@@ -1,0 +1,188 @@
+<script>
+var docList = null
+var droitList = null
+
+function returnLine(v, evalId) {
+    return `
+        <div class="list-groupe">
+            <div class="list-group-item">
+                <div class="row">
+                    <a href="{{ path('document_evaluation_choice') }}/${ evalId }/${ v.doc_id }/rapport_edit" style="color:#000">
+                        <h5 class="list-group-item-heading overflow-panel-title-bloc">${ v.doc_name }</h5>
+                    </a>
+                    <div class="col-md-3 ml-auto">
+                        <div class="row">
+                            <div class="col-9 progress progress-custom">
+                                <div class="progress-bar progress-bar-custom" role="progressbar" style="width: ${ v.percent }%"></div>
+                            </div>
+                            <div class="col-3 ml-auto percent-custom">${ v.percent }%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-12 col-xl-8 list-group-item-text pl-0">
+                        <div>
+                        {{ traduction.status|trans }}  :
+                            <span class="badge badge-pill badge-pill-custom mt-2 custom-${ v.percent <= 40 ? 'validation' : (v.percent < 75 ? 'edition' : 'publication') }">
+                                ${ v.flu_name == null ? 'En édition' : v.flu_name }
+                            </span>
+                        </div>
+                        <div>{{ traduction.type_de_document|trans }} : ${ v.droit }</div>
+                    </div>
+                    <div class="col-12 col-md-12 col-xl-4" style="text-align: right;">
+                        <div class="mt-4 ml-4 mr-4 btn-group report-controls" onclick="deleteCookie()">
+                            <a  data-toggle="tooltip" data-placement="bottom" title="{{ traduction.modifier_le_document|trans }}" href="{{ path('document_evaluation_choice') }}/${ evalId }/${ v.doc_id }/rapport_edit">
+                                <img src="{{ app.request.getBaseURL() }}/images/rapport_edit.svg" width="40" height="40">
+                            </a>
+                            <a href="{{ path('document_evaluation_choice') }}/${ evalId }/${ v.doc_id }">
+                             <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.afficher_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/apercu-du-doc.svg" width="40" height="40">
+                            </a>
+                            <a href="{{ path('api_create_file_document') }}/${ v.doc_id }">
+                            <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.telecharger_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/telecharger.svg" width="40" height="40"/>
+                            </a>
+                           <a href="{{ path('document_evaluation_choice') }}/${ evalId }/${ v.doc_id }/dashboard_document">
+                           <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.voir_le_tableau_de_bord|trans }}" src="{{ app.request.getBaseURL() }}/images/tableau-de-bord.svg" width="40" height="40"/>
+                           </a>
+                           {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTIONNAIRE') %}
+                           <a href="{{ path('document_evaluation_choice') }}/${ evalId }/${ v.doc_id }/rapport_flux">
+                              <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.acceder_flux_de_travail|trans }}" src="{{ app.request.getBaseURL() }}/images/flux-de-travail.svg" width="40" height="40"/>
+                           </a>
+                           <div class="other-menu">
+                           <a class="" id="extend_menu_hceres_custom" href="#" onclick="toggle_hceres('${ v.doc_id }');event.preventDefault(); this.classList.toggle('open-other-menu');" role="tab" aria-selected="true">
+                               <img src="{{ app.request.getBaseURL() }}/images/autres.svg" data-toggle="tooltip" data-placement="bottom" title="{{ traduction.autre |trans }}"  width="40" height="40">
+                           </a>
+                            {% endif %}
+                        <div class="mt-2 tab-content dropdown-menu-hceres" id="nav-tabContent-${ v.doc_id }">
+                               <div class="" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                                {#<a href="{{ path('document_evaluation_choice') }}/${ evalId }/${ v.doc_id }"#}
+                                {#    class="dropdown-item">{{ traduction.afficher_le_document|trans }}</a>#}
+                                {#<a href="{{ path('api_create_file_document') }}/${ v.doc_id }"#}
+                                {#    class="dropdown-item">{{ traduction.telecharger_le_document|trans }}</a>#}
+                                {#<a href="{{ path('document_evaluation_choice') }}/${ evalId }/${ v.doc_id }/dashboard_document"#}
+                                {#    class="dropdown-item">{{ traduction.voir_le_tableau_de_bord|trans }}</a>#}
+                                    <a href="/document/${ evalId }/${ v.doc_id }/edit"
+                                        class="dropdown-item">{{ traduction.renommer_le_document|trans }}</a>
+                                    <a href="{{ path('document_duplicate') }}/${ v.doc_id }"
+                                        class="dropdown-item">{{ traduction.dupliquer_le_document|trans }}</a>
+                                    <a href="{{ path('document_evaluation_choice') }}/${ evalId }/${ v.doc_id }/gestion_user_attribution"
+                                        class="dropdown-item">{{ traduction.gerer_les_droits_des_contributeurs|trans }}</a>
+                                    <a href="{{ path('document_evaluation_choice') }}/${ evalId }/${ v.doc_id }/rapport_template"
+                                        class="dropdown-item">{{ traduction.modifier_le_template|trans }}</a>
+
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `
+}
+
+function displayDoc(data, evalId) {
+    html = ''
+    $.each(data, function (k, v) {
+        html += returnLine(v, evalId)
+    })
+    $('.evalToDisplay[data-eval-display=' + evalId + ']').html(html)
+}
+
+function showDocsFromDroit(spec) {
+    if ($('.listDocsFromDroit[data-spec="' + spec + '"]').hasClass('show')) {
+        $(`.listDocsFromDroit[data-spec="${ spec }"]`).removeClass('show')
+        $(`.listDocsFromDroit[data-spec="${ spec }"]`).slideUp()
+    } else {
+        $(`.listDocsFromDroit[data-spec="${ spec }"]`).addClass('show')
+        $(`.listDocsFromDroit[data-spec="${ spec }"]`).slideDown()
+    }
+}
+
+function removeItem(sKey, sPath, sDomain) {
+    document.cookie = encodeURIComponent(sKey) +
+        "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" +
+        (sDomain ? "; domain=" + sDomain : "") +
+        (sPath ? "; path=" + sPath : "");
+}
+
+function deleteCookie() {
+    removeItem('top')
+    removeItem('left')
+    console.log('test')
+
+}
+
+function displaySystDroit(droits, docs, evalId) {
+    html = ''
+    $.each(droits, function (k1, v1) {
+        tmpHtml = ''
+        count = 0
+        $.each(docs, function (k2, v2) {
+            if (v2.droit_id == v1.droit_id) {
+                ++count
+                tmpHtml += returnLine(v2, evalId)
+
+            }
+        })
+        html += `<div style="margin-bottom:25px">
+                    <div class="titleDroit" onclick="showDocsFromDroit('${ evalId }_${ v1.droit_id }')">
+                        <h5 style="cursor:pointer">&mdash; ${ v1.droit }</h5>
+                    </div>
+                    <div class="listDocsFromDroit${'' }" data-spec="${ evalId }_${ v1.droit_id }">
+                        ${ tmpHtml }
+                    </div>
+                </div>
+                `
+    })
+    $('.evalToDisplay[data-eval-display=' + evalId + ']').html(html)
+}
+
+$(document).ready(function () {
+    $('#ModalMail').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var recipient = button.data('whatever') // Extract info from data-* attributes
+        // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+        // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+        var modal = $(this)
+        modal.find('.modal-title').text('Support : ' + recipient)
+        $('#recipient-name').val('aide.sarali@hceres.fr')
+    })
+$('.evalToLoad').click(function () {
+    if (!$(this).hasClass('collapsed')) { return }
+    const evalId = $(this).attr('data-eval-toggle')
+
+    $.ajax({
+        url: '{{ path('ajaxGetDocumentsForHome') }}',
+        method: 'post',
+        data: {
+            evalId: evalId,
+            userId: {{ app.user.id }}
+        },
+        beforeSend: function () {
+            $('.evalToDisplay[data-eval-display=' + evalId + ']').html(
+                '<div class="loadingMessage">{{ traduction.chargement|trans }}</div>'
+            )
+        },
+        success: function (res) {
+            if (res.docs.length) {
+                docList = res.docs
+                droitList = res.droits
+                if (droitList.length > 1 && docList.length > 10) {
+                    displaySystDroit(droitList, docList, evalId)
+                } else {
+                    displayDoc(docList, evalId);
+                    $('[data-toggle="tooltip"]').tooltip();
+                }
+            } else {
+                $('.evalToDisplay[data-eval-display=' + evalId + ']').html(
+                    `<div class="warningNoDocInFolder">{{ traduction.aucun_documents|trans }}</div>`
+                )
+            }
+        },
+        error: function (error) {
+
+        }
+    })
+})
+})
+</script>

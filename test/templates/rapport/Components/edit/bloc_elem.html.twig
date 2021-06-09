@@ -1,0 +1,50 @@
+{#{% if bloc.ordre != 2 and not (bloc.realname matches '{paragraphe}') and not (bloc.realname matches '{mot}') %}#}
+{#    <h5 class="upperCase">{{ bloc.name }}</h5>#}
+{#{% endif %}#}
+<div class="row">
+    <div class="col-8">
+        <div class="row">
+            <div class="col-4">
+                <p id="badgeContainer{{ bloc.id }}"style="font-size: small">{{ traduction.statut |trans }} :
+                {% if bloc.status == 0 %}
+                    <span id="badge{{ bloc.id }}" class="badge badge-pill badge-pill-custom-small mt-2 custom-validation">
+                        {{ traduction.en_edition |trans }}
+                    </span>
+                {% elseif bloc.status == 1 %}
+                    <span id="badge{{ bloc.id }}" class="badge badge-pill badge-pill-custom-small mt-2 custom-publication">
+                        {{ traduction.valide |trans }}
+                    </span>
+                {% endif %}
+                </p>
+            </div>
+            <div class="col-8">
+                {% if bloc.content is not null and bloc.date_modification is not null %}
+                    <p style="font-size: small">
+                        {{ traduction.modifie_le |trans }} : {{ bloc.date_modification | date('d/m/Y à H:m') }}
+                    </p>
+                {% endif %}
+            </div>
+            <div class="col-12">
+                <p style="font-size: small">
+                    {{ traduction.commentaire |trans }} : {{ bloc.nb_notes }}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        {% include 'rapport/Components/edit/bloc_elem_edition.html.twig' %}
+    </div>
+</div>
+{% if bloc.content is not null %}
+{#   167 #}
+{#or bloc.paragraphe_edit == 0#}
+{#    <div id="content{{ bloc.id }}">#}
+        <div id="summary">
+            <p class="collapse" style="text-align: justify" id="collapseSummary{{ bloc.id }}" contenteditable="false">
+                {{ bloc.content|raw }}
+            </p>
+        </div>
+{#    </div>#}
+{% else %}
+    <p>{{ traduction.non_redige |trans }}</p>
+{% endif %}

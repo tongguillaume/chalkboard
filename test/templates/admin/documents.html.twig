@@ -1,0 +1,122 @@
+{% extends 'home/base.html.twig' %}
+
+{% block title %}Document index{% endblock %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    {{ traduction.administration|trans }}
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.documents|trans }}</li>
+                <!-- <li class="breadcrumb-item active">Overview</li> -->
+            </ol>
+
+            <h3>{{ traduction.gestion_des_documents|trans }}</h3>
+            <table class="table table-sm mt-5" id="dataTabledoc" style="width: 100%">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">{{ traduction.nom|trans }}</th>
+                    <th scope="col">{{ traduction.dossiers|trans }}</th>
+                    <th scope="col">{{ traduction.systeme_de_droit|trans }}</th>
+                    <th scope="col">{{ traduction.cree_le|trans }}</th>
+                    <th scope="col">{{ traduction.derniere_modification_le|trans }}</th>
+                    <th scope="col">{{ traduction.actions|trans }}</th>
+                </tr>
+                </thead>
+               {#<tbody>
+                 {% for document in documents %}
+                    <tr {#class="{% if app.session.get("document_id") == document.id %}table-success{% endif %}">
+                        <th scope="row">{{ document.id }}</th>
+                        <td>{{  document.nom }}</td>
+                        <td>{{ document.evaluations.nom}}</td>
+                        <td>{{ document.idSystemDroit.name}}</td>
+                        <td>{{ document.dateCreation ? document.dateCreation|date('d-m-Y H:i:s') : '' }}</td>
+                        <td>{{ document.dateModification ? document.dateModification|date('d-m-Y H:i:s') : '' }}</td>
+                        <td>
+                            <form method="post" action="{{ path('document_delete', {'id': document.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                <a class="mb-1" href="{{ path('admin_document_edit', {'id': document.id}) }}" style="color: #0069d9;"> <span class="fas fa-fw fa-edit"></span>{{ traduction.modifier_le_document|trans }}</a><br>
+                                <a class="mb-1" href="{{ path('api_create_file_document', {'document' : document.id}) }}" style="color: #0069d9;"> <span class="fas fa-fw fa-download"></span>{{ traduction.telecharger_le_document|trans }}</a><br>
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ document.id) }}">
+                                <button  style="background: transparent; color: red; padding-left: 0px;" class="btn btn-link"><i class="fas fa-fw fa-trash"></i> Supprimer le document</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>#}
+            </table>
+            <a href="{{ app.request.getBaseURL()  }}/newDossierDocument" class="btn btn-custom-hceres float-right mt-5 mr-1"><i class="fas fa-fw fa-plus"></i>{{ traduction.ajouter|trans }}</a>
+            <!-- /.container-fluid -->
+            <!-- Sticky Footer -->
+
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+{% block javascripts %}
+<script>
+$(document).ready(function() {
+    var lang = "{{ app.session.get('lang') }}";
+    if ( lang === "fr") {
+        $('#dataTabledoc').DataTable({
+
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+            },
+            "pageLength": 25,
+            "stateSave": true,
+            "processing": true,
+            "responsive": true,
+            "ajax": "{{ path("all_document") }}",
+            "columns": [
+                  { "data": "id" },
+                  { "data": "nom" },
+                  { "data": "dossier" },
+                  { "data": "systemedroit" },
+                  { "data": "datecreation" },
+                  { "data": "datemodification" },
+                  { "data": "action" , "searchable": false},
+              ],
+            "initComplete": function () {
+                 $(this).show();
+            }
+        });
+    }
+    if ( lang === "en") {
+        $('#dataTabledoc').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.10.16/i18n/English.json"
+            },
+            "pageLength": 25,
+            "stateSave": true,
+            "processing": true,
+            "responsive": true,
+            "ajax": "{{ path("all_document") }}",
+            "columns": [
+                { "data": "id" },
+                { "data": "nom" },
+                { "data": "dossier" },
+                { "data": "systemedroit" },
+                { "data": "datecreation" },
+                { "data": "datemodification" },
+                { "data": "action" , "searchable": false},
+            ],
+            "initComplete": function () {
+                $(this).show();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

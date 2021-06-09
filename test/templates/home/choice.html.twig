@@ -1,0 +1,59 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <div class="row justify-content-md-center py-3">
+                <div class="col-md-4">
+                        {##ED145B#}
+                        <div class="card bg-light">
+                            <div class="card-header bg-primary text-white   " style="background-color: #00AAB5 !important;">
+                            </div>
+                            <div class="card-body">
+                                <img class="navbar-nav img-icone-univ mx-auto d-block" style='height: 200px;' src="{{ app.request.getBaseURL() }}/icons/LogoHceres.png">
+                                <p>{{ traduction.connexion_message_partie_1 |trans }}</p>
+                                <p>{{ traduction.connexion_message_partie_2 |trans }}</p>
+                                <p>{{ traduction.connexion_message_partie_3 |trans }}</p>
+                                <div class="d-flex justify-content-center">
+                                    <a href="{{ path('sso_connect') }}" class="btn btn-custom-hceres">
+                                        <i class="fa fa-sign-in-alt"></i>
+                                        {{ traduction.connexion_via_la_ged|trans }}
+                                    </a>
+                                    {% if app.environment == 'dev' %}
+                                        <a href="{{ path('fos_user_security_login') }}" class="ml-5 btn btn-custom-hceres">
+                                            <i class="fa fa-sign-in-alt"></i>
+                                            {{ traduction.connexion_manuelle|trans }}
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card-footer text-muted">
+                                <div class="text-md-center">
+                                    <div class="copyright text-center my-auto">
+                                        <span>Copyright © Hcéres 2019</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+
+
+
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+     <script>
+         document.addEventListener('DOMContentLoaded', function() {
+             localStorage.setItem("sideBar", "true");
+         }, false);
+     </script>
+{% endblock %}

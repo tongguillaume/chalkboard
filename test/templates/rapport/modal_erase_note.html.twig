@@ -1,0 +1,18 @@
+<div class="modal fade" id="exampleEraseNoteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ traduction.attention |trans }}</h5>
+      </div>
+        <input id="idNoteToErase" type="hidden"/>
+      
+      <div class="modal-body">
+        {{ traduction.sur_le_point_supprimer_note |trans }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ traduction.annuler |trans }}</button>
+        <button id="eraseNoteConfirmButton" onclick="confirmNoteErase()" type="button" data-dismiss="modal" class="btn btn-primary">{{ traduction.confirmer |trans }}</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+{% extends "admin.html.twig" %}
+
+{% block page_title_text %}
+    {{ 'users.translation.page_title' | trans | desc('Translations') }}
+{% endblock %}
+
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset("bundles/translation/css/webui.css") }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset("bundles/translation/js/webui.js") }}"></script>
+{% endblock %}

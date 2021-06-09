@@ -1,0 +1,68 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="#">{{ traduction.accueil |trans }}</a>
+                </li>
+                <!-- <li class="breadcrumb-item active">Overview</li> -->
+            </ol>
+
+
+            <h1>Fiche declaration</h1>
+            <!-- /.container-fluid -->
+            <div class="card">
+                <div class="card-body">
+                    <h2> Partie 1 - de l'invention à l'innovation : informations scientifiques</h2>
+                    <div class="row">
+                        <div class="col-md-5"><b>Titre </b></div><div class="col-md-6">{{ declaration.Titre  }}</div>
+                        <div class="col-md-5"><b>Focus transfert </b></div><div class="col-md-6">{{ declaration.FocusTransfert }}</div>
+                        <div class="col-md-5"><b>Intitulé </b></div><div class="col-md-6">{{ declaration.Intitule }}</div>
+                    </div>
+                </div>
+                <hr>
+                <div class="card-body">
+                    <h2> Descriptif de l'invention</h2>
+                    <div class="row">
+                        <div class="col-md-5"><b>Résumé </b></div><div class="col-md-6">{{ declaration.Resume }}</div>
+                        <div class="col-md-5"><b>Descriptif </b></div><div class="col-md-6">{{ declaration.Descriptif }}</div>
+                        <div class="col-md-5"><b>Question </b></div><div class="col-md-6">{{ declaration.Question }}</div>
+                        <div class="col-md-5"><b>Probleme tech </b></div><div class="col-md-6">{{ declaration.ProblemeTech }}</div>
+                        <div class="col-md-5"><b>Date obtention </b></div><div class="col-md-6">{{ declaration.DateObtention|date('d-m-Y') }}</div>
+                    </div>
+                </div>
+            </div>
+            {#
+            {{ convention.Partenaire }}
+            {{ convention.Nature }}
+            {{ convention.Type }}
+            {{ convention.Objet }}
+            {{ convention.DateOuverture|date('d-m-Y') }}
+            {{ convention.Id }}
+            {{ convention.DirectionReferente }}
+            {{ convention.ChargeConvention }}
+            {{ convention.IntituleStructure }}
+            {{ convention.ResponsableStructure }}
+            {{ convention.Theme }}
+            {{ convention.DateDeSignature|date('d-m-Y') }}
+            #}
+            <!-- Sticky Footer -->
+            <footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright © Your Website 2018</span>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

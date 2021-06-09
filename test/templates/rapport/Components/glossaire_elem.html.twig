@@ -1,0 +1,26 @@
+<li id="gloToRemove{{glossaire.id}}" class="list-group-item item-collapse-panel">
+    <div class="row">
+        <div class="col-xs-10 col-md-11">
+            <h5 style="display:inline" id="motGlossaire{{glossaire.id}}"> {{glossaire.mot}}</h5> :
+            <p style="display:inline" id="descGlossaire{{glossaire.id}}">{{glossaire.description|raw}}</p>
+
+{#            {% if glossaire.id_user_id == app.user.id or is_granted('ROLE_ADMIN') %}#}
+                <div class="action row">
+                    <div class="col1" style="width:30px; margin-left:10px;">
+                        <button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"
+                                class="editGlossaire" data-idgloss="{{glossaire.id}}" type="submit" data-toggle="modal"
+                                data-target="#glossaireModalEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>
+                        </button>
+                    </div>
+                    <div class="col2">
+                        <a onclick="eraseGlossaire({{glossaire.id}})" class="eraseButton" data-comId="{{glossaire.id}}"
+                            style="color: red; background-color: white; -webkit-appearance:none!important;"
+                            data-toggle="modal" data-target="#glossaireModalErase"><i class="fas fa-fw fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+                <hr class="ml-2" style="border:dashed 1px grey; width:25%">
+{#            {% endif %}#}
+        </div>
+    </div>
+</li>

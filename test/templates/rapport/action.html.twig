@@ -1,0 +1,1336 @@
+{% extends 'home/base.html.twig' %}
+{% block content %}
+    <link rel="stylesheet" href="{{ app.request.getBaseURL()  }}/css/farbtastic.css" type="text/css" />
+    <link href="{{ app.request.getBaseURL()  }}/css/select2.min.css" rel="stylesheet" />
+    <div id="content-wrapper">
+		<div class="container-fluid">
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">{{ app.session.get("evaluation") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ path('document_evaluation_choice', {'idEval': app.session.get("evaluation_id"), 'idDoc': app.session.get("document_id"),'page' : 'dashboard_document'}) }}">{{ app.session.get("document") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ path('rapport_edit') }}">{{ traduction.edition |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-active-custom active">{{ traduction.modification |trans }}</li>
+            </ol>
+			<h3 class="ml-2">{{ app.session.get("document") }} - {{ traduction.mode_edition_du_paragraphe |trans }}</h3>
+            <ol class="breadcrumb breadcrumb-custom-small">
+                {% for arbo in blocArborescence %}
+                    <li class="breadcrumb-item breadcrumb-item-small upperCase">
+                        {{ arbo.name }}
+                    </li>
+                {% endfor %}
+                <li class="breadcrumb-item breadcrumb-item-small upperCase breadcrumb-item-active-custom active">{{ bloc.name }}</li>
+            </ol>     
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="row">
+                        <div class="col-lg-8 col-xs-12">
+                            <div class="nav nav-tabs btn-group justify-content-center" id="myTab" role="tablist" style="border-bottom: none !important;">
+                                {% if bloc.AideRedaction | length > 0 %}
+                                <a class="btn nav-link-collapser active-link" data-panel="aide" id="redaction-tab">{{ traduction.aide_a_la_redaction |trans }}</a>
+                                {% endif %}
+                                {% if droits.notes == true %}
+                                        <a class="btn nav-link-collapser" data-panel="notes" id="notes-tab">{{ traduction.notes |trans }}</a>
+                                {% endif %}
+                                {% if droits.ecriture == true %}
+                                        <a class="btn nav-link-collapser" data-panel="version" id="revision-tab">{{ traduction.revisions |trans }}</a>
+                                {% endif %}
+                                {% if glossairesInBlocs == 1 %}
+                                <a class="btn nav-link-collapser" data-panel="glossaire" id="glossaire-tab">{{ traduction.glossaire |trans }}</a>
+                                {% endif %}
+                                {% if endnotesInBlocs == 1 %}
+                                <a class="btn nav-link-collapser" data-panel="end-note" id="end-note-tab">{{ traduction.note_fin_document |trans }}</a>
+                                {% endif %}
+                                <a class="btn nav-link-collapser editColor" data-toggle="modal" data-target="#colorModal">{{ traduction.couleur_redaction |trans }}</a>{#<i class="fas fa-fw fa-palette"></i>#}
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-xs-12" style="text-align:right">
+                            <div style="height: 45px">
+                            <a class="btn nav-link-collapser" data-toggle="popover" data-trigger="hover" data-content="{{traduction.cliquer_ici_pour_rendre_visible_le_texte | trans}}." id="save" {#href="{{ app.request.getBaseURL() }}/rapport/actions/publish/{{ bloc.id }}"#} style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;"> {{ traduction.sauvegarder_dans_le_document |trans }}</a>
+                            </div>
+                            <div>
+                                {% if ordreParagraphe["precedent"] != null and ordreParagraphe["precedent_is_tab"] == null %}
+                                    <a class="btn nav-link-collapser" href="{{ path('rapport_actions', {'id' : ordreParagraphe["precedent"]}) }}" title="{{ traduction.pensez_a_cliquer| trans }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;">{{ traduction.precedent |trans }} </a>
+                                {% elseif  ordreParagraphe["precedent"] != null and ordreParagraphe["precedent_is_tab"] != null  %}
+                                    <a class="btn nav-link-collapser" href="{{ path('rapport_actions_tab', {'id' : ordreParagraphe["precedent"]}) }}" title="{{ traduction.pensez_a_cliquer| trans }}"  style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;">{{ traduction.precedent |trans }}</a>
+                                {% endif %}
+                                <a class="btn nav-link-collapser" href="{{ path('rapport_edit')}}" title="{{ traduction.pensez_a_cliquer| trans }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;"> {{ traduction.retour_edition |trans }}</a>
+                                {% if ordreParagraphe["suivant"] != null  and ordreParagraphe["suivant_is_tab"] == null %}
+                                    <a class="btn nav-link-collapser"  href="{{ path('rapport_actions', {'id' : ordreParagraphe["suivant"]}) }}" title="{{ traduction.pensez_a_cliquer| trans }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;">{{ traduction.suivant |trans }}</a>
+                                {% elseif  ordreParagraphe["suivant"] != null and ordreParagraphe["suivant_is_tab"] != null  %}
+                                    <a class="btn nav-link-collapser"  href="{{ path('rapport_actions_tab', {'id' : ordreParagraphe["suivant"]}) }}" title="{{ traduction.pensez_a_cliquer| trans }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;">{{ traduction.suivant |trans }}</a>
+                                {% endif %}
+                            </div>
+                            {#<a class="btn nav-link-collapser" data-toggle="popover" data-trigger="hover" data-content="Cliquer ici pour rendre visible le texte dans l’ensemble du document. Cette action crée une nouvelle version du paragraphe." id="save" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;"> Sauvegarder dans le document</a>#}
+{#                            {%  if bloc.status == 1 %}#}
+{#                                <a class="btn nav-link-collapser" href="{{ path('bloc_dismiss', {"bloc" : bloc.id }) }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;"> Invalider le paragraphe</a>#}
+{#                            {% else %}#}
+                             {# <a class="btn nav-link-collapser" data-toggle="popover" data-trigger="hover" data-content="{{traduction.cliquer_ici_pour_notifier_aux_autres_redacteurs | trans}}" href="{{ path('bloc_validation', {"bloc" : bloc.id }) }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;"> {{ traduction.valider_le_bloc |trans }}</a> #}
+{#                            {% endif %}#}
+                        </div>
+                    </div>
+                    {# GLOSSAIRE #}
+                    <div class="tab-content tab-content-collapse" id="myTabContent">
+                        <div id="glossaire" class="tabpanel panel-collapsed" role="tabpanel" aria-labelledby="glossaire-tab" style="display: none">
+                            <div class="panel-body">
+                                {% set j = glossaires|length %}
+                                <ul class="list-group glossaireTable">
+                                    {% for glossaire in glossaires|slice(0, 2) %}
+                                        {% include 'rapport/Components/glossaire_elem.html.twig' %}
+                                    {% endfor %}
+                                </ul>
+                                {% if j > 2 %}
+                                    <ul id="hiddenGlossaire" style="display: none;" class="list-group hiddenGlossaireTable">
+                                        {% for glossaire in glossaires|slice(2, j - 1) %}
+                                            {% include 'rapport/Components/glossaire_elem.html.twig' %}
+                                        {% endfor %}
+                                    </ul>
+                                    <div class="row justify-content-center">
+                                        <a id="plusButtonGlossaire" data-comId="{{id_bloc}}"
+                                           class="btn btn-custom-hceres btn-sm btn-block col-4 center mt-1" role="button"><span
+                                                    class="glyphicon glyphicon-refresh"></span> {{ traduction.montrer_plus |trans }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                <div class="row justify-content-center">
+                                    <button id="createButtonGlossaire" type="submit" class="btn btn-custom-hceres btn-sm btn-block col-4 justify-content-center my-1"
+                                            data-toggle="modal" data-target="#exampleModalGlossaire" data-whatever="@mdo">{{ traduction.ajouter_glossaire |trans }}
+                                    </button>
+                                </div>
+                                {% include 'rapport/form_new_glossaire.html.twig' %}
+                                {% include 'rapport/form_edit_glossaire.html.twig' %}
+                                {% include 'rapport/modal_erase_glossaire.html.twig' %}
+                        </div>
+                    </div>
+                    {# COMMENTAIRES #}
+                    {% if droits.notes == true %}
+                        <div id="notes" class="tabpanel panel-collapsed" role="tabpanel" aria-labelledby="notes-tab" style="display: none">
+                            <div class="panel-body">
+                              <div id="noTitleComment">
+                                  </div>
+                                {% set j = notes|length %}
+                                {% if j <= 2 %}
+                                    <ul class="list-group notesTable">
+                                        {% for note in notes %}
+                                            <li id="noteToRemove{{note.id}}" class="list-group-item item-collapse-panel">
+                                                <div class="row">
+                                                    <div class="col-xs-10 col-md-11">
+                                                        <h5 id="noteTitle{{note.id}}">{{note.titre}}</h5>
+                                                        <div class="mic-info">
+                                                            {{ traduction.de_from |trans }}: {{note.idUser.username}}</br>
+                                                            {{ traduction.le }} : {{note.dateCreation | date('Y-m-d')}} </br>
+                                                            {% if note.dateModification is not null %}
+                                                                {{ traduction.derniere_modification_le |trans }} : {{note.dateModification | date('Y-m-d')}}
+                                                            {% endif %}
+                                                        </div>
+                                                        <span {% if note.etat == 0 %} class="badge badge-info">{{ traduction.a_resoudre |trans }}
+                                                            {% else %}
+                                                                class="badge badge-success">{{ traduction.resolu |trans }}
+                                                            {% endif %}
+                                                        </span>
+
+                                                        </br>
+                                                        <div id="noteComment{{note.id}}">{{note.description|raw}}</div>
+{#                                                        {% if note.idUser.id == app.user.id or is_granted('ROLE_ADMIN') %}#}
+                                                            <div class="action row">
+                                                                <div class="col1" style="width:30px; margin-left:10px;">
+                                                                    <button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;" class="editNoteButton"
+                                                                            data-idnote="{{note.id}}" type="submit" data-toggle="modal" data-target="#exampleNoteEdit"
+                                                                            data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col2">
+                                                                    <a onclick="eraseNoteFunction({{note.id}})" class="eraseNoteButton" data-comId="{{note.id}}"
+                                                                       style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal" data-target="#exampleEraseNoteModal"><i class="fas fa-fw fa-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+{#                                                        {% endif %}#}
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <ul class="list-group notesTable">
+                                        {% for note in notes|slice(0,2) %}
+                                            <li id="noteToRemove{{note.id}}" class="list-group-item item-collapse-panel">
+                                                <div class="row">
+                                                    <div class="col-xs-10 col-md-11">
+                                                        <h5 id="noteTitle{{note.id}}">{{note.titre}}</h5>
+                                                        <div class="mic-info">
+                                                            {{ traduction.de_from |trans }}: {{note.idUser}}</br>
+                                                            {{ traduction.le|trans }} : {{note.dateCreation | date('Y-m-d')}} <br>
+                                                            {% if note.dateModification is not null %}
+                                                                {{ traduction.derniere_modification_le |trans }} : {{note.dateModification | date('Y-m-d')}}
+                                                            {% endif %}
+                                                        </div>
+                                                        </br>
+                                                        <div id="noteComment{{note.id}}">{{note.description|raw}}</div>
+
+{#                                                        {% if note.idUser.id == app.user.id or is_granted('ROLE_ADMIN') %}#}
+                                                            <div class="action row">
+                                                                <div class="col1" style="width:30px; margin-left:10px;">
+                                                                    <button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"
+                                                                            class="editNoteButton" data-idnote="{{note.id}}" type="submit" data-toggle="modal"
+                                                                            data-target="#exampleNoteEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col2">
+                                                                    <a onclick="eraseNoteFunction({{note.id}})" class="eraseNoteButton" data-comId="{{note.id}}"
+                                                                       style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal"
+                                                                       data-target="#exampleEraseNoteModal"><i class="fas fa-fw fa-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+{#                                                        {% endif %}#}
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <ul id="hiddenNote" style="display: none;" class="list-group hiddenNoteTable">
+                                        {% for note in notes|slice(2,j-1) %}
+                                            <li id="noteToRemove{{note.id}}" class="list-group-item item-collapse-panel">
+                                                <div class="row">
+                                                    <div class="col-xs-10 col-md-11">
+                                                        <h5 id="noteTitle{{note.id}}">{{note.titre}}</h5>
+                                                        <div class="mic-info">
+                                                            {{ traduction.de_from |trans }}: {{note.idUser}} </br>
+                                                            {{ traduction.le |trans }} : {{note.dateCreation | date('Y-m-d')}} </br>
+                                                            {% if note.dateModification is not null %}
+                                                                {{ traduction.derniere_modification_le |trans }} : {{note.dateModification | date('Y-m-d')}}
+                                                            {% endif %}
+                                                        </div></br>
+                                                        <div id="noteComment{{note.id}}">{{note.description|raw}}</div>
+{#                                                        {% if note.idUser.id == app.user.id or is_granted('ROLE_ADMIN') %}#}
+                                                            <div class="action row">
+                                                                <div class="col1" style="width:30px; margin-left:10px;">
+                                                                    <button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"
+                                                                            class="editNoteButton" data-idnote="{{note.id}}" type="submit" data-toggle="modal"
+                                                                            data-target="#exampleNoteEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col2">
+                                                                    <a onclick="eraseNoteFunction({{note.id}})" class="eraseNoteButton"
+                                                                       data-comId="{{note.id}}" style="color: red; background-color: white; -webkit-appearance:none!important;"
+                                                                       data-toggle="modal" data-target="#exampleEraseNoteModal"><i class="fas fa-fw fa-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                             <hr class="ml-2" style="border:dashed 1px grey; width:25%">
+{#                                                        {% endif %}#}
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <div class="row justify-content-center">
+                                        <a id="plusNoteButton" data-comId="{{id_bloc}}"
+                                           class="btn btn-custom-hceres btn-sm btn-block col-4 justify-content-center mt-1" role="button"><span
+                                                    class="glyphicon glyphicon-refresh"></span> {{ traduction.montrer_plus |trans }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                <div class="row justify-content-center">
+                                    <button id="createNoteButton" type="submit"
+                                            class="btn btn-custom-hceres btn-sm btn-block col-4 justify-content-center my-1"
+                                            data-toggle="modal" data-target="#modalNoteCreate" data-whatever="@mdo">{{ traduction.ajouter_une_note |trans }}
+                                    </button>
+                                </div>
+                                {% include 'rapport/form_new_note.html.twig' %}
+                                {% include 'rapport/form_edit_note.html.twig' %}
+                                {% include 'rapport/modal_erase_note.html.twig' %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {# VERSIONs #}
+                    {% if droits.ecriture == true %}
+                        <div id="version" class="tabpanel panel-collapsed" role="tabpanel" aria-labelledby="version-tab" style="display: none">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">{{ traduction.version |trans }}</th>
+                                        <th scope="col">{{ traduction.date |trans }}</th>
+                                        <th scope="col">{{ traduction.modifie_par |trans }}</th>
+                                        <th scope="col">{{ traduction.operations |trans }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for revision in revisions %}
+                                    <tr>
+                                        <th scope="row">{% if revision.actif == true%} {{ traduction.actuelle |trans }} {% endif %} v.{{ revision.version }}</th>
+                                        <td>{{ revision.dateCreation| date('d/m/Y - h:i') }}</td>
+                                        <td>{{ revision.idUser.firstname }} {{ revision.idUser.lastname }}</td>
+                                        <td>
+                                            {% if revision.actif == false %}
+                                                <a href="{{ app.request.getBaseURL()  }}/rapport/actions/revision/restore/{{ revision.id }}">{{ traduction.restaurer_cette_version |trans }}</a>
+                                                <a class="ml-5" href="{{ app.request.getBaseURL()  }}/rapport/actions/revision/delete/{{ revision.id }}">{{ traduction.supprimer |trans }}</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                    {# END NOTE #}
+                        {#//TODO#}
+                        <div id="end-note" class="tabpanel panel-collapsed" role="tabpanel" aria-labelledby="end-note-tab" style="display: none">
+                            <div class="panel-body">
+                            <div id="noTitleEndNote">
+           </div>
+                                {% set j = endNotes|length %}
+                                {% if j <= 2 %}
+                                    <ul class="list-group endNoteTable">
+                                        {% for endNote in endNotes %}
+                                            <li id="endNoteToRemove{{endNote.id}}" class="list-group-item item-collapse-panel">
+                                                <div class="row">
+                                                    <div class="col-xs-10 col-md-11">
+                                                        <h5 id="motEndNote{{endNote.id}}">[[{{endNote.mot}}]] {{endNote.description|raw}}</h5>
+                                                        <div class="mic-info">
+{#                                                            De: <a href="#">{{endNote.idUser.username}} </a> {{ traduction.le |trans }} : {{endNote.dateCreation | date('Y-m-d')}} <br>#}
+{#                                                            {{ traduction.de_from |trans }}: {{endNote.username}}</br>#}
+{#                                                            {{ traduction.le |trans }} : {{endNote.date_creation | date('Y-m-d')}} </br>#}
+{#                                                            {% if endNote.dateModification is not null %}#}
+{#                                                            {% if endNote.date_modification is not null %}#}
+{#                                                                {{ traduction.actuelle |trans }} : {{endNote.date_modification | date('Y-m-d')}}#}
+{#                                                            {% endif %}#}
+                                                        </div>
+                                                        <div id="descEndNote{{endNote.id}}"></div>
+{#                                                        {% if endNote.idUser.id == app.user.id or is_granted('ROLE_ADMIN') %}#}
+                                                            <div class="action row">
+                                                                <div class="col1" style="width:30px; margin-left:10px;">
+                                                                    <button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;" class="editEndNote"
+                                                                            onclick="putTextFromPadEdit(`{{ endNote.description }}`)" id="{{endNote.id}}"
+                                                                            data-idendnote="{{endNote.id}}" type="submit" data-toggle="modal" data-target="#endNoteModalEdit"
+                                                                            data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col2">
+                                                                    <a onclick="eraseEndNote({{endNote.id}})" class="eraseButton" data-comId="{{endNote.id}}"
+                                                                       style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal" data-target="#endNoteModalErase"><i class="fas fa-fw fa-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <ul class="list-group endNoteTable">
+                                        {% for endNote in endNotes|slice(0,2) %}
+                                            <li id="endNoteToRemove{{endNote.id}}" class="list-group-item item-collapse-panel">
+                                                <div class="row">
+                                                    <div class="col-xs-10 col-md-11">
+                                                        <h5 id="motEndNote{{endNote.id}}">[[{{endNote.mot}}]] {{endNote.description|raw}}</h5>
+                                                        <div class="mic-info">
+{#                                                            {{ traduction.de_from |trans }}: {{endNote.username}}</br>#}
+{#                                                            {{ traduction.le |trans }} : {{endNote.date_creation | date('Y-m-d')}} </br>#}
+{#                                                            {% if endNote.date_modification is not null %}#}
+{#                                                                {{ traduction.derniere_modification_le |trans }}: {{endNote.date_modification | date('Y-m-d')}}#}
+{#                                                            {% endif %}#}
+                                                        </div>
+
+{#                                                        <div id="descEndNote{{endNote.id}}">{{endNote.description|raw}}</div>#}
+
+
+                                                            <div class="action row">
+                                                                <div class="col1" style="width:30px; margin-left:10px;">
+                                                                    <button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"
+                                                                            onclick="putTextFromPadEdit(`{{ endNote.description }}`)"
+                                                                            class="editEndNote" data-idendnote="{{endNote.id}}" type="submit" data-toggle="modal" id="{{endNote.id}}"
+                                                                            data-target="#endNoteModalEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col2">
+                                                                    <a onclick="eraseEndNote({{endNote.id}})" class="eraseButton" data-comId="{{endNote.id}}"
+                                                                       style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal"
+                                                                       data-target="#endNoteModalErase"><i class="fas fa-fw fa-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <ul id="hiddenEndNote" style="display: none;" class="list-group hiddenEndNoteTable">
+                                        {% for endNote in endNotes|slice(2,j-1) %}
+                                            <li id="endNoteToRemove{{endNote.id}}"class="list-group-item item-collapse-panel">
+                                                <div class="row">
+                                                    <div class="col-xs-10 col-md-11">
+                                                        <h5 id="motEndNote{{endNote.id}}">[[{{endNote.mot}}]] {{endNote.description|raw}}</h5>
+                                                        <div class="mic-info">
+{#                                                            {{ traduction.de_from |trans }}: {{endNote.username}}</br>#}
+{#                                                            {{ traduction.le|trans }} : {{endNote.date_creation | date('Y-m-d')}} </br>#}
+{#                                                            {% if endNote.date_modification is not null %}#}
+{#                                                                {{ traduction.derniere_modification_le |trans }} : {{endNote.date_modification | date('Y-m-d')}}#}
+{#                                                            {% endif %}#}
+                                                        </div>
+                                                        <div id="descEndNote{{endNote.id}}"></div>
+                                                            <div class="action row">
+                                                                <div class="col1" style="width:30px; margin-left:10px;">
+                                                                    <button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"
+                                                                            class="editEndNote" data-idendnote="{{endNote.id}}" type="submit" data-toggle="modal" id="{{endNote.id}}"
+                                                                            data-target="#endNoteModalEdit" onclick="putTextFromPadEdit(`{{ endNote.description }}`)" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col2">
+                                                                    <a onclick="eraseEndNote({{endNote.id}})" class="eraseButton"
+                                                                       data-comId="{{endNote.id}}" style="color: red; background-color: white; -webkit-appearance:none!important;"
+                                                                       data-toggle="modal" data-target="#endNoteModalErase"><i class="fas fa-fw fa-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <div class="row justify-content-center">
+                                        <a id="plusButtonEndNote" data-comId="{{id_bloc}}"
+                                           class="btn btn-custom-hceres btn-sm btn-block col-4 center mt-1" role="button"><span
+                                                    class="glyphicon glyphicon-refresh"></span> {{ traduction.montrer_plus |trans }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                <div class="row justify-content-center">
+                                    <button id="createButtonEndNote" type="submit" class="btn btn-custom-hceres btn-sm btn-block col-4 justify-content-center my-1"
+                                            data-toggle="modal" data-target="#exampleModalEndNote" onclick="putTextFromPad()" data-whatever="@mdo">{{ traduction.ajouter_notes_fin_document |trans }}
+                                    </button>
+                                </div>
+                                {% include 'rapport/form_new_end_note.html.twig' %}
+                                {% include 'rapport/form_edit_end_note.html.twig' %}
+                                {% include 'rapport/modal_erase_end_note.html.twig' %}
+                            </div>
+                        </div>
+                        {#//TODO#}
+
+                        {% if bloc.AideRedaction |length > 0 %}
+                    <div id="aide" class="tabpanel" role="tabpanel" aria-labelledby="aide-tab">
+                        <div class="card" style="border: none; z-index: 1;">
+                            <div class="card-body">
+{#                                <p class="card-text">#}
+                                    {{ bloc.AideRedaction |raw}}
+{#                                </p>#}
+                            </div>
+                        </div>
+                    </div>
+                        {% endif %}
+                        {% if endnotesInBlocs == 1 %}
+                    <div >
+                        <i class="fas fa-exclamation-triangle"></i> <b>{{ traduction.numerotation_des_notes | trans}}</b> {{ traduction.numerotation_des_notess | trans}}<br>
+                        <i class="fas fa-exclamation-triangle"></i> <b>{{ traduction.supprimer_les_notes | trans}}</b>{{ traduction.supprimer_les_notess | trans}}
+                    </div>
+                        {% endif %}
+                </div>
+
+            <!-- Etherpad Container -->
+                <div id="etherpad-container" class="row">
+                    {% if droits.ecriture == true %}
+                        <div id="etherpad" class="col-lg-12 col-md-12 col-sm-12" style="margin-top: -10px;">
+                            {#<iframe id="iframe_etherpage" src='https://etherpad.softia.fr/p/1?lang=fr' scrolling="no" width=40% height=50%></iframe>#}
+                            {#<iframe id="iframe_etherpage" src='https://etherpad.softia.fr/p/{{ bloc.id }}?lang=fr' scrolling="no" width=40% height=50%></iframe>#}
+                        </div>
+                        {% if bloc.maxChar != null %}
+                            <div class="row ml-3" id="txtNbChar">{{ traduction.vousavezredige |trans }} <div id="nbchar">{% if bloc.blocContent is not null %}{{ bloc.blocContent.contentText | length -  1}}{% else %}0{% endif %}</div> {{ traduction.caracteressurles |trans }} {{ bloc.maxChar }} {{ traduction.recommande |trans }}</div>
+                        {% endif %}
+                        {% elseif droits.visualisation == true %}
+                        <div class="row ml-1 mt-3">
+                            {% if bloc.realOrdre == 1 %}
+                                <div class="col-lg-12 titre1-word">{{ bloc.name }}</div>
+                            {% elseif bloc.realOrdre == 2 %}
+                                <div class="col-lg-12 titre2-word">{{ bloc.name }}</div>
+                            {% elseif bloc.realOrdre == 3 %}
+                                <div class="col-lg-12 titre3-word">{{ bloc.name }}</div>
+                            {% elseif bloc.realOrdre == 4 %}
+                                <h4 class="col-lg-12 titre4-word">{{ bloc.name }}</h4>
+                            {% else %}
+                                <h4 class="col-lg-12 titre4-word">{{ bloc.name }}</h4>
+                            {% endif %}
+                            {% if bloc.ordre == 0 %}
+                                {% if bloc.blocContent is not null %}
+                                    <p class="col-lg-12 p-word">{{ bloc.blocContent.content|raw }}</p>
+                                {% else %}
+                                    <p class="col-lg-12 p-word"><u>{{ traduction.non_redige |trans }}</u></p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            <!-- Etherpad Container -->
+
+                </div>
+            <div class="modal fade" id="colorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalColorEdit" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabelEdit">{{ traduction.modifier_couleur_redaction |trans }}</h5>
+                        </div>
+                        <div id="para" class="modal-body">
+                            <form><input type="text" id="color" name="color" value="{{ user.color }}" /></form>
+                            <div id="colorpicker"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ traduction.annuler |trans }}</button>
+                            <button id="colorEditConfirm" type="submit" class="btn btn-primary" data-dismiss="modal">{{ traduction.confirmer |trans }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <div class="modal fade" id="loadMe" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">
+                    <div class="modal-dialog modal-sm" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body text-center">
+                                <div class="loader"></div>
+                                <div class="loader-txt">
+                                    <p>{{ traduction.paragraphe_en_cours_enregistrement |trans }}<br><br><small>{{ traduction.patientez |trans }}</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <!-- Sticky Footer -->
+    <!-- /.content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script src="{{ app.request.getBaseURL()  }}/js/etherpad/etherpad.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/farbtastic.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/select2.min.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    //Fonction qui alerte si titre a été oublié dans commentaire
+     $(document).ready(function() {
+
+      $('#createNoteConfirm').click(function(e){
+          e.preventDefault();
+        var titre = $('CreateNoteTitle').val();
+        var messageError = "Merci d'ajouter un titre à votre commentaire avant de valider.";
+        if(titre){
+            if(titre.trim() = ""){
+            $('#noTitle').append( '<h5 class="alert alert-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>'+' '+messageError+'</h5>');
+            }
+         
+        }
+      })
+   })
+
+        // Fonction qui permet de déclencher la modale (message confirmation de suppression d'un element de glossaire)
+        function eraseGlossaire(id){
+            var idTarget = $('#idGlossaireToErase');
+            idTarget.val(id);
+        }
+
+        // Fonction qui effectue en Ajax la suppression d'un element de glossaire
+        function eraseGlossaireConfirm(){
+            var id = $('#idGlossaireToErase').val();
+            $('#gloToRemove' + id).remove();
+
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/actions/glossaire/delete/" + id,
+                type: "DELETE",
+                dataType: 'JSON',
+                success: function()
+                {
+                    console.log("La suppression s'est bien effectuée");
+                },
+                error: function(err)
+                {
+                    console.log(err);
+                }
+            });
+        }
+
+
+        // Fonction qui permet de déclencher la modale (message confirmation de suppression d'une note de fin de document)
+        function eraseEndNote(id){
+            var idTarget = $('#idEndNoteToErase');
+            idTarget.val(id);
+        }
+
+        // Fonction qui effectue en Ajax la suppression d'un element d'une note de fin de document
+        function eraseEndNoteConfirm(){
+            var id = $('#idEndNoteToErase').val();
+            var idBloc = {{ bloc.id }}
+            $('#endNoteToRemove' + id).remove();
+
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/actions/endNote/delete/" + id + "/idBloc/" + idBloc,
+                type: "GET",
+                dataType: 'JSON',
+                success: function()
+                {
+                    console.log("La suppression s'est bien effectuée");
+                },
+                error: function(err)
+                {
+                    console.log(err);
+                }
+            });
+        }
+
+
+        // Fonction qui permet de déclencher la modale (message confirmation de suppression d'un commentaire)
+        function eraseNoteFunction(id){
+            var idTarget = $('#idNoteToErase');
+            idTarget.val(id);
+        }
+
+        // Fonction qui effectue en Ajax la suppression d'un commentaire
+        function confirmNoteErase(){
+            var id = $('#idNoteToErase').val();
+            $('#noteToRemove' + id).remove();
+
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/actions/note/delete/" + id,
+                type: "DELETE",
+                dataType: 'JSON',
+                success: function(data)
+                {
+                    console.log("La suppression s'est bien effectuée");
+
+                },
+                error: function(err)
+                {
+                    console.log(err);
+                }
+            });
+        }
+
+
+        // Fonction qui permet de déclencher la modale (message confirmation de suppression d'un commentaire)
+        function eraseFunction(id){
+            var idTarget = $('#idToErase');
+            idTarget.val(id);
+        }
+
+        // Fonction qui effectue en Ajax la suppression d'un commentaire
+        function confirmErase(){
+            var id = $('#idToErase').val();
+            $('#liToRemove' + id).remove();
+
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/actions/commentaire/delete/" + id,
+                type: "DELETE",
+                dataType: 'JSON',
+                success: function(data)
+                {
+                    console.log("La suppression s'est bien effectuée");
+
+                },
+                error: function(err)
+                {
+                    console.log(err);
+                }
+            });
+        }
+
+    function myParseInt(x) {
+        const parsed = parseInt(x, 10);
+        if (isNaN(parsed)) { return 0 }
+        return parsed;
+    }
+
+        $(document).ready(function() {
+            var allowedKeys = {
+                "37" : "arrow-left",
+                "38" : "arrow-up",
+                "39" : "arrow-right",
+                "40" : "arrow-down",
+                "9" : "tab",
+                "27" : "esc"
+            }
+
+            $("textarea[data-readonly=readonly]").keydown(function(e){
+                if (!allowedKeys[e.which]) {
+                    e.preventDefault();
+                }
+            });
+            var _lang = "{{ app.session.get('lang')  }}";
+            if (_lang === "fr"){
+                _lang = "fr-fr";
+            } else if (_lang === "en"){
+                _lang = "en-gb";
+            } else if (_lang === "es"){
+                _lang = "es-es";
+            } else {
+                _lang = "fr-fr";
+            }
+
+            {% if bloc.maxChar != null %}
+                let _maxCharBloc = {{ bloc.maxChar }};
+                let _nbChar = $('#nbchar').html();
+                console.log(_maxCharBloc, myParseInt(_nbChar));
+                if (_nbChar > _maxCharBloc){
+                    //Rouge
+                    $("#txtNbChar").css('color', 'red');
+                }
+            {% endif %}
+
+            $('.nav-link-collapser').click(function(){
+                var $this = $(this);
+                var id = $(this).data("panel");
+                var panel = $('#'+id);
+                if (!panel.hasClass('panel-collapsed')) {
+                    panel.slideUp();
+                    panel.addClass('panel-collapsed');
+                    $this.removeClass('active-link');
+
+                } else {
+                    $('.tabpanel').each(function(){
+                        $(this).slideUp();
+                        $(this).addClass('panel-collapsed');
+                    });
+                    $('.nav-link-collapser').each(function(){
+                        $(this).removeClass('active-link');
+                    });
+                    panel.removeClass('panel-collapsed');
+
+                    panel.slideDown();
+                    $this.addClass('active-link');
+                    // $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+                }
+            });
+        //Gère le color picker
+            $('#colorpicker').farbtastic('#color');
+
+            $('#colorEditConfirm').click(function(){
+                var color = $('#color').val();
+                color =  color.replace('#', '');
+
+                var url = "{{ app.request.getBaseURL() }}/gestion/colorChange/";
+                var resurl = url.concat(color);
+               
+
+                $.ajax({
+                    url: resurl,
+                    type: "GET",
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    complete : function()
+                    {
+                        location.reload()
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                    }
+                });
+            });
+
+            {% if droits.ecriture == true %}
+            console.log(_lang);
+                $('#etherpad').pad({'padId':'{{ id_bloc }}',
+                    'host':'{{ etherpad_url }}',
+                    'baseUrl':'/p/',
+                    'userName': '{{ app.user.firstname }} {{ app.user.lastname }}',
+                    'width':100,
+                    'height':600,
+                    'showControls':true,
+                    'border': '0.5px',
+                    'borderStyle':'solid',
+                    'showChat':true,
+                    'userColor' : '{{ app.user.color }}',
+                    'lang' : _lang,
+                });
+
+                function getRandomColor() {
+                    var letters = '0123456789ABCDEF';
+                    var color = '#';
+                    for (var i = 0; i < 6; i++) {
+                        color += letters[Math.floor(Math.random() * 16)];
+                    }
+                    return color;
+                }
+            {% endif %}
+            $('#save').click(function(){
+                var id = {{ id_bloc }};
+                const modal = $("#loadMe").modal({
+                    backdrop: "static", //remove ability to close modal with click
+                    keyboard: false, //remove option to close with keyboard
+                    show: true //Display loader!
+                });
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/publish/" + id,
+                    complete: function(request, result)
+                    {
+                       
+                        if (request.responseText === "Le paragraphe a bien été mis à jour."
+                            || request.responseText === "The paragraph has been updated.") {
+                            setTimeout(function() {
+                                $(".loader-txt").html("<p>"+ request.responseText +"</p>");
+                                {% if bloc.maxChar != null %}
+                                    $("#nbchar").html(request.getResponseHeader('nbchar'));
+                                    let _maxCharBloc = {{ bloc.maxChar }};
+                                    let _nbChar = request.getResponseHeader('nbchar');
+                                    if (_nbChar > _maxCharBloc){
+                                        $("#txtNbChar").css('color', 'red');
+                                    } else {
+                                        $("#txtNbChar").css('color', 'black');
+                                    }
+                                {% endif %}
+                                // $("#loadMe").modal("hide");
+                            }, 2000);
+                            setTimeout(function() {
+                                $("#loadMe").modal("hide");
+                            }, 4000);
+                            setTimeout(function() {
+                                $(".loader-txt").html("<p>{{ traduction.paragraphe_en_cours_enregistrement |trans }}<br><br><small>{{ traduction.patientez |trans }}</small></p>");
+                            }, 5000);
+
+                        }
+                        else {
+                            $(".loader").hide();
+                            $(".loader-txt").html("<p>{{ traduction.erreur_enregistrement |trans }}<br> {{ traduction.veuillez_rafraichir |trans }}<br><br><small>{{ traduction.erreur |trans }} : "+ request.responseText +" </small></p>");
+
+                        }
+                    },
+                });
+            });
+
+            // Fonction qui cache le boutton "Plus"
+            // Et affiche les commentaires supplémentaires
+            $('#plusButton').click(function(){
+                $('#hiddenComm').show();
+                $('#plusButton').hide();
+            });
+
+            // Fonction qui cache le boutton "Plus"
+            // Et affiche les notes supplémentaires
+            $('#plusNoteButton').click(function(){
+                $('#hiddenNote').show();
+                $('#plusNoteButton').hide();
+            });
+
+            // Fonction qui cache le boutton "Plus"
+            // Et affiche les glossaires supplémentaires
+            $('#plusButtonGlossaire').click(function(){
+                $('#hiddenGlossaire').show();
+                $('#plusButtonGlossaire').hide();
+            });
+
+            // Fonction qui cache le boutton "Plus"
+            // Et affiche les Notes de fin de document supplémentaires
+            $('#plusButtonEndNote').click(function(){
+                $('#hiddenEndNote').show();
+                $('#plusButtonEndNote').hide();
+            });
+
+            //Fonction qui permet de compléter les champs du Form pour Editer un commentaire.
+            $(document).on("click" ,'.editButton', function(){
+                var id = $(this).data("comid");
+                var titre = $('#titleComm'+id).text();
+                var commentaire = $('#commentComm'+id).text();
+
+                $('#newTitre').val(titre);
+                $('#newComm').val(commentaire);
+                $('#idComment').val(id);
+            });
+
+            //Fonction qui permet de faire l'appel Ajax pour l'édition d'un commentaire en base de données.
+            $('#modalCommentaireConfirm').click(function(){
+                var id = $('#idComment').val();
+                var titre = $('#newTitre').val();
+                var commentaire = $('#newComm').val();
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/commentaire/edit/" + id,
+                    type: "POST",
+                    data: {id:id, titre:titre, commentaire:commentaire},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        $('#titleComm'+ data['id']).text(data['titre']);
+                        $('#commentComm'+ data['id']).text(data['commentaire']);
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement");
+                    }
+                });
+            });
+ // Fonction qui permet la création d'un nouveau commentaire via AJAx
+            $('#createCommConfirm').click(function(){
+                var idUser = {{app.user.id}};
+                var id = $(this).data("comid");
+                var titre = $('#modalCommTitle').val();
+                var commentaire = $('#modalCommComment').val();
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/commentaire/create/" + id,
+                    type: "POST",
+                    data: {titre:titre, commentaire:commentaire, idUser:idUser, messageError:messageError},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                         
+                        var date1 = new Date(data.dateDeCreation.date);
+                            
+                        $('.commentaireTable').prepend('<li id="liToRemove'+ data.id +'" class="list-group-item item-collapse-panel">'+
+                            '<div class="row">'+
+                            '<div class="col-xs-10 col-md-11">'+
+                          
+                            '<h5 id="titleComm' + data.id + '">'+ data.titre + '</h5>'+
+                        
+                            '<div class="mic-info">'+
+                            '{{ traduction.de_from |trans }}' + ' : '+ ''+ data.username + '<br>'+ '{{ traduction.derniere_modification_le |trans }}' +' : ' + date1.getFullYear() + '-' + (date1.getMonth() + 1) + '-' + date1.getDate() +'</br>'+
+                            '</div>'+
+                            '</br>'+
+                            '<div id="commentComm'+ data.id + '">'+ data.commentaire +'</div>'+
+                            '<div class="action row">'+
+                            '<div class="col1" style="width:30px; margin-left:10px;">'+
+                            '<button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"'+
+                            'class="editButton" data-comid="' + data.id + '" type="submit" data-toggle="modal"'+
+                            'data-target="#exampleModalEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i></button>'+
+                            '</div>'+
+                            '<div class="col2">'+
+                            '<a onclick="eraseFunction('+ data.id +')" class="eraseButton" data-comId="'+ data.id +'"'+
+                            'style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal"'+
+                            'data-target="#exampleModal"><i class="fas fa-fw fa-trash"></i>'+
+                            '</a>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</li>');
+                    },
+                    error: function(err)
+                    {
+                        
+                        console.log(data.messageError);
+                        console.log("erreur de chargement des données");
+                    }
+                });
+            });
+        });
+    
+
+     function putTextFromPad()
+     {
+         var id = {{ bloc.id }}
+         $("#descEndNoteModal").val('')
+         $("#motEndNoteModal").focus();
+         $("#motEndNoteModal").get(0).setSelectionRange(0,0);
+             $.ajax({
+                 url: "{{ app.request.getBaseURL() }}/rapport/getText/pad/" + id,
+                 type: "GET",
+                 success: function(data)
+                 {
+                     $("#motEndNoteModal").val(data.data)
+                 },
+                 error: function(err)
+                 {
+                     console.log(err);
+                     console.log("erreur de chargement");
+                 }
+             })
+     }
+
+     function putTextFromPadEdit(note)
+     {
+         var id = {{ bloc.id }}
+             $('#descEndNoteModalEdit').val(note)
+             $("#motEndNoteModalEdit").focus();
+             $("#motEndNoteModalEdit").get(0).setSelectionRange(0,0);
+             $.ajax({
+                 url: "{{ app.request.getBaseURL() }}/rapport/getText/pad/" + id,
+                 type: "GET",
+                 success: function(data)
+                 {
+                     $("#motEndNoteModalEdit").val(data.data)
+                 },
+                 error: function(err)
+                 {
+                     console.log(err);
+                     console.log("erreur de chargement");
+                 }
+             })
+
+     }
+
+    function putTextFromPadEditNewModal(note)
+    {
+        var id = {{ bloc.id }}
+            $('#descEndNoteModalEdit').val(note)
+
+        $.ajax({
+            url: "{{ app.request.getBaseURL() }}/rapport/getText/pad/" + id,
+            type: "GET",
+            success: function(data)
+            {
+                $("#motEndNoteModalEdit").val(data.data)
+            },
+            error: function(err)
+            {
+                console.log(err);
+                console.log("erreur de chargement");
+            }
+        })
+
+    }
+         // Fonction qui permet de déclencher la modale (message confirmation de suppression d'une Note)
+
+        $(document).ready(function() {
+            $('[data-toggle="popover"]').popover();
+
+            var noteContentId = $(".noteContent").first().attr("id");
+            if (noteContentId) {
+                openCity(event, noteContentId);
+                $("#sel").first().addClass("active");
+            }
+            //Fonction qui permet de compléter les champs du Form pour Editer une Note.
+            $(document).on("click" ,'.editNoteButton', function(){
+                var id = $(this).data("idnote");
+                var titre = $('#noteTitle'+id).text();
+                var commentaire = $('#noteComment'+id).text();
+              
+                $('#newNoteTitle').val(titre);
+                $('#newNoteComment').val(commentaire);
+                $('#idNote').val(id);
+            });
+
+            //Fonction qui permet de faire l'appel Ajax pour l'édition d'une Note en base de données.
+            $('#modalEditNoteConfirm').click(function(){
+                var id = $('#idNote').val();
+                var titre = $('#newNoteTitle').val();
+                var commentaire = $('#newNoteComment').val();
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/note/edit/" + id,
+                    type: "POST",
+                    data: {id:id, titre:titre, commentaire:commentaire},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        $('#noteTitle'+ data['id']).text(data['titre']);
+                        $('#noteComment'+ data['id']).text(data['commentaire']);
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement");
+                    }
+                });
+            });
+
+            // Fonction qui permet la création d'une nouvelle Note via AJAx
+            $('#createNoteConfirm').click(function(){
+                var idUser = {{app.user.id}};
+                var id = $(this).data("comid");
+                var titre = $('#CreateNoteTitle').val();
+                var commentaire = $('#CreateNoteComment').val();
+
+
+                $('#CreateNoteTitle').val('');
+                $('#CreateNoteComment').val('');
+                $.ajax({
+                    
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/note/create/" + id,
+                    type: "POST",
+                    data: {titre:titre, commentaire:commentaire, idUser:idUser},
+                    dataType: 'JSON',
+                    //condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {               
+                        var date1 = new Date(data.dateDeCreation.date);
+                        
+                            $('.notesTable').prepend('<li id="noteToRemove'+ data.id +'" class="list-group-item item-collapse-panel">'+
+                            '<div class="row">'+
+                            '<div class="col-xs-10 col-md-11" id="class-col">' + 
+                                 '<h5 id="noteTitle' + data.id + '">'+ data.titre + '</h5>' + '<div class="mic-info">'+
+                            '{{ traduction.de_from |trans }}' +
+                                ' : '+
+                            ' '+
+                            data.username +
+                            '</br> '+
+                                '{{ traduction.cree_le |trans }}'+
+                                    ' : ' + date1.getFullYear() + '-' + (date1.getMonth() + 1) + '-' + date1.getDate() +'</br>'+
+                            '</div>'+
+                            '</br>'+
+                            '<div id="noteComment'+ data.id + '">'+ data.commentaire +'</div>'+
+                            '<div class="action row">'+
+                            '<div class="col1" style="width:30px; margin-left:10px;">'+
+                            '<button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"'+
+                            'class="editNoteButton" data-idnote="' + data.id + '" type="submit" data-toggle="modal"'+
+                            'data-target="#exampleNoteEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i></button>'+
+                            '</div>'+
+                            '<div class="col2">'+
+                            '<a onclick="eraseNoteFunction('+ data.id +')" class="eraseNoteButton" data-comId="'+ data.id +'"'+
+                            'style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal"'+
+                            'data-target="#exampleEraseNoteModal"><i class="fas fa-fw fa-trash"></i>'+
+                            '</a>'+
+                            '</div>'+
+                            '</hr class="ml-2" style="border:dashed 1px grey; width:25%">'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</li>')
+
+
+                    },
+                  
+                    error: function(err)
+                    {
+                       
+                        console.log(err);
+                        console.log("erreur de chargement des données");
+                    }
+            });
+        });
+
+      
+            // Fonction qui permet la création d'un nouveau glossaire via AJAx
+            $('#createGlossaireConfirm').click(function() {
+                var idUser = {{ app.user.id }};
+                var id = $(this).data("idbloc");
+                var mot = $('#motGlossaireModal').val();
+                var description = $('#descGlossaireModal').val();
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/glossaire/create/" + id,
+                    type: "POST",
+                    data: {mot:mot, description:description, idUser:idUser},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        if (data.error){
+                            alert(data.error);
+                        } else {
+                            var date1 = new Date(data.dateDeCreation.date);
+                            $('.glossaireTable').prepend('<li id="gloToRemove' + data.id + '" class="list-group-item item-collapse-panel">' +
+                                '<div class="row">' +
+                                '<div class="col-xs-10 col-md-11">' +
+                                '<h5 style="display:inline" id="motGlossaire' + data.id + '">' + data.mot + ' </h5>: '+ '<p style="display:inline" id="descGlossaire' + data.id + '">' + data.description + '</p> ' +
+
+                                '<div class="action row">' +
+                                '<div class="col1" style="width:30px; margin-left:10px;">' +
+                                '<button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"' +
+                                'class="editGlossaire" data-idgloss="' + data.id + '" type="submit" data-toggle="modal"' +
+                                'data-target="#glossaireModalEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i></button>' +
+                                '</div>' +
+                                '<div class="col2">' +
+                                '<a onclick="eraseGlossaire(' + data.id + ')" class="eraseButton" data-comId="' + data.id + '"' +
+                                'style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal"' +
+                                'data-target="#glossaireModalErase"><i class="fas fa-fw fa-trash"></i>' +
+                                '</a>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</li>');
+                        }
+
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement des données");
+                    }
+                });
+                $('#motGlossaireModal').val('');
+                $('#descGlossaireModal').val('');
+
+            });
+
+            //Fonction qui permet de compléter les champs du Form pour Editer un glossaire.
+            $(document).on("click" ,'.editGlossaire', function(){
+                var id = $(this).data("idgloss");
+                var mot = $('#motGlossaire'+id).text();
+                var description = $('#descGlossaire'+id).text();
+
+                $('#newMot').val(mot);
+                $('#newDesc').val(description);
+                $('#idGlossaire').val(id);
+            });
+
+
+            //Fonction qui permet l'edition d'un glossaire.
+            $('#glossaireModalEditConfirm').click(function(){
+                var id = $('#idGlossaire').val();
+                var mot = $('#newMot').val();
+                var description = $('#newDesc').val();
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/glossaire/edit/" + id,
+                    type: "POST",
+                    data: {id:id, mot:mot, description:description},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        if (data.error){
+                            alert(data.error);
+                        } else {
+                            $('#motGlossaire' + data['id']).text(data['mot']);
+                            $('#descGlossaire' + data['id']).text(data['description']);
+                        }
+
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement");
+                    }
+                });
+            });
+
+            //Fonction qui permet de compléter les champs du Form pour Editer une note de fin de document.
+            $(document).on("click" ,'.editEndNote', function(){
+                var id = $(this).data("idendnote");
+                var mot = $('#motEndNote'+id).text();
+                var description = $('#descEndNote'+id).text();
+
+
+                $('#newEndNoteMot').val(mot);
+                $('#newEndNoteDesc').val(description);
+                $('#idEndNote').val(id);
+            });
+
+            //Fonction qui permet l'edition d'une note de fin de document.
+            $('#endNoteModalEditConfirm').click(function(){
+                var id = $('#idEndNote').val();
+                var selected =  $('#motEndNoteModalEdit').prop("selectionStart");
+                var description = $('#descEndNoteModalEdit').val();
+                var nom_bloc = `{{ bloc.name }}`;
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/endNote/edit/" + id,
+                    type: "POST",
+                    data: {id:id, mot:selected, description:description, idBloc: {{ id_bloc }} , nom_bloc: nom_bloc },
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        $('#motEndNote'+ data['id']).text('[['+data['motSansPos'] + ']] ' + data['description']);
+                        $('#descEndNote'+ data['id']).text(data['description']);
+                        document.getElementById(id).setAttribute('onclick',data['description']);
+
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement");
+                    }
+                });
+            });
+
+            // Fonction qui permet la création d'une nouvelle note de fin de document via AJAx
+            $('#createEndNoteConfirm').click(function() {
+                var idUser = {{ app.user.id }};
+                var idDoc = {{ document_id }};
+                var mot = $('#motEndNoteModal').val();
+                var description = $('#descEndNoteModal').val();
+                var selected =  $('#motEndNoteModal').prop("selectionStart");
+                var id_bloc = {{ id_bloc }};
+                var nom_bloc = `{{ bloc.name }}`;
+
+
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/endNote/create/" + idDoc,
+                    type: "POST",
+                    data: {pos:selected, description:description, idUser:idUser, idBloc : id_bloc, nom_bloc: nom_bloc },
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+
+                        var date1 = new Date(data.dateDeCreation.date);
+                        $('.endNoteTable').prepend('<li id="endNoteToRemove'+ data.id +'" class="list-group-item item-collapse-panel">'+
+                            '<div class="row">'+
+                            '<div class="col-xs-10 col-md-11">'+  
+                            '<h5 id="motEndNote' + data.id + '">[['+ data.motSansPos + ']] ' + data.description+ '</h5>'+
+                            {#'<div class="mic-info">'+#}
+                            {#'{{ traduction.derniere_modification_le |trans }}' +' : '+ data.username + '</br> '+ '{{ traduction.cree_le |trans }}'+ ' : ' + date1.getFullYear() + '-' + (date1.getMonth() + 1) + '-' + date1.getDate() +'</br>'+#}
+                            {#'</div>'+'</br>'+#}
+                            {#'<div id="descEndNote'+ data.id + '">'+ data.description +'</div>'+#}
+                            '<div class="action row">'+
+                            '<div class="col1" style="width:30px; margin-left:10px;">'+
+                            '<button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"'+
+                            'class="editEndNote" data-idEndNote="' + data.id + '" type="submit" data-toggle="modal"'+ 'id="'+ data.id +'"' +
+                            'data-target="#endNoteModalEdit" onclick="putTextFromPadEdit(`'+ data.description  +'`)" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i></button>'+
+                            '</div>'+
+                            '<div class="col2">'+
+                            '<a onclick="eraseEndNote('+ data.id +')" class="eraseButton" data-comId="'+ data.id +'"'+
+                            'style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal"'+
+                            'data-target="#endNoteModalErase"><i class="fas fa-fw fa-trash"></i>'+
+                            '</a>'+
+                            '</hr class="ml-2" style="border:dashed 1px grey; width:25%">'+
+
+                            '</div>'+  
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+                      
+                            '</li>');
+
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement des données");
+                    }
+                });
+                $('#motEndNoteModal').val('');
+                $('#descEndNoteModal').val('');
+            });
+
+            $(".mySelect").change(function(){
+                var etat = this.value
+                var id = $(this).data("comid");
+                myFunction(id, etat);
+            });
+
+            //Fonction qui permet la modification de l'état d'une note ("A résoudre" , "Résolu")
+            function myFunction(id, etat) {
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/note/edit/etat/" + id,
+                    type: "POST",
+                    data: {etat:etat},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        var tmp;
+                        var span = $('#sel'+data.id+' > span');
+                        
+                        span.toggleClass("badge-success badge-info");
+
+                        if (data.etat == 0){
+                            span.text('{{ traduction.a_resoudre |trans }}');
+
+                        }else{
+                            span.text('{{ traduction.resolu |trans }}');
+                        }
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement des données");
+                    }
+                });
+            }
+        });
+    </script>
+    {% endblock %}

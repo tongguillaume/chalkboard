@@ -1,0 +1,65 @@
+{% extends 'home/base.html.twig' %}
+
+{% block title %}Role index{% endblock %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    {{ traduction.administration |trans }}
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/systemDroit">{{ traduction.systeme_de_droit | trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    {{ systemDroit.name }}
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.roles |trans }}</li>
+            </ol>
+
+            <h3>{{ traduction.role_du_systeme_de_droit |trans }}: {{ systemDroit.name }}</h3>
+
+            <table class="table table-sm mt-5" id="dataTable4">
+                <thead>
+                <tr>
+                    <th scope="col">Ordre</th>
+                    <th scope="col">{{ traduction.nom |trans }}</th>
+                    <th scope="col">{{ traduction.nom_abrege |trans }}</th>
+                    <th scope="col">{{ traduction.actions |trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for role in roles %}
+                    <tr>
+                        <th scope="row">{{ role.ordre }}</th>
+                        <td><a href="{{ path('role_show', {'id': role.id}) }}">{{ role.nom }}</a></td>
+                        <td>{{ role.nom_abrege }}</td>
+                        <td>
+                            <form method="post" class="ml-0" action="{{ path('role_delete', {'id': role.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                <a href="{{ path('role_edit', {'id': role.id}) }}" style="color: #0069d9;"> <span class="fas fa-fw fa-edit"></span></a>
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ role.id) }}">
+                                <button style="color: red;" class="btn"><i class="fas fa-fw fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <a href="{{ path('role_new', {'systemDroit' : systemDroit.id}) }}" class="btn btn-custom-hceres float-right mt-5 mr-1"><i class="fas fa-fw fa-plus"></i> {{ traduction.ajouter|trans }}</a>
+
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

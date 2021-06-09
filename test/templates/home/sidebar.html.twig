@@ -1,0 +1,163 @@
+{% block sidebar %}
+    <div id="wrapper">
+    <!-- Sidebar -->
+    {% if app.user %}
+        <ul class="sidebar navbar-nav" id="sidebar" style="width: 275px !important;">
+            {#<li class="nav-item img-icone-univ d-flex justify-content-center" >#}
+                {#<img class="navbar-nav img-icone-univ" style='height: 150px; background-color: white' src="{{ app.request.getBaseURL() }}/icons/LogoHceres.png" />#}
+            {#</li>#}
+
+            <li class="nav-item ml-3">
+                <a class="nav-link" href="{{ app.request.getBaseURL()  }}/">
+                    <span class="nav-item-sidebar-title color-black-hceres" >{{ traduction.mes_dossiers_documents | trans }}</span>
+                    <span class="nav-item-sidebar-icon color-black-hceres" style="display: none"><i class="fa fa-file"></i></span>
+                </a>
+            </li>
+
+                    <li class="nav-item  ml-3">
+                    {%  if app.session.get("evaluation") %}
+                       <a class="nav-link" href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">
+                            <span class="color-black-hceres"> {{ traduction.tableau_de_bord_par_dossier| trans }}</span>
+                       </a>
+                    {% else %}
+{#                        <a class="dropdown-item dropdown-item-sidebar" href="{{ app.request.getBaseURL() }}/dashboard/general">#}
+{#                            <span class="color-black-hceres" > {{ traduction.tableau_de_bord_general | trans}}</span>#}
+{#                        </a>#}
+                    {% endif %}
+                    </li>
+
+                    {#<a class="dropdown-item dropdown-item-sidebar" href="{{ app.request.getBaseURL()  }}/rapport/dash">#}
+                        {#<i class="fas fa-fw fa-tachometer-alt small dropdown-menu-item"></i>#}
+                        {#<span class="color-black-hceres" >Tableau de bord par documents</span>#}
+                    {#</a>#}
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTIONNAIRE') %}
+                <li class="nav-item dropdown ml-3">
+
+
+                    <a class="nav-link"  href="{{ app.request.getBaseURL()  }}/newDossierDocument">
+                            <span class="color-black-hceres">{{ traduction.creer_un_nouveau| trans }} {{ traduction.dossier_document | trans}}</span>
+                        </a>
+                </li>
+            {% endif %}
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTIONNAIRE_ADMINISTRATIF') %}
+            <li class="nav-item dropdown ml-3">
+
+                <a class="nav-link " href="{{ path('list_delete') }}">
+                    {#<span class="color-black-hceres" >{{ traduction.creer_un_nouveau| trans }}<br>{{ traduction.folder/document| trans }}</span>#}
+
+                    <span class="color-black-hceres">{{ traduction.supprimer_des_documents| trans }}</span>
+
+                </a>
+            </li>
+            {% endif %}
+
+
+            {%  if app.session.get("evaluation") %}
+               {# {% if droits is defined and droits.gestion == true %} #}
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTIONNAIRE') %}
+                    <li class="nav-item ml-3">
+                        <a class="nav-link" href="{{ app.request.getBaseURL()  }}/gestion/memberAttribution">
+                            <span class="color-black-hceres" >{{ traduction.gerer_les_membres | trans}}</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if app.session.get("document") %}
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTIONNAIRE') %}
+{#                        <li class="nav-item dropdown ml-3">#}
+{#                            <a class="nav-link " href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+{#                                <span class="nav-item-sidebar-title color-black-hceres">{{ traduction.gerer_les_droits_des_contributeurs| trans }} </span>#}
+{#                                <span class="nav-item-sidebar-icon color-black-hceres" style="display: none"><i class="fa fa-user-lock"></i></span>#}
+{#                            </a>#}
+{#                            <div class="dropdown-menu dropdown-menu-sidebar" aria-labelledby="pagesDropdown">#}
+{#                                #}{#<a class="dropdown-item dropdown-item-sidebar" href="{{ path('gestion_permissions') }}">#}
+{#                                    #}{#<span class="color-black-hceres"> > Affiner les droits par rôle</span>#}
+{#                                #}{#</a>#}
+{#                                #}{#<a class="dropdown-item dropdown-item-sidebar" href="{{ app.request.getBaseURL()  }}/gestion/permissions/roles">#}
+{#                                    #}{#<span class="color-black-hceres"> > Affiner les droits par étapes</span>#}
+{#                                #}{#</a>#}
+{#                                <a class="dropdown-item dropdown-item-sidebar" href="{{ path('gestion_contributeur_attribution_index') }}">#}
+{#                                    <span class="color-black-hceres"> {{ traduction.modifier_les_droits_d_un_contributeur | trans}} </span>#}
+{#                                </a>#}
+{#                                <a class="dropdown-item dropdown-item-sidebar" href="{{ path('gestion_user_attribution') }}">#}
+{#                                    <span class="color-black-hceres">{{ traduction.ajouter_un_contributeur| trans }} </span>#}
+{#                                </a>#}
+{#                            </div>#}
+{#                        </li>#}
+{#                        <li class="nav-item ml-3">#}
+{#                            <a class="nav-link" href="{{ path('depotDocumentFinal') }}">#}
+{#                                <span class="color-black-hceres" >{{ traduction.depotdocument| trans }} </span>#}
+{#                            </a>#}
+{#                        </li>#}
+                    {% endif %}
+{#                    {% if droits is defined and droits.modificationEtat == true %}#}
+{#                        <li class="nav-item ml-3">#}
+{#                            <a class="nav-link" href="{{ app.request.getBaseURL()  }}/rapport/flux">#}
+{#                                <span class="color-black-hceres" >{{ traduction.flux_de_travail | trans}}</span>#}
+{#                            </a>#}
+{#                        </li>#}
+{#                    {% endif %}#}
+                {% endif %}
+            {% endif %}
+            {%  if is_granted('ROLE_ADMIN')  %}
+                <li class="nav-item ml-3 dropdown">
+                    <a class="nav-link " href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="color-black-hceres">{{ traduction.administration | trans}}</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-sidebar" aria-labelledby="pagesDropdown">
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ app.request.getBaseURL()  }}/admin/users">
+                            <span class="color-black-hceres">{{ traduction.utilisateurs | trans}}</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('admin_evaluations') }}">
+                            <span class="color-black-hceres">{{ traduction.evaluations| trans }}</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('familles_evaluations') }}">
+                            <span class="color-black-hceres">{{ traduction.famille_d_evaluations | trans}}</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('admin_document') }}">
+                            <span class="color-black-hceres">{{ traduction.documents| trans }}</span>
+                        </a>
+                        {#<a class="dropdown-item dropdown-item-sidebar" href="{{ path('bloc_admin') }}">#}
+                            {#<span class="color-black-hceres" > > Bloc</span>#}
+                        {#</a>#}
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('system_droit_index') }}">
+                            <span class="color-black-hceres">{{ traduction.systeme_de_droit | trans}}</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('admin_dashboard_index') }}">
+                            <span class="color-black-hceres">{{ traduction.tableaux_de_bord| trans }}</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('importxls') }}">
+                            <span class="color-black-hceres">{{ traduction.gestions_des_tableaux | trans}}</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('importxlsCommande') }}">
+                            <span class="color-black-hceres">{{ traduction.commande_import_tableau | trans}}</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('template_wo_doc') }}">
+                            <span class="color-black-hceres">{{ traduction.maquette_non_reliee | trans}}</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('importxlsDocument') }}">
+                            <span class="color-black-hceres">{{ traduction.import_document | trans}}</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('importxlsDocCommand') }}">
+                            <span class="color-black-hceres">{{ traduction.import_document_command | trans}}</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('importxlsUser') }}">
+                            <span class="color-black-hceres">{{ traduction.chargement_des_affectations_utilisateurs | trans}}</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('importxlsUserCommand') }}">
+                            <span class="color-black-hceres">{{ traduction.import_utilisateurs_command | trans}}</span>
+                        </a>
+                        {#<a class="dropdown-item dropdown-item-sidebar" href="{{ path('flux_index') }}">
+                            <span class="color-black-hceres"> > Repertoire des étapes par système</span>
+                        </a> #}
+                        {#<a class="dropdown-item dropdown-item-sidebar" href="{{ path('admin_flux') }}">
+                            <span class="color-black-hceres"> > Flux</span>
+                        </a>
+                        <a class="dropdown-item dropdown-item-sidebar" href="{{ path('admin_role') }}">
+                            <span class="color-black-hceres"> > Rôles</span>
+                        </a> #}
+                    </div>
+                </li>
+            {% endif %}
+        </ul>
+    {% endif %}
+{% endblock %}

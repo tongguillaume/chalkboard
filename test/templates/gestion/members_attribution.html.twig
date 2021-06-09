@@ -1,0 +1,151 @@
+{% extends "home/base.html.twig" %}
+
+{% block title %}
+    {{ 'users.index.title' | trans | desc('Users') }} - {{ parent() }}
+{% endblock %}
+
+{% block page_title_text %}
+    {{ 'users.index.page_title' | trans | desc('Users') }}
+{% endblock %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">{{ app.session.get("evaluation") }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.ajouter_des_membres| trans}} </li>
+            </ol>
+
+            <h3>{{ traduction.ajouter_des_membres_a_l_evaluation | trans}} {{ evaluation.nom }}</h3>
+
+            <table class="table table-sm mt-5" id="dataTableUser">
+                <thead>
+                <tr>
+                    <th scope="col">Id ged</th>
+                    <th scope="col">{{ traduction.utilisateurs | trans}} </th>
+                    <th scope="col">E-mail</th>
+                    <th scope="col">{{ traduction.actions |trans }}</th>
+                </tr>
+                </thead>
+                {#<tbody>#}
+                {#{% set index = 1 %}#}
+                {#{% for user in users %}#}
+                    {#{% set userEval = false %}#}
+                    {#<tr>#}
+                        {#<th scope="row">{{ user.id }}</th>#}
+                        {#<td><a href="#">{{ user.username }}</a></td>#}
+                        {#<td>{{ user.email }} </td>#}
+                            {#{% for userEvaluation in user.userEvaluations %}#}
+                                {#{% if userEvaluation.evaluationId.id == evaluation.id %}#}
+                                    {#{% set userEval = true %}#}
+                                {#{% endif %}#}
+                            {#{% endfor %}#}
+                        {#<td id="action{{ index }}">#}
+                            {#{% if userEval == true %}#}
+                                {#<a onclick="dismiss({{ index }}, {{ user.id }})" id="dismiss{{ index }}" class="attribution-dismiss-members" style="cursor: pointer; color: red;">Retirer des membres</a>#}
+                                {#<br>#}
+                            {#{% else %}#}
+                                {#<a onclick="attribution({{ index }}, {{ user.id }})" id="attribution{{ index }}" class="attribution-add-members"  style="cursor: pointer; color: #5C2D91;">Ajouter aux membres</a>#}
+                                {#<br>#}
+                            {#{% endif %}#}
+                            {#<br>#}
+                        {#</td>#}
+                    {#</tr>#}
+                    {#{% set index = index + 1 %}#}
+                {#{% endfor %}#}
+                {#</tbody>#}
+            </table>
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript">
+        function attribution(index, idUser, idRole){
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/gestion/memberAttribution/" + idUser,
+                type: "POST",
+                dataType: 'JSON',
+                complete: function()
+                {
+                    // $('#attribution'+index).remove();
+                    $('#attribution'+index).replaceWith("<a onclick=\"dismiss("+ index +","+ idUser +")\" id=\"dismiss"+ index +"\" style=\"cursor: pointer; color: red;\">{{ traduction.retirer_des_membres |trans }}</a>");
+                    //$('#action'+index).prepend("<a onclick=\"dismiss("+ index +","+ idUser +")\" id=\"dismiss"+ index +"\" style=\"cursor: pointer; color: red;\">Retirer des membres</a>");
+                },
+            });
+        }
+
+        function dismiss(index, idUser, idRole){
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/gestion/memberDismiss/" + idUser,
+                type: "POST",
+                dataType: 'JSON',
+                complete: function()
+                {
+                    // $('#dismiss'+index).remove();
+                    $('#role'+ idRole +'user'+idUser).remove();
+                    $('#dismiss'+index).replaceWith("<a onclick=\"attribution("+ index +","+ idUser +")\" id=\"attribution"+ index +"\" style=\"cursor: pointer; color: #5C2D91;\">{{ traduction.ajouter_aux_membres |trans }}</a>");
+                    // $('#action'+index).prepend("<a onclick=\"attribution("+ index +","+ idUser +")\" id=\"attribution"+ index +"\" style=\"cursor: pointer; color: #5C2D91;\">Ajouter aux membres</a>");
+
+                },
+            });
+        }
+        $(document).ready(function() {
+            var lang = "{{ app.session.get('lang') }}";
+                if ( lang === "fr") {
+                    $('#dataTableUser').DataTable({
+
+                        "language":{
+                        "url":"https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+                    },
+                        "pageLength": 25,
+                        "stateSave": true,
+                        "processing": true,
+                        "responsive": true,
+                        "ajax": "{{ path("all_users_gestion", {"eval" :  evaluation.id }) }}",
+                        "columns": [
+                            { "data": "id" },
+                            { "data": "name" },
+                            { "data": "mail" },
+                            { "data": "action", "searchable": false },
+                        ],
+                        "initComplete": function () {
+                            $('#dataTableUser').show();
+                        }
+                    });
+                }
+                if ( lang === "en") {
+                    $('#dataTableUser').DataTable({
+                        "language": {
+                        "url": "https://cdn.datatables.net/plug-ins/1.10.16/i18n/English.json"
+                    },
+                        "pageLength": 25,
+                        "stateSave": true,
+                        "processing": true,
+                            "responsive": true,
+                            "ajax": "{{ path("all_users_gestion", {"eval" :  evaluation.id }) }}",
+                            "columns": [
+                            { "data": "id" },
+                            { "data": "name" },
+                            { "data": "mail" },
+                            { "data": "action", "searchable": false },
+                        ],
+                            "initComplete": function () {
+                            $('#dataTableUser').show();
+                        }
+                    });
+                }
+        });
+    </script>
+{% endblock %}

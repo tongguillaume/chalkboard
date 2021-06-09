@@ -1,0 +1,75 @@
+{% extends 'home/base.html.twig' %}
+
+{% block title %}Flux{% endblock %}
+
+{% block content %}
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/bloc/index/">{{ traduction.blocs | trans }}</a>
+                </li>
+                <li class="breadcrumb-item active">Bloc {{ bloc.name }}</li>
+            </ol>
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h5 style="color: #ED145B" class="mb-0">
+                        Bloc {{ bloc.name }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th>Id</th>
+                            <td>{{ bloc.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.nom |trans }}</th>
+                            <td>{{ bloc.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.type |trans }}</th>
+                            <td>{{ bloc.type }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.status | trans }}</th>
+                            <td>{{ bloc.status }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.actif |trans }}</th>
+                            <td>{{ bloc.actif }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.document | trans }}</th>
+                            <td>{{ bloc.idDocument.nom }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.date_de_creation |trans }}</th>
+                            <td>{{ bloc.dateCreation|date('Y-m-d H:i:s') }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.date_de_modification |trans }}</th>
+                            <td>{{ bloc.dateModification|date('Y-m-d H:i:s') }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <div class="row justify-content-center">
+                        <form method="post" class="ml-0" action="{{ path('bloc_delete', {'id': bloc.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                            <a href="{{ path('bloc_edit', {'id': bloc.id}) }}" style="color: #0069d9;"> <span class="fas fa-fw fa-edit"></span></a>
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ bloc.id) }}">
+                            <button style="color: red; background: transparent" class="btn" type="submit"><i class="fas fa-fw fa-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

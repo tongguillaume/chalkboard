@@ -1,0 +1,62 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">{{ app.session.get("evaluation") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ path('document_evaluation_choice', {'idEval': app.session.get("evaluation_id"), 'idDoc': app.session.get("document_id"),'page' : 'dashboard_document'}) }}">{{ app.session.get("document") }}</a>
+                </li>
+                {#<li class="breadcrumb-item active"><a href="{{ app.request.getBaseURL()  }}/gestion/permissions">Permissions</a></li>#}
+                {#<li class="breadcrumb-item active">Global</li>#}
+            </ol>
+
+            <h3>{{ traduction.attribution_des_roles_de | trans }} {{ user.username }} {{ traduction.sur | trans }} {{ app.session.get("document") }}</h3>
+
+            {{ form_start(form) }}
+            {{ form_errors(form) }}
+            <div class="ml-5 col-md-8 mb-5" id ="accordion">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <a class="btn btn-link plusandminus"  href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="fas fa-minus"></i> {{ traduction.fiche_role | trans }}
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                            {{ form_row(form.roles) }}
+                            {{ form_row(form.save, { 'label': traduction.enregister|trans } ) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function () {
+            $('#submitPermission').click(function() {
+
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'home/base.html.twig' %}
+
+{% block title %}Duplication du document{% endblock %}
+
+{% block content %}
+<div id="content-wrapper">
+
+    <div class="container-fluid">
+
+        <!-- Breadcrumbs-->
+        <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+            </li>
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{evaluation.id}}">{{ evaluation.nom}}</a>
+            </li>
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ path('document_evaluation_choice', {'idEval': evaluation.id, 'idDoc': document.id ,'page' : 'dashboard_document'}) }}">{{ document.nom }}</a>
+            </li>
+            <li class="breadcrumb-item active">{{ traduction.duplication_du_document | trans }} {{ document.nom }}</li>
+        </ol>
+
+        <div class="ml-5 col-md-8 mb-5">
+            <h1>{{ traduction.duplication_du_document | trans }} {{ document.nom }}</h1>
+
+            <div class="mt-4 form-group">
+                <input type="number" id="number" required="required" class="mb-3 form-control form-input-hceres form-control" placeholder="{{ traduction.nombre_duplication | trans }}">
+            </div>
+            <div class="row">
+                <div class="col-10"></div>
+                <button id="duplicate" class="btn btn-primary form-btn-hceres col-2 btn">{{ traduction.dupliquer | trans }}</button>
+            </div>
+            <div class="row mt-3 ml-2" id="message">
+
+            </div>
+        </div>
+
+
+        <!-- Sticky Footer -->
+    </div>
+    <!-- /.content-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#duplicate').click(function(){
+                var number = $('#number').val();
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/document/duplication/" + {{ document.id }} + "/" + number,
+                    type: "POST",
+                    complete: function(response)
+                    {
+                        $('#messageContent').hide();
+                        window.location.replace("{{ app.request.getBaseURL() }}/dashboard/dossier/" + {{ document.evaluations.id }});
+                        },
+                });
+            });
+        });
+    </script>
+{% endblock %}

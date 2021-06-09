@@ -1,0 +1,89 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.telechargementrapport |trans }}</li>
+            </ol>
+
+            <div class="row">
+                <div class="col-md-11 mx-auto">
+                    <h3 class="mb-2">{{ traduction.telechargementrapport |trans }}</h3>
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">{{ traduction.nom |trans }}</th>
+                                    <th scope="col">{{ traduction.selection |trans }}</th>
+                                    <th scope="col">{{ traduction.ordre |trans }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <form action="{{ path('download_all_rapport', {'id' : evaluation_id}) }}" method="post">
+                                        <input type="hidden" name="is_form" value="1">
+                                        {% if lettreObs is not null %}
+                                            <tr>
+                                                <th>{{ traduction.lettreobservation | trans }}</th>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="obs"
+                                                               id="defaultCheck_obs" onclick="enableOrdre('obs')">
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <input name="ordre[obs]" id="ordre_obs" class="form-control form-control-sm"
+                                                           style="display:none;" type="number" min="0">
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% for key, rapport in rapports  %}
+                                    <tr>
+                                        <th>{{ rapport.nom }}</th>
+                                        <td>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" checked value="{{ rapport.id }}" name="is_selected"
+                                                       id="defaultCheck_{{ rapport.id }}" onclick="enableOrdre({{ rapport.id }})">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input name="ordre[{{ rapport.id }}]" id="ordre_{{ rapport.id }}" class="form-control form-control-sm"
+                                                   type="number" min="0" value="{{ key + 1 }}">
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <button type="submit" id="document_save" name="document[save]" class="btn btn-primary
+                            form-btn-hceres col-2 btn float-right"><i class="fas fa-download fa-fw"></i> {{ traduction.telecharger |trans }}</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+
+        function enableOrdre(id) {
+            $('#ordre_'+id).val(0);
+            $('#ordre_'+id).toggle();
+        }
+    </script>
+{% endblock %}

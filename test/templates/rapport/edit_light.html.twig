@@ -1,0 +1,302 @@
+{% extends 'home/base.html.twig'%}
+
+{% block content %}
+{# collapse : https://disjfa.github.io/bootstrap-tricks/card-collapse-tricks/ #}
+<div id="content-wrapper"  onload="window.location='#btnGroupBloc54576';">
+    <div class="container-fluid">
+        <!-- Breadcrumbs-->
+        <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px; padding-bottom: 0px;" >
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+            </li>
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">
+                    {{ app.session.get("evaluation") }}
+                </a>
+            </li>
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ path('document_evaluation_choice', {'idEval': app.session.get("evaluation_id"), 'idDoc': app.session.get("document_id"),'page' : 'dashboard_document'}) }}">
+                    {{ app.session.get("document") }}
+                </a>
+            </li>
+            <li class="breadcrumb-item active">{{ traduction.edition |trans }}</li>
+        </ol>
+        {# TODO améliorer le CSS de la page : Espacer les bouttons Actions #}
+       <div style="width: 100%">
+
+{#       <div class="row" style="margin-left: 70%">#}
+        <div class="row">
+         <div class="col-xl-8">
+                        <h3 style="margin-top: 10px;">{{ traduction.edition |trans }}</h3>
+
+         </div>
+         <div class="col-12 col-md-12 col-l-12 col-lg-12 col-xl-4" style="text-align: right;">
+            {#                    <a class="ml-3 btn btn-outline-secondary" href="#" id="openAll">{{ traduction.tout_deplier |trans }}</a>#}
+            {#                    <a class="ml-3 btn btn-outline-secondary" style="display: none;" href="#" id="closeAll">{{ traduction.tout_replier |trans }}</a>#}
+          
+{#            <a href="{{ app.request.getBaseURl() }}/rapport/edit?complete=1" class="mt-3 col-lg-8" ><span data-toggle="tooltip"#}
+{#                    data-placement="right"#}
+{#                    title="{{traduction.infobullevuecomplete |trans}}">{{ traduction.vuecomplete |trans }}</span></a>#}
+
+                                    <div class="btn-group report-controls" style="margin-right: 50px !important;">
+                                            <a data-toggle="tooltip" data-placement="bottom" title="{{ traduction.afficher_le_document|trans }}" href="{{ path('document_evaluation_choice') }}/{{ evaluationId }}/{{ documentId }}">
+                                                <img src="{{ app.request.getBaseURL() }}/images/apercu-du-doc.svg" width="40" height="40">
+                                            </a>
+                                            <a data-toggle="tooltip" data-placement="bottom" title="{{ traduction.telecharger_le_document|trans }}" href="{{ path('api_create_file_document') }}/{{ documentId }}">
+                                                <img src="{{ app.request.getBaseURL() }}/images/telecharger.svg" width="40" height="40"/>
+                                            </a>
+                                                <a data-toggle="tooltip" data-placement="bottom" title="{{ traduction.voir_le_tableau_de_bord|trans }}" href="{{ path('document_evaluation_choice') }}/{{ evaluationId }}/{{ documentId }}/dashboard_document">
+                                                    <img src="{{ app.request.getBaseURL() }}/images/tableau-de-bord.svg" width="40" height="40"/>
+                                                </a>
+                                         {% if droits is defined and droits.modificationEtat == true %}
+                                            <a data-toggle="tooltip" data-placement="bottom" title="{{ traduction.acceder_flux_de_travail|trans }}" href="{{ path('document_evaluation_choice') }}/{{ evaluationId}}/{{ documentId }}/rapport_flux">
+                                                <img src="{{ app.request.getBaseURL() }}/images/flux-de-travail.svg" width="40" height="40"/>
+                                            </a>
+                                            {% endif %}
+                             {% if currentContribution is not null %}
+                                {% if currentContribution.checked %}
+                                    <a data-toggle="tooltip" data-placement="bottom" title="{{ traduction.retirer_la_validation_pour_ma_contribution | trans }}" href="{{ app.request.getBaseURl() }}/rapport/validateContribution/unchek" id="contributionValidation">
+                                        <img src="{{ app.request.getBaseURL() }}/images/devalider.svg"  width="40" height="40">
+                                    </a>
+                                    {% else %}
+                                        <a data-toggle="tooltip" data-placement="bottom" title="{{ traduction.valider_ma_contribution | trans }}"  href="{{ app.request.getBaseURl() }}/rapport/validateContribution/check" id="contributionValidation">
+                                            <img src="{{ app.request.getBaseURL() }}/images/valider.svg"  width="40" height="40">
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <a data-toggle="tooltip" data-placement="bottom" title="{{ traduction.valider_ma_contribution | trans }}" href="{{ app.request.getBaseURl() }}/rapport/validateContribution/check" id="contributionValidation">
+                                      <img src="{{ app.request.getBaseURL() }}/images/valider.svg"  width="40" height="40">
+                                    </a>
+                            {% endif %}
+                                  {% if hasAccess %}
+                                  <div class="other-menu">
+                                     <a data-toggle="tooltip" data-placement="bottom" title="{{ traduction.autre |trans }}" class="" id="extend_menu_hceres" onclick="event.preventDefault(); this.classList.toggle('open-other-menu');" role="tab" aria-selected="true">
+                                        <img src="{{ app.request.getBaseURL() }}/images/autres.svg" width="40" height="40">
+                                     </a>
+                                    <div class="mt-2 tab-content dropdown-menu-hceres" id="nav-tabContent">
+                                      <div class="" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                                       <a href="/document/{{ evaluationId }}/{{documentId}}/edit"
+                                                       class="dropdown-item">{{ traduction.renommer_le_document|trans }}</a>
+                                                    <a href="{{ path('document_duplicate') }}/{{documentId}}"
+                                                       class="dropdown-item">{{ traduction.dupliquer_le_document|trans }}</a>
+                                                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluationId }}/{{ documentId }}/gestion_user_attribution"
+                                                       class="dropdown-item">{{ traduction.gerer_les_droits_des_contributeurs|trans }}</a>
+                                                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluationId }}/{{ documentId }}/rapport_template"
+                                                       class="dropdown-item">{{ traduction.modifier_le_template|trans }}</a>
+                                       </div>
+                                    </div>
+                                    </div>
+                                   {% endif %}
+
+{#            <a href="{{ app.request.getBaseURl() }}/rapport/validateAllBlocs" class="mt-3 col-4 "#}
+{#                id="validationAllBlocs">{{ traduction.valider_tous_les_paragraphes |trans }}</a>#}
+                    </div>
+                </div>
+                </div>
+       </div>
+        <style>
+        </style>
+            <div class="col-md-12" style="margin-bottom: 20px;">
+                <div class="menu">
+                    {% set i = 0 %}
+
+                    <hr>
+                    {% for bloc in blocs %}
+
+                    <div class="row mt-3">
+
+                        {% if bloc.ordre == 1 %}
+                        <div class="col-lg-8 titre1-word" style="margin: 0 -15px">
+                        {% if bloc.titre_edit == 0 %}
+                            <a id="blocPen_{{ bloc.id }}" href="javascript:;" onclick="openTitreModal({{ bloc.id }},'{{ bloc.name|e('js') }}')"><i class="fas fa-pen fa-fw"></i></a>
+                            {% endif %}
+                            <a id="bloc_{{ bloc.id }}">{{ bloc.name }}</a>
+                        </div>
+                        {% elseif bloc.ordre == 2 %}
+                        <div class="col-lg-8 titre2-word" style="margin: 0 -15px">
+                        {% if bloc.titre_edit == 0 %}
+                            <a id="blocPen_{{ bloc.id }}" href="javascript:;" onclick="openTitreModal({{ bloc.id }},'{{ bloc.name|e('js') }}')"><i class="fas fa-pen fa-fw"></i></a>
+                            {% endif %}
+                            <a id="bloc_{{ bloc.id }}">{{ bloc.name }}</a>
+                        </div>
+                        {% elseif bloc.ordre == 3 %}
+                        <div class="col-lg-8 titre3-word ml-3" style="margin: 0 -15px">
+                            {% if bloc.titre_edit == 0 %}
+                            <a id="blocPen_{{ bloc.id }}" href="javascript:;" onclick="openTitreModal({{ bloc.id }},'{{ bloc.name|e('js') }}')"><i class="fas fa-pen fa-fw"></i></a>
+                            {% endif %}
+                            <a id="bloc_{{ bloc.id }}">{{ bloc.name }}</a>
+{#                            {{ bloc.name }}#}
+                        </div>
+                        {% elseif bloc.ordre == 4 %}
+                        <div class="col-lg-8 titre4-word ml-5" style="margin: 0 -15px">
+                            {% if bloc.titre_edit == 0 %}
+                            <a id="blocPen_{{ bloc.id }}" href="javascript:;" onclick="openTitreModal({{ bloc.id }},'{{ bloc.name|e('js') }}')"><i class="fas fa-pen fa-fw"></i></a>
+                            {% endif %}
+                            <a id="bloc_{{ bloc.id }}">{{ bloc.name }}</a>
+                        </div>
+                        {% endif %}
+
+                        <div style="width: 100%">
+                            <div class="row" style="padding-left: 1%">
+                                {% if bloc.ordre == 0 %}
+                                {% if bloc.content is not null %}
+                                <div class="col-lg-8 p-word empty-text">
+                                    <div class="table-responsive">
+                                        <blockquote>{{ bloc.content|raw }}</blockquote>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4" onclick="putPosInCookie()">
+                                    {% include 'rapport/Components/bouton_edit.html.twig' %}
+                                </div>
+                                {% else %}
+                                <p class="col-8 p-word"><u>{{ traduction.non_redige |trans }}</u></p>
+                                <div class="col-4">
+                                    {% include 'rapport/Components/bouton_edit.html.twig' %}
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% if endNotes | length > 0 %}
+            <div class="col-lg-8 titre1-word" style="margin: 0 -15px">
+    {#                            <a id="blocPen_{{ bloc.id }}" href="#" onclick="openTitreModal({{ bloc.id }},'{{ bloc.name|e('js) }}')"><i class="fas fa-pen fa-fw"></i></a>#}
+                            <a id="bloc_">{{ traduction.note_fin_document | trans }}</a>
+                    </div>
+
+                    <div style="width: 100%">
+                            <div class="row">
+
+                            <div class="col-lg-8 p-word">
+                            <p class="collapse" style="text-align: justify" id="collapseSummary387">
+                                    {% for key, note in endNotes %}
+                                  <p> <sup>{{ note.exposant }}</sup> {{ note.description }} </p>
+                            {% endfor %}
+
+                               </div>
+                            </div>
+{% endif %}
+
+{% if glossaires |length  > 0 %}
+              <div class="col-lg-8 titre1-word" style="margin: 0 -15px">
+    {#                            <a id="blocPen_{{ bloc.id }}" href="#" onclick="openTitreModal({{ bloc.id }},'{{ bloc.name|e('js) }}')"><i class="fas fa-pen fa-fw"></i></a>#}
+                            <a id="bloc_">{{ traduction.glossaire | trans }}</a>
+                    </div>
+
+                    <div style="width: 100%">
+                            <div class="row">
+
+                            <div class="col-lg-8 p-word">
+                            <p class="collapse" style="text-align: justify" id="collapseSummary387">
+                                    {% for key, glossaire in glossaires %}
+                                        <h3> {{ key }} </h3>
+                                        {% for mot in glossaire %}
+                                             <p> {{ mot }}</p>
+                                        {% endfor %}
+                                      {% endfor %}
+                               </div>
+                            </div>
+{% endif %}
+            {% include '/rapport/Components/edit/modal_titre_edit.html.twig' %}
+            <!-- Sticky Footer -->
+        <!-- /.content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    {% endblock %}
+    {% block javascripts %}
+
+    <script>
+    $(document).ready(function() {
+            window.scroll(getCookie('left'),getCookie('top'))
+     });
+        var _idTitre;
+        function openTitreModal(id,titre){
+            $('#titreInputTxt').val(unescape(titre));
+            _idTitre = id;
+            $('#exampleModal').modal('show');
+        }
+
+         function getCookie(cname) {
+          var name = cname + "=";
+          var decodedCookie = decodeURIComponent(document.cookie);
+          var ca = decodedCookie.split(';');
+          for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+              c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+          return "";
+}
+        function putPosInCookie() {
+           var top  = window.pageYOffset || document.documentElement.scrollTop,
+                left = window.pageXOffset || document.documentElement.scrollLeft;
+           document.cookie= "top=" + top;
+           document.cookie= "left=" + left;
+         }
+        function blocValidation(id) {
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/blocValidation/" + id,
+                type: "POST",
+                dataType: 'JSON',
+                complete: function () {
+                    // $('#blocStateBtn'+id).remove();
+                    $('#badge' + id).remove();
+                    // $('#btnGroupBloc'+id).append("<a id=\"blocStateBtn"+ id +"\" class=\"dropdown-item\" onclick=\"blocDismiss("+ id +")\">Invalider le paragraphe</a>");
+                    $('#badgeContainer' + id).append("<span id=\"badge" + id +
+                        "\" class=\"badge badge-pill badge-pill-custom-small mt-2 custom-publication\">{{ traduction.valide |trans }}</span>"
+                        );
+
+
+                },
+            });
+        }
+
+        function blocDismiss(id) {
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/blocDismiss/" + id,
+                type: "POST",
+                dataType: 'JSON',
+                complete: function () {
+                    $('#blocStateBtn' + id).remove();
+                    $('#badge' + id).remove();
+                    $('#btnGroupBloc' + id).append("<a id=\"blocStateBtn" + id +
+                        "\" class=\"dropdown-item\" onclick=\"blocValidation(" + id +
+                        ")\" >{{ traduction.valider_le_bloc |trans }}</a>");
+                    $('#badgeContainer' + id).append("<span id=\"badge" + id +
+                        "\" class=\"badge badge-pill badge-pill-custom-small mt-2 custom-validation\">{{ traduction.en_edition |trans }}</span>"
+                        );
+                },
+            });
+        }
+
+        $(document).ready(function() {
+
+            $('#titreSaveChange').click(function () {
+                    console.log(_idTitre);
+                    let titre = $('#titreInputTxt').val();
+                    console.log(titre);
+                    $.ajax({
+                        url: "{{ app.request.getBaseURL() }}/rapport/api/update/titreBloc/" + _idTitre,
+                        type : "PUT",
+                        data : {titreBloc : titre},
+                        complete: function (data,status) {
+                            console.log(data);
+                            $('#exampleModal').modal('hide');
+                            $('#bloc_'+_idTitre).text(titre);
+                            let titreEscape = escape(titre);
+                            $('#blocPen_'+_idTitre).attr("onclick","openTitreModal("+_idTitre+",'"+titreEscape+"')");
+                            //window.location.reload();
+                        }
+                    })
+               })
+        });
+    </script>
+
+    {% endblock %}

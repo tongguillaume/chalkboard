@@ -1,0 +1,537 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous">
+
+    </script>
+    <script>
+        Date.prototype.toDateInputValue = (function() {
+            const local = new Date(this);
+            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+            return local.toJSON().slice(0,10);
+        });
+
+        if(document.getElementById('step_targetdate')){
+            let calendarDate = new Date().toDateInputValue();
+            document.getElementById('step_targetdate').value = calendarDate;
+        }
+
+        function getFormattedDate(date) {
+
+            date = new Date(date);
+            var year = date.getFullYear();
+
+            var month = (1 + date.getMonth()).toString();
+            month = month.length > 1 ? month : '0' + month;
+
+            var day = date.getDate().toString();
+            day = day.length > 1 ? day : '0' + day;
+
+            return day + '/' + month + '/' + year;
+        }
+    </script>
+
+<div style="width:100%">
+    {% for label, flashes in app.session.flashbag.all %}
+        {% for flash in flashes %}
+            {% if ( label == 'success' ) %}
+                <div class="alert alert-success alert-dismissible fade show">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ flash }}
+                </div>
+            {% elseif ( label == 'error' ) %}
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ flash }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    <ol class="breadcrumb" style="background:none">
+        <li class="breadcrumb-item">
+            <a href="{{ app.request.getBaseURL() }}/">{{ traduction.accueil|trans }}</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ evaluation.id }}">{{ traduction.tableau_de_bord|trans }} {{ evaluation.nom }}</a>
+        </li>
+        <li class="breadcrumb-item active">{{traduction.tableau_de_bord}} {{ document.nom }}</li>
+    </ol>
+    <div style="padding:15px">
+        <a
+            href="{{ path('document_evaluation_choice', {'idEval': evaluation.id, 'idDoc': document.id,'page' : 'rapport_edit'}) }}"
+            style="text-decoration:none">
+            <h3 style="margin-right:10px">{{ traduction.tableau_de_bord|trans }} - {{ document.nom }}</h3>
+        </a>
+        <div class="row" style="margin-bottom:25px">
+            <div class="col-md-9">
+                <div>{{ traduction.cree_le|trans }} {{ document.date_creation|date('d/m/Y') }}</div>
+                {% if document.date_modification is not null %}
+                    <div>{{ traduction.derniere_modification_le|trans }} {{ document.date_modification|date('d/m/Y') }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-3">
+                <div class="btn-group report-controls">
+                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_edit">
+                        <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.modifier_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/rapport_edit.svg" width="40" height="40">
+                    </a>
+
+                    <a href="{{ path('api_create_file_document') }}/{{ document.id }}">
+                        <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.telecharger_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/telecharger.svg" width="40" height="40"/>
+                    </a>
+
+                    {% if droits is defined and droits.modificationEtat == true %}
+                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_flux">
+                    <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.acceder_flux_de_travail|trans }}" src="{{ app.request.getBaseURL() }}/images/flux-de-travail.svg" width="40" height="40"/>
+                    </a>
+                    {% endif %}
+                    {% if isAdmin %}
+                    <div class="other-menu">
+                    <a class="" id="extend_menu_hceres" onclick="event.preventDefault(); this.classList.toggle(`open-other-menu`);" href="#" role="tab" aria-selected="true">
+                        <img src="{{ app.request.getBaseURL() }}/images/autres.svg" data-toggle="tooltip" data-placement="bottom" title="{{ traduction.autre |trans }}" width="40" height="40">
+                    </a>
+                    <div class="mt-2 tab-content dropdown-menu-hceres" id="nav-tabContent">
+                        <div class="" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        {#<a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}"#}
+                        {#    class="dropdown-item">{{ traduction.afficher_le_document|trans }}</a>#}
+                        {#<a href="{{ path('api_create_file_document') }}/{{ document.id }}"#}
+                        {#    class="dropdown-item">{{ traduction.telecharger_le_document|trans }}</a>#}
+                        {#<a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/dashboard_document"#}
+                        {#    class="dropdown-item">{{ traduction.voir_le_tableau_de_bord|trans }}</a>#}
+
+                            <a href="/document/{{ evaluation.id }}/{{ document.id }}/edit"
+                               class="dropdown-item">{{ traduction.renommer_le_document|trans }}</a>
+                            <a href="{{ path('document_duplicate') }}/{{ document.id }}"
+                               class="dropdown-item">{{ traduction.dupliquer_le_document|trans }}</a>
+                            <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/gestion_user_attribution"
+                               class="dropdown-item">{{ traduction.gerer_les_droits_des_contributeurs|trans }}</a>
+                            <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_template"
+                               class="dropdown-item">{{ traduction.modifier_le_template|trans }}</a>
+
+                        </div>
+                    </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+
+        <h4>{{ traduction.etat_d_avancement_du_document | trans}} </h4>
+        {{ traduction.le_document_est_a_l_etape | trans}} <b style="color: rgb(0, 170, 181);">{{ document.fluxname is null ? 'En édition' : document.fluxname }}</b> <a class="ml-5" id="link_etapes_toogle" data-toggle="collapse" href="#demo">{{traduction.voir_toutes_les_etapes | trans}} ▼</a>
+        <div id="demo" class="row collapse">
+            <div class="col-md-7">
+                <div style="border-radius:3px;padding:25px;box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);">
+{#                    <h4>{{ traduction.statut|trans }}</h4>#}
+{#                    <div class="row" style="padding:15px 0">#}
+{#                        <div class="col-md-6">{{ traduction.etat_du_document|trans }}</div>#}
+{#                        <div class="col-md-6">{{ document.fluxname is null ? 'En édition' : document.fluxname }}</div>#}{# Il faut traduire en édition... #}
+{#                    </div>#}
+{#                    <div class="row" style="padding:15px 0;border-top:1px solid rgba(0,0,0,.1)">#}
+{#                        <div class="col-md-6">{{ traduction.date_de_mise_a_dispotition|trans }}</div>#}
+{#                        <div class="col-md-6">{{ document.date_mad|date("d/m/Y") }}</div>#}
+{#                    </div>#}
+{#                    <div class="row" style="padding:15px 0;border-top:1px solid rgba(0,0,0,.1)">#}
+{#                        <div class="col-md-6">{{ traduction.date_cible_finalisation|trans }}</div>#}
+{#                        <div class="col-md-6" id="flux_{{ maxOrdre }}">{{ document.deadline|date("d/m/Y") }} </div>#}
+{#                    </div>#}
+                    <div class="row" style="padding:10px 0;">
+{#                        <div class="col-md-12">{{ traduction.avancement_etapes|trans }}</div>#}
+                        <div class="col-md-12">
+                            {% for key, step in steps %}
+                            {% if  step.statut == 2 %}
+                            <div class="row tl_row statut2 step_parent" data-idstep="{{step.id}}" data-ordre="{{ step.ordre }}">
+                                {% else %}
+                            <div class="row tl_row statut{{ step.statut }} step_parent" data-idstep="{{step.id}}" data-ordre="{{ step.ordre }}">
+                                {% endif %}
+                                <div class="col-md-4">
+                                    {% if step.statut == 2  %}
+                                    <div class="tl_date statut2">
+                                        {% else %}
+                                        <div class="tl_date statut{{ step.statut }}">
+                                            {% endif %}
+                                        <div id="datecibledisplay{{ step.flux_id }}">{{ step.date_cible|date("d/m/Y") }}</div>
+                                        {% if step.retard > 0 %}
+                                            <small style="color: orangered">
+                                                <i class="fas fa-exclamation-triangle" style="color: orangered"></i> {{step.retard}} {{ step.retard > 1 ? traduction.jours|trans : traduction.jours|trans }} {{ traduction.retard|trans }}
+                                            </small>
+                                        {% endif %}
+                                        {# TODO modal asynchronous form#}
+                                            {% if is_granted('ROLE_GESTIONNAIRE') or is_granted('ROLE_ADMIN') %}
+                                                {% include 'dashboard/form_edit_stepdate.html.twig' %}
+                                            {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    {% if step.statut == 2 %}
+                                        <div class="tl_tag statut2">
+                                    {% else %}
+                                        <div class="tl_tag statut{{ step.statut }}">
+
+                                        {% endif %}
+                                        <div>{{ step.name }}</div>
+                                        <small style="font-style:italic;color:#999">{{ step.description }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+{#            <div class="col-md-5">#}
+{#                <div style="padding:25px">#}
+{#                    <h4 style="margin-bottom:25px">{{ traduction.collaborateurs|trans }}</h4>#}
+{#                    {% for keyRole, role in roles %}#}
+{#                        <div style="margin-bottom:25px">#}
+{#                            <h5 style="color:#999">{{ keyRole }}{% if keyRole %}(s){% endif %}</h5>#}
+{#                            {% for userRole in role %}#}
+{#                                <div>{{ userRole.firstname }} {{ userRole.lastname }}</div>#}
+{#                            {% endfor %}#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            </div>#}
+        </div>
+    </div>
+
+            <div class="row ml-3" style="margin-right: 15px;  margin-top: 15px;">
+                <div class="col-7"><h4 style="margin-left: -15px;">{{ traduction.collaborateurs_associes_au_document | trans}}</h4></div>
+                <div class="col-4"><span class="dot dotcolor2"></span> {{ traduction.utilisateur_dashboard | trans}} <span class="dot dotcolor1"></span> {{ traduction.redaction_terminee | trans}}</div>
+            </div>
+{#                <div class="wmd-view-topscroll">#}
+{#                    <div class="scroll-div1">#}
+{#                    </div>#}
+{#                </div>#}
+        <div style="position: relative;width:calc(1430px + 0.75rem)">
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead class="header">
+                        <tr>
+                            <td class="first-col" style="text-align: right;">
+                                <button class="left-paddle paddle panner btn" id="panLeft" style="margin-right: 20px;" data-scroll-modifier='-1'>
+                                    <
+                                </button>
+                            </td>
+                            {% for step in steps %}
+                                <td>Etape {{ step.ordre }}<br><b>{{ step.name }}</b></td>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for keyRole, role in roles %}
+                        <tr>
+                            <td class="first-col">
+                                <b data-toggle="tooltip" data-placement="right" title="{{ keyRole }}" >{{ keyRole |slice(0, 43) }}</b>
+                            {% for userRole in role %}
+                                <div>{{ userRole.firstname }} {{ userRole.lastname }}</div>
+                            {% endfor %}
+                            </td>
+                            {% for step in steps %}
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <br>
+                                {% for userRole in role %}
+                                    <span class="dot dotcolor{{ tab_contribution[userRole.id][step.flux_id] }}"></span><br>
+                                {% endfor %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div style="position:absolute;top:0.75rem;right:0">
+                <button class="left-paddle paddle panner btn" id="panRight" class="panner" data-scroll-modifier='1'>
+                    >
+                </button>
+            </div>
+            </div>
+{#    <span id="panLeft" class="panner" data-scroll-modifier='-1'>Left</span>#}
+
+{#    <span id="panRight" class="panner" data-scroll-modifier='1'>Right</span>#}
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{traduction.nouvelledatecible|trans}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-dark">
+                    {{ traduction.nouvelledatecible|trans}}
+                </div>
+                <input type="date" id="step_targetdate" name="step_targetdate"
+                       min="2018-01-01" max="2099-12-31">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ traduction.annuler|trans}}</button>
+                    <button type="button" class="btn btn-primary modalStepDateConfirm" id="modalStepDateConfirm" data-dismiss="modal">{{traduction.confirmer|trans}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+
+
+        $(window).on('load', function(){
+            $("#footer").hide();
+            let sizeTable = $(".table").width();
+            console.log(sizeTable);
+            sizeTable -= 380;
+            console.log(sizeTable);
+
+            $(".scroll-div1").css("width", sizeTable + "px");
+        });
+
+        $(".wmd-view-topscroll").scroll(function(){
+            $(".table-wrapper")
+                .scrollLeft($(".wmd-view-topscroll").scrollLeft());
+        });
+        $(".table-wrapper").scroll(function(){
+            $(".wmd-view-topscroll")
+                .scrollLeft($(".table-wrapper").scrollLeft());
+        });
+
+
+        var scrollHandle = 0,
+            scrollStep = 5,
+            parent = $(".table-wrapper");
+
+        //Start the scrolling process
+        $(".panner").on("mouseenter", function () {
+            var data = $(this).data('scrollModifier'),
+                direction = parseInt(data, 10);
+
+            $(this).addClass('active');
+
+            startScrolling(direction, scrollStep);
+        });
+
+        //Kill the scrolling
+        $(".panner").on("mouseleave", function () {
+            stopScrolling();
+            $(this).removeClass('active');
+        });
+
+        //Actual handling of the scrolling
+        function startScrolling(modifier, step) {
+            if (scrollHandle === 0) {
+                scrollHandle = setInterval(function () {
+                    var newOffset = parent.scrollLeft() + (scrollStep * modifier);
+
+                    parent.scrollLeft(newOffset);
+                }, 10);
+            }
+        }
+
+        function stopScrolling() {
+            clearInterval(scrollHandle);
+            scrollHandle = 0;
+        }
+
+
+        $("#link_etapes_toogle").click(function () {
+
+
+            $(this).text(function(i, text){
+                return text === "{{ traduction.voir_toutes_les_etapes }} ▼" ? "{{traduction.masquer_toutes_les_etapes}} ▲" : "{{ traduction.voir_toutes_les_etapes }} ▼";
+            })
+        });
+        $('.stepcontainer').on('click', '.stepwrapper', function () {
+            const id = $(this).attr('data-idstep');
+            const ordre = $(this).attr('data-ordre');
+            const flux_id = $(this).attr('data-flux_id');
+
+            console.log(ordre);
+            let initdate = $('#stepwrapper' + id).attr('data-stepdate');
+
+            $('.modalStepDateConfirm').on('click',function(){
+
+                let date = $('#step_targetdate').val();
+
+                if(id !== "") {
+                    $.ajax({
+                        url: "{{ app.request.getBaseURL() }}/document/stepdate/" + id,
+                        type: "POST",
+                        cache: false,
+                        data: {id : id, date : date, flux_id : flux_id },
+                        dataType: 'JSON',
+                        condition: "request.isXmlHttpRequest()",
+                        success: function(data) {
+                            date = $('#step_targetdate').val();
+                            $('#datecibledisplay'+ flux_id).text(getFormattedDate(date));
+                            $('#flux_'+ ordre).text(getFormattedDate(date))
+
+                        },
+                        error: function(err) {
+                            console.log(err);
+                            console.log("erreur de modification de la date cible");
+                        }
+                    });
+
+                    $('.modalStepDateConfirm').off();
+                }  else {
+                    $.ajax({
+                        url: "{{ app.request.getBaseURL() }}/document/stepdate/-1" ,
+                        type: "POST",
+                        cache: false,
+                        data: {id : id, date : date, flux_id : flux_id },
+                        dataType: 'JSON',
+                        condition: "request.isXmlHttpRequest()",
+                        success: function(data) {
+                            date = $('#step_targetdate').val();
+                            $('#datecibledisplay'+ flux_id).text(getFormattedDate(date));
+                        },
+                        error: function(err) {
+                            console.log(err);
+                            console.log("erreur de modification de la date cible");
+                        }
+                    });
+
+                    $('.modalStepDateConfirm').off();
+                }
+            });
+        });
+
+    </script>
+
+
+    <style>
+.tl_row {
+    position:relative;
+    padding:15px 0;
+}
+.tl_row::before {
+    content:'';
+    position:absolute;
+    left:32%;top:0;bottom:0;
+    width:2px;
+    background:#C0C0C0;
+}
+.tl_row:first-child::before { top:35px }
+.tl_row:last-child::before { bottom:unset;height:30px }
+.tl_row:only-child::before { width:0 }
+.tl_row::after {
+    content:'';
+    position:absolute;
+    left:calc(32% - 7px);top:30px;
+    width:16px;height:16px;
+    background:#FFF;border-radius:50%;border:2px solid #999;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.tl_row.statut0::after { border:2px solid #999 }
+.tl_row.statut1::after { border:2px solid #D86D62 }
+.tl_row.statut2::after { border:2px solid #5ED7B1 }
+.tl_row.statut3::after { border:2px solid #efd21a}
+.tl_date {
+    padding:10px 15px;
+    text-align:center;
+}
+.tl_tag {
+    padding:10px 15px;
+    border-radius:3px;
+    border-left:2px solid #07AB9C;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.tl_tag.statut0 { border-left:2px solid #999 }
+.tl_tag.statut1 { border-left:2px solid #D86D62 }
+.tl_tag.statut2 { border-left:2px solid #5ED7B1 }
+.tl_tag.statut3 { border-left:2px solid #efd21a }
+.tl_date.statut0 { color:#999 }
+.tl_date.statut1 { color:#D86D62 }
+.tl_date.statut2 { color:#5ED7B1 }
+.tl_date.statut3 { color:#efd21a }
+
+.table td,.table th {
+    border-left: 1px solid #dee2e6;
+}
+
+.table-wrapper {
+    /*overflow-x: scroll;*/
+    overflow-x: hidden;
+    width: 1000px;
+    margin-left: 380px;
+}
+
+th, td {
+    white-space: normal;
+}
+
+.first-col {
+    position: absolute;
+    width: 24em;
+    margin-left: -23em;
+}
+
+.last-col {
+    position: absolute;
+    /*width: 24em;*/
+    /*margin-left: -25em;*/
+    border: 0px;
+    min-width: 15px !important;
+    border-left: 0px;
+    left: 1500px;
+}
+
+.header .first-col {
+    border: 0px;
+}
+
+.paddle {
+    font-size: 35px;
+    background-color: #f4f5f5;
+}
+
+.dot {
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dotcolor1 {
+    background-color: rgba(107,218,183);
+}
+
+.dotcolor2 {
+    background-color: rgba(215,215,215);
+}
+
+.dotcolor3 {
+    background-color: #ffffff;
+}
+
+.wmd-view-topscroll, .wmd-view {
+    overflow-y: hidden;
+    overflow-x: scroll;
+    width: 1200px;
+    margin-left: 380px;
+    height: 20px;
+    /*width: 300px;*/
+    /*border: none 0px RED;*/
+}
+
+.scroll-div1 {
+    width: 1000px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    height:20px;
+    margin-left: 380px;
+}
+
+/*table td {*/
+/*    min-width: 250px !om*/
+/*    */
+/*}*/
+        
+</style>
+{% endblock %}

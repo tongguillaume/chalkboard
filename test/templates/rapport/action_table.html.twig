@@ -1,0 +1,1145 @@
+{% extends 'home/base.html.twig' %}
+{% block content %}
+    <link rel="stylesheet" href="{{ app.request.getBaseURL()  }}/css/farbtastic.css" type="text/css" />
+    <link href="{{ app.request.getBaseURL()  }}/css/select2.min.css" rel="stylesheet" />
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">{{ app.session.get("evaluation") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ path('document_evaluation_choice', {'idEval': app.session.get("evaluation_id"), 'idDoc': app.session.get("document_id"),'page' : 'dashboard_document'}) }}">{{ app.session.get("document") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ path('rapport_edit') }}">{{ traduction.edition |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-active-custom active">{{ traduction.modification |trans }}</li>
+            </ol>
+            <h3 class="ml-2">{{ app.session.get("document") }} - {{ traduction.mode_edition_du_paragraphe |trans }}</h3>
+            <ol class="breadcrumb breadcrumb-custom-small">
+                {% for arbo in blocArborescence %}
+                    <li class="breadcrumb-item breadcrumb-item-small upperCase">
+                        {{ arbo.name }}
+                    </li>
+                {% endfor %}
+                <li class="breadcrumb-item breadcrumb-item-small upperCase breadcrumb-item-active-custom active">{{ bloc.name }}</li>
+            </ol>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="row">
+                        <div class="col-7">
+                            <ul class="nav nav-tabs btn-group justify-content-center" id="myTab" role="tablist" style="border-bottom: none !important;">
+                                {% if bloc.AideRedaction | length > 0 %}
+                                <a class="btn nav-link-collapser active-link" data-panel="aide" id="redaction-tab">{{ traduction.aide_a_la_redaction |trans }}</a>
+                                {% endif %}
+                                {% if droits.notes == true %}
+                                    <a class="btn nav-link-collapser" data-panel="notes" id="notes-tab">{{ traduction.notes |trans }}</a>
+                                {% endif %}
+                                {#{% if droits.modificationEtat == true %}#}
+                                    {#<a class="btn nav-link-collapser" data-panel="version" id="revision-tab">Historique des versions</a>#}
+                                {#{% endif %}#}
+                                {% if glossairesInBlocs == 1 %}
+                                <a class="btn nav-link-collapser" data-panel="glossaire" id="glossaire-tab">{{ traduction.glossaire |trans }}</a>
+                                {% endif %}
+                                {#<a class="btn nav-link-collapser editColor" data-toggle="modal" data-target="#colorModal">Couleur de votre rédaction</a>#}{#<i class="fas fa-fw fa-palette"></i>#}
+                            </ul>
+                        </div>
+                        <div class="col-1"></div>
+                        <div class="col-4" style="text-align: right">
+                            <div style="height: 45px">
+                            <a class="btn nav-link-collapser" id="save" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;"> {{ traduction.sauvegarder_dans_le_document |trans }}</a>
+                            </div>
+                            <div>
+                                {% if ordreParagraphe["precedent"] != null and ordreParagraphe["precedent_is_tab"] == null %}
+                                    <a class="btn nav-link-collapser" href="{{ path('rapport_actions', {'id' : ordreParagraphe["precedent"]}) }}" title="{{ traduction.pensez_a_cliquer| trans }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;">{{ traduction.precedent |trans }}</a>
+                                {% elseif  ordreParagraphe["precedent"] != null and ordreParagraphe["precedent_is_tab"] != null  %}
+                                    <a class="btn nav-link-collapser" href="{{ path('rapport_actions_tab', {'id' : ordreParagraphe["precedent"]}) }}" title="{{ traduction.pensez_a_cliquer| trans }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;">{{ traduction.precedent |trans }}</a>
+                                {% endif %}
+                                <a class="btn nav-link-collapser" href="{{ path('rapport_edit')}}" title="{{ traduction.pensez_a_cliquer| trans }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;"> {{ traduction.retour_edition |trans }}</a>
+                                {% if ordreParagraphe["suivant"] != null  and ordreParagraphe["suivant_is_tab"] == null %}
+                                    <a class="btn nav-link-collapser"  href="{{ path('rapport_actions', {'id' : ordreParagraphe["suivant"]}) }}" title="{{ traduction.pensez_a_cliquer| trans }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;">{{ traduction.suivant |trans }}</a>
+                                {% elseif  ordreParagraphe["suivant"] != null and ordreParagraphe["suivant_is_tab"] != null  %}
+                                    <a class="btn nav-link-collapser"  href="{{ path('rapport_actions_tab', {'id' : ordreParagraphe["suivant"]}) }}" title="{{ traduction.pensez_a_cliquer| trans }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;">{{ traduction.suivant |trans }}</a>
+                                {% endif %}
+                            </div>
+                            <!--<a class="btn nav-link-collapser" href="{{ path('bloc_validation', {"bloc" : bloc.id }) }}" style="cursor: pointer; color: white; background-color: #5C2D91; border-radius: 3px;"> {{ traduction.valider_le_bloc |trans }}</a>-->
+                        </div>
+                    </div>
+
+                    <div class="tab-content tab-content-collapse" id="myTabContent">
+
+                        <div id="glossaire" class="tabpanel panel-collapsed" role="tabpanel" aria-labelledby="glossaire-tab" style="display: none">
+                            <div class="panel-body">
+                                {% set j = glossaires|length %}
+                                {#{% if j <= 2 %}#}
+                                    {#<ul class="list-group glossaireTable">#}
+                                        {#{% for glossaire in glossaires %}#}
+                                            {#<li id="gloToRemove{{glossaire.id}}" class="list-group-item item-collapse-panel">#}
+                                                {#<div class="row">#}
+                                                    {#<div class="col-xs-10 col-md-11">#}
+                                                        {#<h5 id="motGlossaire{{glossaire.id}}">{{glossaire.mot}}</h5>#}
+                                                        {#<div class="mic-info">#}
+                                                            {#{{ traduction.de |trans }} : <a href="#">{{glossaire.idUser.username}} </a>  {{ traduction.le |trans }} : {{glossaire.dateCreation | date('Y-m-d')}} <br>#}
+                                                            {#{% if glossaire.dateModification is not null %}#}
+                                                                {#{{ traduction.derniere_modification_le |trans }} : {{glossaire.dateModification | date('Y-m-d')}}#}
+                                                            {#{% endif %}#}
+                                                        {#</div></br>#}
+                                                        {#<div id="descGlossaire{{glossaire.id}}">{{glossaire.description|raw}}</div>#}
+                                                        {#{% if glossaire.idUser.id == app.user.id or is_granted('ROLE_ADMIN') %}#}
+                                                            {#<div class="action row">#}
+                                                                {#<div class="col1" style="width:30px; margin-left:10px;">#}
+                                                                    {#<button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;" class="editGlossaire"#}
+                                                                            {#data-idgloss="{{glossaire.id}}" type="submit" data-toggle="modal" data-target="#glossaireModalEdit"#}
+                                                                            {#data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>#}
+                                                                    {#</button>#}
+                                                                {#</div>#}
+                                                                {#<div class="col2">#}
+                                                                    {#<a onclick="eraseGlossaire({{glossaire.id}})" class="eraseButton" data-comId="{{glossaire.id}}"#}
+                                                                       {#style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal" data-target="#glossaireModalErase"><i class="fas fa-fw fa-trash"></i>#}
+                                                                    {#</a>#}
+                                                                {#</div>#}
+                                                            {#</div>#}
+                                                        {#{% endif %}#}
+                                                    {#</div>#}
+                                                {#</div>#}
+                                            {#</li>#}
+                                        {#{% endfor %}#}
+                                    {#</ul>#}
+                                {#{% else %}#}
+                                    {#<ul class="list-group glossaireTable">#}
+                                        {#{% for glossaire in glossaires|slice(0,2) %}#}
+                                            {#<li id="gloToRemove{{glossaire.id}}" class="list-group-item item-collapse-panel">#}
+                                                {#<div class="row">#}
+                                                    {#<div class="col-xs-10 col-md-11">#}
+                                                        {#<h5 id="motGlossaire{{glossaire.id}}">{{glossaire.mot}}</h5>#}
+                                                        {#<div class="mic-info">#}
+                                                            {#{{ traduction.de |trans }} : <a href="#">{{glossaire.idUser}} </a>  {{ traduction.le |trans }} : {{glossaire.dateCreation | date('Y-m-d')}} <br>#}
+                                                            {#{% if glossaire.dateModification is not null %}#}
+                                                                {#{{ traduction.derniere_modification_le |trans }} : {{glossaire.dateModification | date('Y-m-d')}}#}
+                                                            {#{% endif %}#}
+                                                        {#</div>#}
+                                                        {#</br>#}
+                                                        {#<div id="descGlossaire{{glossaire.id}}">{{glossaire.description|raw}}</div>#}
+
+                                                        {#{% if glossaire.idUser.id == app.user.id or is_granted('ROLE_ADMIN') %}#}
+                                                            {#<div class="action row">#}
+                                                                {#<div class="col1" style="width:30px; margin-left:10px;">#}
+                                                                    {#<button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"#}
+                                                                            {#class="editGlossaire" data-idgloss="{{glossaire.id}}" type="submit" data-toggle="modal"#}
+                                                                            {#data-target="#glossaireModalEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>#}
+                                                                    {#</button>#}
+                                                                {#</div>#}
+                                                                {#<div class="col2">#}
+                                                                    {#<a onclick="eraseGlossaire({{glossaire.id}})" class="eraseButton" data-comId="{{glossaire.id}}"#}
+                                                                       {#style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal"#}
+                                                                       {#data-target="#glossaireModalErase"><i class="fas fa-fw fa-trash"></i>#}
+                                                                    {#</a>#}
+                                                                {#</div>#}
+                                                            {#</div>#}
+                                                        {#{% endif %}#}
+                                                    {#</div>#}
+                                                {#</div>#}
+                                            {#</li>#}
+                                        {#{% endfor %}#}
+                                    {#</ul>#}
+                                    {#<ul id="hiddenGlossaire" style="display: none;" class="list-group hiddenGlossaireTable">#}
+                                        {#{% for glossaire in glossaires|slice(2,j-1) %}#}
+                                            {#<li id="gloToRemove{{glossaire.id}}"class="list-group-item item-collapse-panel">#}
+                                                {#<div class="row">#}
+                                                    {#<div class="col-xs-10 col-md-11">#}
+                                                        {#<h5 id="motGlossaire{{glossaire.id}}">{{glossaire.mot}}</h5>#}
+                                                        {#<div class="mic-info">#}
+                                                            {#{{ traduction.de |trans }} : <a href="#">{{glossaire.idUser}} </a>#}
+                                                            {#{{ traduction.le |trans }} : {{glossaire.dateCreation | date('Y-m-d')}} <br>#}
+                                                            {#{% if glossaire.dateModification is not null %}#}
+                                                                {#{{ traduction.derniere_modification_le |trans }} : {{glossaire.dateModification | date('Y-m-d')}}#}
+                                                            {#{% endif %}#}
+                                                        {#</div></br>#}
+                                                        {#<div id="descGlossaire{{glossaire.id}}">{{glossaire.description|raw}}</div>#}
+                                                        {#{% if glossaire.idUser.id == app.user.id or is_granted('ROLE_ADMIN') %}#}
+                                                            {#<div class="action row">#}
+                                                                {#<div class="col1" style="width:30px; margin-left:10px;">#}
+                                                                    {#<button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"#}
+                                                                            {#class="editGlossaire" data-idgloss="{{glossaire.id}}" type="submit" data-toggle="modal"#}
+                                                                            {#data-target="#glossaireModalEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>#}
+                                                                    {#</button>#}
+                                                                {#</div>#}
+                                                                {#<div class="col2">#}
+                                                                    {#<a onclick="eraseGlossaire({{glossaire.id}})" class="eraseButton"#}
+                                                                       {#data-comId="{{glossaire.id}}" style="color: red; background-color: white; -webkit-appearance:none!important;"#}
+                                                                       {#data-toggle="modal" data-target="#glossaireModalErase"><i class="fas fa-fw fa-trash"></i>#}
+                                                                    {#</a>#}
+                                                                {#</div>#}
+                                                            {#</div>#}
+                                                        {#{% endif %}#}
+                                                    {#</div>#}
+                                                {#</div>#}
+                                            {#</li>#}
+                                <ul class="list-group glossaireTable">
+                                    {% for glossaire in glossaires|slice(0, 2) %}
+                                        {% include 'rapport/Components/glossaire_elem.html.twig' %}
+                                    {% endfor %}
+                                </ul>
+                                {% if j > 2 %}
+                                    <ul id="hiddenGlossaire" style="display: none;" class="list-group hiddenGlossaireTable">
+                                        {% for glossaire in glossaires|slice(2, j - 1) %}
+                                            {% include 'rapport/Components/glossaire_elem.html.twig' %}
+                                        {% endfor %}
+                                    </ul>
+                                    <div class="row justify-content-center">
+                                        <a id="plusButtonGlossaire" data-comId="{{id_bloc}}"
+                                           class="btn btn-custom-hceres btn-sm btn-block col-4 center mt-1" role="button"><span
+                                                    class="glyphicon glyphicon-refresh"></span> {{ traduction.montrer_plus |trans }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                <div class="row justify-content-center">
+                                    <button id="createButtonGlossaire" type="submit" class="btn btn-custom-hceres btn-sm btn-block col-4 justify-content-center my-1"
+                                            data-toggle="modal" data-target="#exampleModalGlossaire" data-whatever="@mdo">+ {{ traduction.ajouter_glossaire |trans }}
+                                    </button>
+                                </div>
+                                {% include 'rapport/form_new_glossaire.html.twig' %}
+                                {% include 'rapport/form_edit_glossaire.html.twig' %}
+                                {% include 'rapport/modal_erase_glossaire.html.twig' %}
+                            </div>
+                        </div>
+                        {% if droits.notes == true %}
+                            <div id="notes" class="tabpanel panel-collapsed" role="tabpanel" aria-labelledby="notes-tab" style="display: none">
+                                <div class="panel-body">
+                                    {% set j = notes|length %}
+                                    {% if j <= 2 %}
+                                        <ul class="list-group notesTable">
+                                            {% for note in notes %}
+                                                <li id="noteToRemove{{note.id}}" class="list-group-item item-collapse-panel">
+                                                    <div class="row">
+                                                        <div class="col-xs-10 col-md-11">
+                                                            <h5 id="noteTitle{{note.id}}">{{note.titre}}</h5>
+                                                            <div class="mic-info">
+                                                                {{ traduction.de |trans }}: <a href="#">{{note.idUser.username}} </a>  {{ traduction.le |trans }} : {{note.dateCreation | date('Y-m-d')}} <br>
+                                                                {% if note.dateModification is not null %}
+                                                                    {{ traduction.derniere_modification_le |trans }} : {{note.dateModification | date('Y-m-d')}}
+                                                                {% endif %}
+                                                            </div>
+                                                            <span {% if note.etat == 0 %} class="badge badge-info">{{ traduction.a_resoudre |trans }}
+                                                                {% else %}
+                                                                    class="badge badge-success">{{ traduction.resolu |trans }}
+                                                                {% endif %}
+                                                        </span>
+
+                                                            </br>
+                                                            <div id="noteComment{{note.id}}">{{note.description|raw}}</div>
+                                                            {% if note.idUser.id == app.user.id or is_granted('ROLE_ADMIN') %}
+                                                                <div class="action row">
+                                                                    <div class="col1" style="width:30px; margin-left:10px;">
+                                                                        <button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;" class="editNoteButton"
+                                                                                data-idnote="{{note.id}}" type="submit" data-toggle="modal" data-target="#exampleNoteEdit"
+                                                                                data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="col2">
+                                                                        <a onclick="eraseNoteFunction({{note.id}})" class="eraseNoteButton" data-comId="{{note.id}}"
+                                                                           style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal" data-target="#exampleEraseNoteModal"><i class="fas fa-fw fa-trash"></i>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <ul class="list-group notesTable">
+                                            {% for note in notes|slice(0,2) %}
+                                                <li id="noteToRemove{{note.id}}" class="list-group-item item-collapse-panel">
+                                                    <div class="row">
+                                                        <div class="col-xs-10 col-md-11">
+                                                            <h5 id="noteTitle{{note.id}}">{{note.titre}}</h5>
+                                                            <div class="mic-info">
+                                                                {{ traduction.de |trans }}: <a href="#">{{note.idUser}} </a>  {{ traduction.le |trans }} : {{note.dateCreation | date('Y-m-d')}} <br>
+                                                                {% if note.dateModification is not null %}
+                                                                    {{ traduction.derniere_modification_le |trans }} : {{note.dateModification | date('Y-m-d')}}
+                                                                {% endif %}
+                                                            </div>
+                                                            </br>
+                                                            <div id="noteComment{{note.id}}">{{note.description|raw}}</div>
+
+                                                            {% if note.idUser.id == app.user.id or is_granted('ROLE_ADMIN') %}
+                                                                <div class="action row">
+                                                                    <div class="col1" style="width:30px; margin-left:10px;">
+                                                                        <button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"
+                                                                                class="editNoteButton" data-idnote="{{note.id}}" type="submit" data-toggle="modal"
+                                                                                data-target="#exampleNoteEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="col2">
+                                                                        <a onclick="eraseNoteFunction({{note.id}})" class="eraseNoteButton" data-comId="{{note.id}}"
+                                                                           style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal"
+                                                                           data-target="#exampleEraseNoteModal"><i class="fas fa-fw fa-trash"></i>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                        <ul id="hiddenNote" style="display: none;" class="list-group hiddenNoteTable">
+                                            {% for note in notes|slice(2,j-1) %}
+                                                <li id="noteToRemove{{note.id}}" class="list-group-item item-collapse-panel">
+                                                    <div class="row">
+                                                        <div class="col-xs-10 col-md-11">
+                                                            <h5 id="noteTitle{{note.id}}">{{note.titre}}</h5>
+                                                            <div class="mic-info">
+                                                                {{ traduction.de |trans }}: <a href="#">{{note.idUser}} </a>
+                                                                {{ traduction.le |trans }} : {{note.dateCreation | date('Y-m-d')}} <br>
+                                                                {% if note.dateModification is not null %}
+                                                                    Dernière modification le : {{note.dateModification | date('Y-m-d')}}
+                                                                {% endif %}
+                                                            </div></br>
+                                                            <div id="noteComment{{note.id}}">{{note.description|raw}}</div>
+                                                            {% if note.idUser.id == app.user.id or is_granted('ROLE_ADMIN') %}
+                                                                <div class="action row">
+                                                                    <div class="col1" style="width:30px; margin-left:10px;">
+                                                                        <button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"
+                                                                                class="editNoteButton" data-idnote="{{note.id}}" type="submit" data-toggle="modal"
+                                                                                data-target="#exampleNoteEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="col2">
+                                                                        <a onclick="eraseNoteFunction({{note.id}})" class="eraseNoteButton"
+                                                                           data-comId="{{note.id}}" style="color: red; background-color: white; -webkit-appearance:none!important;"
+                                                                           data-toggle="modal" data-target="#exampleEraseNoteModal"><i class="fas fa-fw fa-trash"></i>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                        <div class="row justify-content-center">
+                                            <a id="plusNoteButton" data-comId="{{id_bloc}}"
+                                               class="btn btn-custom-hceres btn-sm btn-block col-4 justify-content-center mt-1" role="button"><span
+                                                        class="glyphicon glyphicon-refresh"></span> {{ traduction.montrer_plus |trans }}
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                    <div class="row justify-content-center">
+                                        <button id="createNoteButton" type="submit"
+                                                class="btn btn-custom-hceres btn-sm btn-block col-4 justify-content-center my-1"
+                                                data-toggle="modal" data-target="#modalNoteCreate" data-whatever="@mdo">+ {{ traduction.ajouter_notes |trans }}
+                                        </button>
+                                    </div>
+                                    {% include 'rapport/form_new_note.html.twig' %}
+                                    {% include 'rapport/form_edit_note.html.twig' %}
+                                    {% include 'rapport/modal_erase_note.html.twig' %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if droits.ecriture == true %}
+                            <div id="version" class="tabpanel panel-collapsed" role="tabpanel" aria-labelledby="version-tab" style="display: none">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">{{ traduction.version |trans }}</th>
+                                        <th scope="col">{{ traduction.date |trans }}</th>
+                                        <th scope="col">{{ traduction.modifie_par |trans }}</th>
+                                        <th scope="col">{{ traduction.operations |trans }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for revision in revisions %}
+                                        <tr>
+                                            <th scope="row"><a href="#">{% if revision.actif == true%} {{ traduction.actuelle |trans }} {% endif %} v.{{ revision.version }}</a></th>
+                                            <td>{{ revision.dateCreation| date('d/m/Y - h:i') }}</td>
+                                            <td>{{ revision.idUser.username }}</td>
+                                            <td>
+                                                {% if revision.actif == false %}
+                                                    <a href="{{ app.request.getBaseURL()  }}/rapport/actions/revision/restore/{{ revision.id }}">{{ traduction.restaurer_cette_version |trans }}</a>
+                                                    <a class="ml-5" href="{{ app.request.getBaseURL()  }}/rapport/actions/revision/delete/{{ revision.id }}">{{ traduction.supprimer |trans }}</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                        {% if bloc.AideRedaction | length > 0 %}
+                        <div id="aide" class="tabpanel" role="tabpanel" aria-labelledby="aide-tab">
+                            <div class="card" style="border: none; z-index: -1;">
+                                <div class="card-body">
+{#                                    <p class="card-text">#}
+                                        {{ bloc.AideRedaction | raw}}
+{#                                    </p>#}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <!-- Etherpad Container -->
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col" id="home" style="margin-left:10px" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="row">
+                                {% if droits.ecriture == true %}
+
+                                    <div class="col-lg-12 col-md-12 com-sm-12 mb-3">
+                                        <div class="form-group input_generate_tab">
+                                            <input type="text" id="row_number" required="required" class="mb-3 form-control form-input-hceres form-control" placeholder="{{ traduction.nombre_ligne |trans }}">
+                                        </div>
+                                        <div class="form-group input_generate_tab">
+                                            <input type="text" id="col_number" required="required" class="mb-3 form-control form-input-hceres form-control" placeholder="{{ traduction.nombre_colonne |trans }}">
+                                        </div>
+                                        <div >
+{#                                            <i class="fas fa-exclamation-triangle"></i> <b>{{ traduction.attention_ne_pas_faire | trans}}</b>#}
+                                            <a class="ml-2 input_generate_tab" id="tableGeneration" style="cursor: pointer"><button class="btn btn-custom-hceres float-right" type="submit"><i class="fas fa-fw fa-table"></i> {{ traduction.generer_le_tableau |trans }}</button></a>
+                                            {% if droits.modificationEtat == true %}
+                                                {% if hasAccessStructure == true %}
+                                              <a class="ml-2 input_mofier_tab" style="cursor: pointer"><button class="btn btn-custom-hceres float-right" type="submit"><i class="fas fa-fw fa-table"></i> {{ traduction.modifier_la_structure_du_tableau |trans }}</button></a>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="col-lg-12 col-md-12 com-sm-12">
+                                        <div id="table" style="overflow: auto ; height: 100%; max-height:700px;"></div>
+                                    </div>
+                                    {% if bloc.blocContent is not null %}
+                                        <div id="contentBloc" style="display: none;">{{textBloc|raw }}</div>
+                                    {% endif %}
+                                    {# <a class="ml-2" id="save" href="{{ app.request.getBaseURL() }}/rapport/actions/publish/{{ bloc.id }}" style="cursor: pointer"><button style="background-color: #00AAB5" class="btn btn-primary float-right" type="submit"><i class="fas fa-fw fa-save"></i> Sauvegarder</button></a> #}
+
+                                {% elseif droits.visualisation == true %}
+                                    <div class="row ml-1 mt-3">
+                                        {% if bloc.realOrdre == 1 %}
+                                            <div class="col-lg-12 titre1-word">{{ bloc.name }}</div>
+                                        {% elseif bloc.realOrdre == 2 %}
+                                            <div class="col-lg-12 titre2-word">{{ bloc.name }}</div>
+                                        {% elseif bloc.realOrdre == 3 %}
+                                            <div class="col-lg-12 titre3-word">{{ bloc.name }}</div>
+                                        {% elseif bloc.realOrdre == 4 %}
+                                            <h4 class="col-lg-12 titre4-word">{{ bloc.name }}</h4>
+                                        {% else %}
+                                            <h4 class="col-lg-12 titre4-word">{{ bloc.name }}</h4>
+                                        {% endif %}
+                                        {% if bloc.ordre == 0 %}
+                                            {% if bloc.blocContent is not null %}
+                                                <p class="col-lg-12 p-word">{{ bloc.blocContent.content|raw }}</p>
+                                            {% else %}
+                                                <p class="col-lg-12 p-word"><u>{{ traduction.non_redige |trans }}</u></p>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Etherpad Container -->
+
+                </div>
+                <div class="modal fade" id="colorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalColorEdit" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabelEdit">{{ traduction.couleur_redaction |trans }}</h5>
+                            </div>
+                            <div id="para" class="modal-body">
+                                <form><input type="text" id="color" name="color" value="{{ user.color }}" /></form>
+                                <div id="colorpicker"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ traduction.annuler |trans }}</button>
+                                <button id="colorEditConfirm" type="submit" class="btn btn-primary" data-dismiss="modal">{{ traduction.confirmer |trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="loadMe" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">
+                    <div class="modal-dialog modal-sm" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body text-center">
+                                <div class="loader"></div>
+                                <div class="loader-txt">
+                                    <p>{{ traduction.paragraphe_en_cours_enregistrement |trans }}<br><br><small>{{ traduction.patientez |trans }}</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Sticky Footer -->
+    <!-- /.content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+{#    <script src="{{ app.request.getBaseURL()  }}/vendor/jquery/jquery.js"></script>#}
+    <script src="{{ app.request.getBaseURL()  }}/js/etherpad/etherpad.js"></script>
+    <script src="{{ app.request.getBaseURL()  }}/js/farbtastic.js"></script>
+    <script type="text/javascript">
+        function eraseGlossaire(id){
+            var idTarget = $('#idGlossaireToErase');
+            idTarget.val(id);
+        }
+
+        // Fonction qui effectue en Ajax la suppression d'un element de glossaire
+        function eraseGlossaireConfirm(){
+            var id = $('#idGlossaireToErase').val();
+            $('#gloToRemove' + id).remove();
+
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/actions/glossaire/delete/" + id,
+                type: "DELETE",
+                dataType: 'JSON',
+                success: function()
+                {
+                    console.log("La suppression s'est bien effectuée");
+                },
+                error: function(err)
+                {
+                    console.log(err);
+                }
+            });
+        }
+
+        // Fonction qui permet de déclencher la modale (message confirmation de suppression d'un commentaire)
+        function eraseNoteFunction(id){
+            var idTarget = $('#idNoteToErase');
+            idTarget.val(id);
+        }
+
+        // Fonction qui effectue en Ajax la suppression d'un commentaire
+        function confirmNoteErase(){
+            var id = $('#idNoteToErase').val();
+            $('#noteToRemove' + id).remove();
+
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/actions/note/delete/" + id,
+                type: "DELETE",
+                dataType: 'JSON',
+                success: function(data)
+                {
+                    console.log("La suppression s'est bien effectuée");
+                },
+                error: function(err)
+                {
+                    console.log(err);
+                }
+            });
+        }
+
+
+        // Fonction qui permet de déclencher la modale (message confirmation de suppression d'un commentaire)
+        function eraseFunction(id){
+            var idTarget = $('#idToErase');
+            idTarget.val(id);
+        }
+
+        // Fonction qui effectue en Ajax la suppression d'un commentaire
+        function confirmErase(){
+            var id = $('#idToErase').val();
+            $('#liToRemove' + id).remove();
+
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/actions/commentaire/delete/" + id,
+                type: "DELETE",
+                dataType: 'JSON',
+                success: function(data)
+                {
+                    console.log("La suppression s'est bien effectuée");
+                },
+                error: function(err)
+                {
+                    console.log(err);
+                }
+            });
+        }
+
+        $(window).on('beforeunload', function(){
+            return "N'oubliez pas de sauvegarder votre tableau";
+        });
+        $(document).ready(function() {
+
+            $('#save').click(function(){
+                $(window).off('beforeunload');
+                var id = {{ id_bloc }};
+                //console.log(id);
+                var tabs = [];
+                var $rows = $("#concreteTable tbody tr").each(function(index) {
+                    console.log(index);
+                    $cells = $(this).find("td");
+                    //console.log($cells);
+                    tabs[index] = {};
+                    $cells.each(function (cellIndex) {
+                        //console.log($(this).children().val());
+                        console.log($(this).html());
+                        /*console.log($(this).textContent);
+                        console.log($(this).children());*/
+                        //tabs[index][cellIndex] = $(this).children().val();
+                        tabs[index][cellIndex] = $(this).html();
+                    });
+                });
+
+                console.log($rows);
+                
+                // Let's put this in the object like you want and convert to JSON (Note: jQuery will also do this for you on the Ajax request)
+                var myObj = {};
+                myObj.tabs = tabs;
+                console.log(JSON.stringify(myObj));
+                const modal = $("#loadMe").modal({
+                    backdrop: "static", //remove ability to close modal with click
+                    keyboard: false, //remove option to close with keyboard
+                    show: true //Display loader!
+                });
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/publishTab/" + id,
+                    method: "POST",
+                    data: {"tabs" : JSON.stringify(myObj)},
+                    complete: function(request)
+                    {
+
+                        console.log("salut");
+                        if (request.responseText === "Le Tableau a bien été mis à jour."
+                            || request.responseText === "The Table has been updated.") {
+                            setTimeout(function() {
+                                $(".loader-txt").html("<p>"+ request.responseText +"</p>");
+                                // $("#loadMe").modal("hide");
+                            }, 2000);
+                            setTimeout(function() {
+                                $("#loadMe").modal("hide");
+                            }, 4000);
+                            setTimeout(function() {
+                                $(".loader-txt").html("<p>{{ traduction.tableau_en_cours_enregistrement |trans }}<br><br><small>{{ traduction.patientez |trans }}</small></p>");
+                            }, 5000);
+
+                        }
+                        else {
+                            $(".loader").hide();
+                            $(".loader-txt").html("<p>{{ traduction.erreur_enregistrement |trans }}<br> {{ traduction.veuillez_rafraichir |trans }}<br><br><small>{{ traduction.erreur |trans }} : "+ request.responseText +" </small></p>");
+
+                        }
+                    }
+                });
+            });
+
+            // Fonction qui cache le boutton "Plus"
+            // Et affiche les commentaires supplémentaires
+            $('#plusButton').click(function(){
+                $('#hiddenComm').show();
+                $('#plusButton').hide();
+            });
+
+            // Fonction qui cache le boutton "Plus"
+            // Et affiche les notes supplémentaires
+            $('#plusNoteButton').click(function(){
+                $('#hiddenNote').show();
+                $('#plusNoteButton').hide();
+            });
+
+            //Fonction qui permet de compléter les champs du Form pour Editer un commentaire.
+            $(document).on("click" ,'.editButton', function(){
+                var id = $(this).data("comid");
+                var titre = $('#titleComm'+id).text();
+                var commentaire = $('#commentComm'+id).text();
+                console.log(titre);
+                console.log(commentaire);
+
+                $('#newTitre').val(titre);
+                $('#newComm').val(commentaire);
+                $('#idComment').val(id);
+            });
+
+            //Fonction qui permet de faire l'appel Ajax pour l'édition d'un commentaire en base de données.
+            $('#modalCommentaireConfirm').click(function(){
+                var id = $('#idComment').val();
+                var titre = $('#newTitre').val();
+                var commentaire = $('#newComm').val();
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/commentaire/edit/" + id,
+                    type: "POST",
+                    data: {id:id, titre:titre, commentaire:commentaire},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        console.log(data);
+                        $('#titleComm'+ data['id']).text(data['titre']);
+                        $('#commentComm'+ data['id']).text(data['commentaire']);
+
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement");
+                    }
+                });
+            });
+
+            // Fonction qui permet la création d'un nouveau commentaire via AJAx
+            $('#createCommConfirm').click(function(){
+                var idUser = {{app.user.id}};
+                var id = $(this).data("comid");
+                var titre = $('#modalCommTitle').val();
+                var commentaire = $('#modalCommComment').val();
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/commentaire/create/" + id,
+                    type: "POST",
+                    data: {titre:titre, commentaire:commentaire, idUser:idUser},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        var date1 = new Date(data.dateDeCreation.date);
+                        $('.commentaireTable').prepend('<li id="liToRemove'+ data.id +'" class="list-group-item">'+
+                            '<div class="row">'+
+                            '<div class="col-xs-10 col-md-11">'+
+                            '<h5 id="titleComm' + data.id + '">'+ data.titre + '</h5>'+
+                            '<div class="mic-info">'+
+                            '{{ traduction.de |trans }}'+': <a href="#">'+ data.username + '</a><br> '+ '{{ traduction.cree_le |trans }}' +' : ' + date1.getFullYear() + '-' + (date1.getMonth() + 1) + '-' + date1.getDate() +'</br>'+
+                            '</div>'+
+                            '</br>'+
+                            '<div id="commentComm'+ data.id + '">'+ data.commentaire +'</div>'+
+                            '<div class="action row">'+
+                            '<div class="col1" style="width:30px; margin-left:10px;">'+
+                            '<button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"'+
+                            'class="editButton" data-comid="' + data.id + '" type="submit" data-toggle="modal"'+
+                            'data-target="#exampleModalEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i></button>'+
+                            '</div>'+
+                            '<div class="col2">'+
+                            '<a onclick="eraseFunction('+ data.id +')" class="eraseButton" data-comId="'+ data.id +'"'+
+                            'style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal"'+
+                            'data-target="#exampleModal"><i class="fas fa-fw fa-trash"></i>'+
+                            '</a>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</li>');
+
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement des données");
+                    }
+                });
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        // Fonction qui permet de déclencher la modale (message confirmation de suppression d'une Note)
+
+
+        function activeLeaveModal()
+        {
+            $(window).on('beforeunload', function(){
+                return "N'oubliez pas de sauvegarder votre tableau";
+            });
+        }
+        $(document).ready(function() {
+
+            document.querySelector("#table").addEventListener("paste", function(e) {
+                e.preventDefault();
+                var text = e.clipboardData.getData("text/plain");
+                document.execCommand("insertHTML", false, text);
+            });
+
+            $('.nav-link-collapser').click(function(){
+                var $this = $(this);
+                var id = $(this).data("panel");
+                var panel = $('#'+id);
+                if (!panel.hasClass('panel-collapsed')) {
+                    panel.slideUp();
+                    panel.addClass('panel-collapsed');
+                    $this.removeClass('active-link');
+
+                } else {
+                    $('.tabpanel').each(function(){
+                        $(this).slideUp();
+                        $(this).addClass('panel-collapsed');
+                    });
+                    $('.nav-link-collapser').each(function(){
+                        $(this).removeClass('active-link');
+                    });
+                    panel.removeClass('panel-collapsed');
+
+                    panel.slideDown();
+                    $this.addClass('active-link');
+                    // $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+                }
+            });
+
+            $('.input_mofier_tab').click(function () {
+                $('.input_generate_tab').show();
+                $('.input_mofier_tab').hide();
+            });
+
+            if ($('#contentBloc').length > 0){
+                console.log($('#contentBloc').html() );
+                var p = JSON.parse($('#contentBloc').html());
+                var tabs = p['tabs'];
+                var html = "";
+
+                console.log(tabs.length);
+                if (tabs.length >= 1)
+                {
+                    $('.input_generate_tab').hide();
+                } else {
+                    $('.input_generate_tab').show();
+                    $('.input_mofier_tab').hide();
+                }
+
+                html += "<table contenteditable=\"true\" onkeyup='activeLeaveModal()' id=\"concreteTable\" class=\"table table-bordered\"><tbody>";
+                var index = 0;
+
+                $.each(tabs, (k,v) => {
+                    console.log(k,v)
+                    html += "<tr>";
+                    $.each(v, (k1,v1) => {
+                        if ({{ styleTab }} == 1)
+                        {
+                            //html += "<td><textarea type=\"text\" class=\"form-control\" >" + v1 + "</textarea></td>";
+                            if (index === 0) {
+                                html += "<td style=' text-align: center; font-weight:bold;'>" + v1 + "</td>";
+                            } else {
+                                html += "<td style=' text-align: center; '>" + v1 + "</td>";
+                            }
+                        } else {
+                            html += "<td style=' text-align: center; '>" + v1 + "</td>";
+
+                        }
+                    });
+                    index= 1;
+
+                    html += "</tr>";
+                });
+                html += "</tbody></table>";
+
+                $('#table').append(html);
+
+            } else {
+                $('.input_mofier_tab').hide();
+            }
+
+            $('#tableGeneration').click(function() {
+                $('#concreteTable').remove();
+                var row = $('#row_number').val();
+                var col = $('#col_number').val();
+                console.log(row);
+                console.log(col);
+
+                if ($("#contentBloc").length >= 1 ) {
+                    //$('#table').empty();
+                    console.log("Dans le if");
+                    var p = JSON.parse($('#contentBloc').html());
+                    var tabs = p['tabs'];
+
+                    var html = "";
+                    html += "<table contenteditable=\"true\" id=\"concreteTable\" class=\"table table-bordered\"><tbody>";
+
+
+                    for (var x = 0; x < row; x++) {
+                        html += "<tr>";
+                        for (var z = 0; z < col; z++) {
+                            var v1 = "";
+                            if (tabs[x] !== void 0) {
+                                if (tabs[x][z] !== void 0) {
+                                    v1 = tabs[x][z];
+                                }
+                            }
+                            if (x == 0) {
+                                //html += "<td><textarea type=\"text\" class=\"tab-header form-control\" >" + v1 + "</textarea></td>";
+                                html += "<td>" + v1 + "</td>";
+                            }
+                            else {
+                                //html += "<td><textarea type=\"text\" class=\"form-control\" >" + v1 + "</textarea></td>";
+                                html += "<td>" + v1 + "</td>";
+                            }
+                        }
+                        $('#body').append('</tr>');
+                    }
+
+                    /*$.each(tabs, function (k, v) {
+                        html += "<tr>";
+                        $.each(v, function (k1, v1) {
+                            //console.log(v1);
+                            html += "<td><input type=\"text\" class=\"form-control\" value=\"" + v1 + "\"></td>";
+                        });
+                        html += "</tr>";
+                    });*/
+                    html += "</tbody></table>";
+
+                    //console.log(html);
+                    $('#table').append(html);
+
+                } else {
+                    /*$('#concreteTable').append(
+                        '<thead>'+
+                        '<tr id="tr">');
+                    for (var i = 0; i < col; i++ ) {
+                        $('#tr').append('<th><input type="text" class="form-control"/></th>');
+                    }
+                    $('#concreteTable').append("</tr>" +
+                        "</thead>"+
+                        "<tbody id=\"body\">");*/
+                    $('#table').append('<table contenteditable="true" id="concreteTable" class="table table-bordered">'+
+                        '</table>');
+
+                    $('#concreteTable').append("<tbody id=\"body\">");
+
+                    for (var x = 0; x < row; x++) {
+                        $('#body').append('<tr id = "tr' + x + '">');
+                        for (var z = 0; z < col; z++) {
+                            //$('#tr' + x).append('<td><textarea type="text" class="form-control"/></td>');
+                            $('#tr' + x).append('<td></td>');
+                        }
+                        $('#body').append('</tr>');
+                    }
+                    $('#concreteTable').append("</tbody>");
+                }
+
+            });
+
+
+
+            var noteContentId = $(".noteContent").first().attr("id");
+            if (noteContentId) {
+                openCity(event, noteContentId);
+                $("#sel").first().addClass("active");
+            }
+            //Fonction qui permet de compléter les champs du Form pour Editer une Note.
+            $(document).on("click" ,'.editNoteButton', function(){
+                var id = $(this).data("idnote");
+                var titre = $('#noteTitle'+id).text();
+                var commentaire = $('#noteComment'+id).text();
+                console.log(id);
+                console.log(titre);
+                console.log(commentaire);
+
+                $('#newNoteTitle').val(titre);
+                $('#newNoteComment').val(commentaire);
+                $('#idNote').val(id);
+            });
+
+            //Fonction qui permet de faire l'appel Ajax pour l'édition d'une Note en base de données.
+            $('#modalEditNoteConfirm').click(function(){
+                var id = $('#idNote').val();
+                var titre = $('#newNoteTitle').val();
+                var commentaire = $('#newNoteComment').val();
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/note/edit/" + id,
+                    type: "POST",
+                    data: {id:id, titre:titre, commentaire:commentaire},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        $('#noteTitle'+ data['id']).text(data['titre']);
+                        $('#noteComment'+ data['id']).text(data['commentaire']);
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement");
+                    }
+                });
+            });
+
+            // Fonction qui permet la création d'une nouvelle Note via AJAx
+            $('#createNoteConfirm').click(function(){
+                var idUser = {{app.user.id}};
+                var id = $(this).data("comid");
+                var titre = $('#CreateNoteTitle').val();
+                var commentaire = $('#CreateNoteComment').val();
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/note/create/" + id,
+                    type: "POST",
+                    data: {titre:titre, commentaire:commentaire, idUser:idUser},
+                    dataType: 'JSON',
+                    //condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        var date1 = new Date(data.dateDeCreation.date);
+                        $('.notesTable').prepend('<li id="noteToRemove'+ data.id +'" class="list-group-item">'+
+                            '<div class="row">'+
+                            '<div class="col-xs-10 col-md-11">'+
+                            '<h5 id="noteTitle' + data.id + '">'+ data.titre + '</h5>'+
+                            '<div class="mic-info">'+
+                            '{{ traduction.de |trans }}'+ ' : <a href="#">'+ data.username + '</a><br> ' + '{{ traduction.cree_le |trans }}' +' :  '+ date1.getFullYear() + '-' + (date1.getMonth() + 1) + '-' + date1.getDate() +'</br>'+
+                            '</div>'+
+                            '</br>'+
+                            '<div id="noteComment'+ data.id + '">'+ data.commentaire +'</div>'+
+                            '<div class="action row">'+
+                            '<div class="col1" style="width:30px; margin-left:10px;">'+
+                            '<button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"'+
+                            'class="editButton" data-comid="' + data.id + '" type="submit" data-toggle="modal"'+
+                            'data-target="#exampleNoteEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i></button>'+
+                            '</div>'+
+                            '<div class="col2">'+
+                            '<a onclick="eraseNoteFunction('+ data.id +')" class="eraseNoteButton" data-comId="'+ data.id +'"'+
+                            'style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal"'+
+                            'data-target="#exampleEraseNoteModal"><i class="fas fa-fw fa-trash"></i>'+
+                            '</a>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</li>');
+
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement des données");
+                    }
+                });
+            });
+
+
+            $(".mySelect").change(function(){
+                var etat = this.value
+                var id = $(this).data("comid");
+                myFunction(id, etat);
+            });
+
+            //Fonction qui permet la modification de l'état d'une note ("A résoudre" , "Résolu")
+            function myFunction(id, etat) {
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/note/edit/etat/" + id,
+                    type: "POST",
+                    data: {etat:etat},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        console.log(data);
+                        var tmp;
+                        var span = $('#sel'+data.id+' > span');
+                        console.log(span);
+                        span.toggleClass("badge-success badge-info");
+
+                        if (data.etat == 0){
+                            span.text('{{ traduction.a_resoudre |trans }}');
+
+                        }else{
+                            span.text('{{ traduction.resolu |trans }}');
+                        }
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement des données");
+                    }
+                });
+            }
+            // Fonction qui permet la création d'un nouveau glossaire via AJAx
+            $('#createGlossaireConfirm').click(function() {
+                var idUser = {{ app.user.id }};
+                var id = $(this).data("idbloc");
+                var mot = $('#motGlossaireModal').val();
+                var description = $('#descGlossaireModal').val();
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/glossaire/create/" + id,
+                    type: "POST",
+                    data: {mot:mot, description:description, idUser:idUser},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        var date1 = new Date(data.dateDeCreation.date);
+                        $('.glossaireTable').prepend('<li id="gloToRemove'+ data.id +'" class="list-group-item item-collapse-panel">'+
+                            '<div class="row">'+
+                            '<div class="col-xs-10 col-md-11">'+
+                            '<h5 id="motGlossaire' + data.id + '">'+ data.mot + '</h5>'+
+                            '<div class="mic-info">'+
+                            '{{ traduction.de |trans }} : <a href="#">'+ data.username + '</a><br>' + '{{ traduction.cree_le |trans }}' + ' : ' + date1.getFullYear() + '-' + (date1.getMonth() + 1) + '-' + date1.getDate() +'</br>'+
+                            '</div>'+
+                            '</br>'+
+                            '<div id="descGlossaire'+ data.id + '">'+ data.description +'</div>'+
+                            '<div class="action row">'+
+                            '<div class="col1" style="width:30px; margin-left:10px;">'+
+                            '<button style="color: blue; background-color: white; border: none; -webkit-appearance:none!important;"'+
+                            'class="editGlossaire" data-idgloss="' + data.id + '" type="submit" data-toggle="modal"'+
+                            'data-target="#glossaireModalEdit" data-whatever="@getbootstrap"><i class="fas fa-fw fa-pen"></i></button>'+
+                            '</div>'+
+                            '<div class="col2">'+
+                            '<a onclick="eraseGlossaire('+ data.id +')" class="eraseButton" data-comId="'+ data.id +'"'+
+                            'style="color: red; background-color: white; -webkit-appearance:none!important;" data-toggle="modal"'+
+                            'data-target="#glossaireModalErase"><i class="fas fa-fw fa-trash"></i>'+
+                            '</a>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</li>');
+
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement des données");
+                    }
+                });
+            });
+
+            //Fonction qui permet de compléter les champs du Form pour Editer un glossaire.
+            $(document).on("click" ,'.editGlossaire', function(){
+                var id = $(this).data("idgloss");
+                var mot = $('#motGlossaire'+id).text();
+                var description = $('#descGlossaire'+id).text();
+
+                $('#newMot').val(mot);
+                $('#newDesc').val(description);
+                $('#idGlossaire').val(id);
+            });
+
+            //Fonction qui permet l'edition d'un glossaire.
+            $('#glossaireModalEditConfirm').click(function(){
+                var id = $('#idGlossaire').val();
+                var mot = $('#newMot').val();
+                var description = $('#newDesc').val();
+
+                $.ajax({
+                    url: "{{ app.request.getBaseURL() }}/rapport/actions/glossaire/edit/" + id,
+                    type: "POST",
+                    data: {id:id, mot:mot, description:description},
+                    dataType: 'JSON',
+                    condition: "request.isXmlHttpRequest()",
+                    success: function(data)
+                    {
+                        console.log(data);
+                        $('#motGlossaire'+ data['id']).text(data['mot']);
+                        $('#descGlossaire'+ data['id']).text(data['description']);
+
+                    },
+                    error: function(err)
+                    {
+                        console.log(err);
+                        console.log("erreur de chargement");
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

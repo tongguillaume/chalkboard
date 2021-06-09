@@ -1,0 +1,386 @@
+{% extends 'home/base.html.twig'%}
+
+{% block content %}
+<div id="content-wrapper">
+    <div class="container-fluid">
+        <!-- Breadcrumbs-->
+        <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+            </li>
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">{{ app.session.get("evaluation") }}</a>
+            </li>
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ path('document_evaluation_choice', {'idEval': app.session.get("evaluation_id"), 'idDoc': app.session.get("document_id"),'page' : 'dashboard_document'}) }}">{{ app.session.get("document") }}</a>
+            </li>
+            <li class="breadcrumb-item active">{{ traduction.edition |trans }}</li>
+        </ol>
+        {# TODO améliorer le CSS de la page : Espacer les bouttons Actions #}
+
+        <h3>{{ traduction.edition |trans }}</h3>
+
+        <div style="margin-bottom:10px">
+            <div class="row">
+                <div class="col-md-8">
+                    <a class="mr-3" href="#" id="openAll">
+                        {{ traduction.tout_deplier |trans }}
+                    </a>
+                    <a class="mr-3" style="display: none;" href="#" id="closeAll">
+                        {{ traduction.tout_replier |trans }}
+                    </a>
+                    <a href="{{ app.request.getBaseURl() }}/rapport/edit?simple=1" class="mr-3" >
+                        <span data-toggle="tooltip"
+                            data-placement="right"
+                            title="{{traduction.infobullevuesimple |trans}}">
+                            {{ traduction.vuesimple |trans }}
+                        </span>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    {% if currentContribution is not null %}
+                        {% if currentContribution.checked %}
+                            <a class="ml-4" href="{{ app.request.getBaseURl() }}/rapport/validateContribution/unchek" id="contributionValidation">
+                                {{ traduction.retirer_la_validation_pour_ma_contribution | trans}}<i class="fas fa-times fa-fw" style="background-color: rgba(215,215,215); color: white;"></i>
+                            </a>
+                            {% else %}
+                                <a class="ml-4" href="{{ app.request.getBaseURl() }}/rapport/validateContribution/check" id="contributionValidation">
+                                    {{ traduction.valider_ma_contribution |trans }}<i class="fas fa-check fa-fw" style="background-color: rgba(107,218,183); color: white;"></i>
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <a class="ml-4" href="{{ app.request.getBaseURl() }}/rapport/validateContribution/check" id="contributionValidation">
+                                {{ traduction.valider_ma_contribution |trans }} <i class="fas fa-check fa-fw" style="background-color: rgba(107,218,183); color: white;"></i>
+                            </a>
+                    {% endif %}
+                </div>
+{#                <div class="col-md-4">#}
+{#                    <a class="ml-4" href="{{ app.request.getBaseURl() }}/rapport/validateAllBlocs" id="validationAllBlocs">#}
+{#                        {{ traduction.valider_tous_les_paragraphes |trans }}#}
+{#                    </a>#}
+{#                </div>#}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {% set i = 0 %}
+                {% for key, bloc in blocs %}
+                    {# si c'est un titre 1#}
+                    {% if bloc.ordre == 1 %}
+                        <div class="accordion">
+                            <div class="accordion-group">
+                                <div class="accordion-heading area">
+                                    <div class="accordion-heading area">
+                                        <div class="accordion-toggle upperCase">
+                                            {% if bloc.titre_edit == 0%}
+                                            <a id="blocPen_{{ bloc.id }}" href="javascript:;" onclick="openTitreModal({{ bloc.id }},'{{ bloc.name|e('js') }}')"><i class="fas fa-pen fa-fw"></i></a>
+                                            {% endif %}
+                                            <a id="bloc_{{ bloc.id }}" style="padding-left: 25px;" data-toggle="collapse" href="#area{{ i }}">
+                                                {{ bloc.name }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-body collapse" id="area{{ i }}">
+                                        <div class="accordion-inner">
+                                            <div class="accordion" id="equipamento{{ i }}">
+                                                {% set boucle = true %}
+                                                {% set last = 0 %}
+                                                {% set last = key %}
+                                                {# Paragraphe titre 1#}
+                                                {% for key, bloc in blocs %}
+                                                    {% if key > i and boucle == true %}
+                                                        {% if bloc.ordre == 0 %}
+                                                            {% include 'rapport/Components/edit/bloc_elem.html.twig' %}
+                                                            {% set last = key %}
+                                                        {% else %}
+                                                            {% set boucle = false %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {# Paragraphe titre 1 FIN#}
+                                                {% for key, bloc in blocs %}
+                                                    {# Key : {{ key }}  Last : {{ last }} Bloc ordre {{ bloc.ordre }} #}
+                                                    {% if bloc.ordre == 2 and key == last + 1 %}
+                                                        <div class="accordion-group">
+                                                            <div class="accordion-heading equipamento">
+                                                                <div class="accordion-toggle upperCase">
+                                                                    {% if bloc.titre_edit == 0 %}
+                                                                    <a id="blocPen_{{ bloc.id }}" href="#" onclick="openTitreModal({{ bloc.id }},'{{ bloc.name|e('js') }}')"><i class="fas fa-pen fa-fw"></i></a>
+                                                                   {% endif %}
+                                                                    <a id="bloc_{{ bloc.id }}" style="padding-left: 25px;" data-toggle="collapse" href="#ponto{{ i }}-{{ key }}">
+                                                                        {{ bloc.name }}
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="accordion-body collapse" id="ponto{{ i }}-{{ key }}">
+                                                                <div class="accordion-inner">
+                                                                    <div class="accordion" id="servico{{ i }}">
+                                                                        {% set last = last + 1 %}
+                                                                        {% set boucle = true %}
+                                                                        {#Paragraphe Titre 2 Start #}
+                                                                        {% for key, bloc in blocs %}
+                                                                            {% if key > last and boucle == true %}
+                                                                                {% if bloc.ordre == 0 %}
+                                                                                    {% include 'rapport/Components/edit/bloc_elem.html.twig' %}
+                                                                                    {% set last = key %}
+                                                                                {% else %}
+                                                                                    {% set boucle = false %}
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                        {# Paragaphe Titre 2 fin #}
+                                                                        {# TITRE 3#}
+                                                                        {% for key, bloc in blocs %}
+                                                                            {% if key == last + 1 and last != 0 and bloc.ordre == 3 %}
+                                                                                <div class="accordion-group">
+                                                                                    <div class="accordion-heading equipamento">
+                                                                                        <div class="accordion-toggle upperCase">
+                                                                                            {% if bloc.titre_edit == 0 %}
+                                                                                            <a id="blocPen_{{ bloc.id }}" href="#" onclick="openTitreModal({{ bloc.id }},'{{ bloc.name|e('js') }}')"><i class="fas fa-pen fa-fw"></i></a>
+                                                                                            {% endif %}
+                                                                                                <a id="bloc_{{ bloc.id }}" style="padding-left: 25px;" data-toggle="collapse" href="#ponto{{ i }}-{{ key }}">
+                                                                                                {{ bloc.name }}
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="accordion-body collapse" id="ponto{{ i }}-{{ key }}">
+                                                                                        <div class="accordion-inner">
+                                                                                            <div class="accordion" id="servico{{ i }}">
+                                                                                                {% set last = last + 1 %}
+                                                                                                {% set boucle = true %}
+                                                                                                {#Paragraphe Titre 3 Start #}
+                                                                                                {% for key, bloc in blocs %}
+                                                                                                    {% if key > last and boucle == true %}
+                                                                                                        {% if bloc.ordre == 0 %}
+                                                                                                            {% include 'rapport/Components/edit/bloc_elem.html.twig' %}
+                                                                                                            {% set last = key %}
+                                                                                                        {% else %}
+                                                                                                            {% set boucle = false %}
+                                                                                                        {% endif %}
+                                                                                                    {% endif %}
+                                                                                                {% endfor %}
+                                                                                                {# Paragaphe Titre 3 fin #}
+                                                                                                {# TITRE 4#}
+                                                                                                {% for key, bloc in blocs %}
+                                                                                                    {% if key == last + 1 and last != 0 and bloc.ordre == 4 %}
+                                                                                                        <div class="accordion-group">
+                                                                                                            <div class="accordion-heading equipamento">
+                                                                                                                <div class="accordion-toggle upperCase">
+                                                                                                                    {% if bloc.titre_edit == 0 %}
+                                                                                                                    <a id="blocPen_{{ bloc.id }}" href="#" onclick="openTitreModal({{ bloc.id }},'{{ bloc.name|e('js') }}')"><i class="fas fa-pen fa-fw"></i></a>
+                                                                                                                   {% endif %}
+                                                                                                                    <a id="bloc_{{ bloc.id }}" style="padding-left: 25px;" data-toggle="collapse" href="#ponto{{ i }}-{{ key }}">
+                                                                                                                        {{ bloc.name }}
+                                                                                                                    </a>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div class="accordion-body collapse" id="ponto{{ i }}-{{ key }}">
+                                                                                                                <div class="accordion-inner">
+                                                                                                                    <div class="accordion" id="servico{{ i }}">
+                                                                                                                        {% set last = last + 1 %}
+                                                                                                                        {% set boucle = true %}
+                                                                                                                        {#Paragraphe Titre 4 Start #}
+                                                                                                                        {% for key, bloc in blocs %}
+                                                                                                                            {% if key > last and boucle == true %}
+                                                                                                                                {% if bloc.ordre == 0 %}
+                                                                                                                                    {% include 'rapport/Components/edit/bloc_elem.html.twig' %}
+                                                                                                                                    {% set last = key %}
+                                                                                                                                {% else %}
+                                                                                                                                    {% set boucle = false %}
+                                                                                                                                {% endif %}
+                                                                                                                            {% endif %}
+                                                                                                                        {% endfor %}
+                                                                                                                        {# Paragaphe Titre 4 fin #}
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    {% endif %}
+                                                                                                {% endfor %}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                        {# Fin TITRE 3#}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if bloc.ordre == 0 %}
+                        {# TODO gérer le cas on à pas de titre 1#}
+                        {# <h2>Paragraphe</h2> #}
+                    {% endif %}
+                    {% set i = i + 1 %}
+                {% endfor %}
+                {% if endNotes | length > 0 %}
+                {% include 'rapport/Components/edit/endNotes.html.twig' %}
+                 {% endif %}
+                {% if glossaires | length > 0%}
+                {% include 'rapport/Components/edit/glossaire.html.twig' %}
+                {% endif %}
+                </div>
+            </div>
+        </div>
+{#    <div class="modal fade" id="loadMe" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">#}
+{#        <div class="modal-dialog modal-sm" role="document">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-body text-center">#}
+{#                    <div class="loader"></div>#}
+{#                    <div class="loader-txt">#}
+{#                        <p>{{ traduction.paragraphe_en_cours_enregistrement |trans }}<br><br><small>{{ traduction.patientez |trans }}</small></p>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+        {% include '/rapport/Components/edit/modal_titre_edit.html.twig' %}
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+
+<script>
+    var _idTitre;
+    function openTitreModal(id,titre){
+        $('#titreInputTxt').val(unescape(titre));
+        _idTitre = id;
+        $('#exampleModal').modal('show');
+    }
+    //167
+    {#function editParagraph(id)#}
+    {#{#}
+    {#        var value =   $('#collapseSummary' + id).attr('contenteditable');#}
+    {#        if ( value === 'false') {#}
+    {#            $('#collapseSummary' + id).attr('contenteditable','true');#}
+    {#            document.getElementById("content" + id).style.background = "#DDD8D8"#}
+    {#            document.getElementById("content"+ id).insertAdjacentHTML('afterend', '<input id="buttonParagraphEdit" class="btn dropdown-button-custom pt-2" type="button" value="{{ traduction.sauvegarder_dans_le_document |trans }}" onclick="saveParagraph('+ id +')">');#}
+    {#        } else {#}
+    {#            $('#collapseSummary' + id).attr('contenteditable','false');#}
+    {#            document.getElementById("content" + id).style.background = "white"#}
+    {#            document.getElementById('buttonParagraphEdit').remove();#}
+
+    {#        }#}
+    {#}#}
+
+    {#function saveParagraph(id)#}
+    {#{#}
+    {#    const modal = $("#loadMe").modal({#}
+    {#        backdrop: "static", //remove ability to close modal with click#}
+    {#        keyboard: false, //remove option to close with keyboard#}
+    {#        show: true //Display loader!#}
+    {#    });#}
+    {#    var content = $("#collapseSummary"+ id ).text()#}
+    {#    $.ajax({#}
+    {#        url: "{{ app.request.getBaseURL() }}/rapport/api/update/paragraphEdit/" + id,#}
+    {#        type: "POST",#}
+    {#        data: {paragraph : content},#}
+    {#        complete: function(request, result)#}
+    {#        {#}
+
+    {#            if (request.responseText === "Le paragraphe a bien été mis à jour."#}
+    {#                || request.responseText === "The paragraph has been updated.") {#}
+    {#                setTimeout(function() {#}
+    {#                    $(".loader-txt").html("<p>"+ request.responseText +"</p>");#}
+
+    {#                    // $("#loadMe").modal("hide");#}
+    {#                }, 2000);#}
+    {#                setTimeout(function() {#}
+    {#                    $("#loadMe").modal("hide");#}
+    {#                }, 4000);#}
+    {#                setTimeout(function() {#}
+    {#                    $(".loader-txt").html("<p>{{ traduction.paragraphe_en_cours_enregistrement |trans }}<br><br><small>{{ traduction.patientez |trans }}</small></p>");#}
+    {#                }, 5000);#}
+
+    {#            }#}
+    {#            else {#}
+    {#                $(".loader").hide();#}
+    {#                $(".loader-txt").html("<p>{{ traduction.erreur_enregistrement |trans }}<br> {{ traduction.veuillez_rafraichir |trans }}<br><br><small>{{ traduction.erreur |trans }} : "+ request.responseText +" </small></p>");#}
+
+    {#            }#}
+    {#        }#}
+    {#    })#}
+    {#}#}
+
+    $(document).ready(function() {
+           $('.accordion-body').addClass('hide');
+           $('#openAll').show();
+           $('#closeAll').hide();
+       $('#openAll').click(function () {
+           $('.accordion-body').addClass('show');
+           // $('.accordion-toggle').removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
+           // $('.ui-accordion-content').addClass('ui-accordion-content-active').attr({'aria-expanded':'true','aria-hidden':'false'}).show();
+           $(this).hide();
+           $('#closeAll').show();
+       });
+       $('#closeAll').click(function () {
+           $('.accordion-body').removeClass('show');
+           // $('.accordion-toggle').removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
+           // $('.ui-accordion-content').addClass('ui-accordion-content-active').attr({'aria-expanded':'true','aria-hidden':'false'}).show();
+           $(this).hide();
+           $('#openAll').show();
+       });
+
+
+       $('#titreSaveChange').click(function () {
+            console.log(_idTitre);
+            let titre = $('#titreInputTxt').val();
+            console.log(titre);
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/api/update/titreBloc/" + _idTitre,
+                type : "PUT",
+                data : {titreBloc : titre},
+                complete: function (data,status) {
+                    console.log(data);
+                    $('#exampleModal').modal('hide');
+                    $('#bloc_'+_idTitre).text(titre);
+                    let titreEscape = escape(titre);
+                    $('#blocPen_'+_idTitre).attr("onclick","openTitreModal("+_idTitre+",'"+titreEscape+"')");
+                    //window.location.reload();
+                }
+            })
+       })
+    });
+
+       function blocValidation(id){
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/blocValidation/" + id,
+                type: "POST",
+                dataType: 'JSON',
+                complete: function()
+                {
+                    // $('#blocStateBtn'+id).remove();
+                    $('#badge'+id).remove();
+                    // $('#btnGroupBloc'+id).append("<a id=\"blocStateBtn"+ id +"\" class=\"dropdown-item\" onclick=\"blocDismiss("+ id +")\">Invalider le paragraphe</a>");
+                    $('#badgeContainer'+id).append("<span id=\"badge"+ id +"\" class=\"badge badge-pill badge-pill-custom-small mt-2 custom-publication\">{{ traduction.valide |trans }}</span>");
+                },
+            });
+        }
+        function blocDismiss(id){
+            $.ajax({
+                url: "{{ app.request.getBaseURL() }}/rapport/blocDismiss/" + id,
+                type: "POST",
+                dataType: 'JSON',
+                complete: function()
+                {
+                    $('#blocStateBtn'+id).remove();
+                    $('#badge'+id).remove();
+                    $('#btnGroupBloc'+id).append("<a id=\"blocStateBtn"+ id +"\" class=\"dropdown-item\" onclick=\"blocValidation("+ id +")\" >{{ traduction.valider_le_bloc |trans }}</a>");
+                    $('#badgeContainer'+id).append("<span id=\"badge"+ id +"\" class=\"badge badge-pill badge-pill-custom-small mt-2 custom-validation\">{{ traduction.en_edition |trans }}</span>");
+                },
+            });
+        }
+</script>
+
+{% endblock %}

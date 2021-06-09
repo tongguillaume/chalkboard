@@ -1,0 +1,80 @@
+{% extends 'home/base.html.twig' %}
+
+{% block title %}Modification du document{% endblock %}
+
+{% block body %}
+    <h1>Create new Document</h1>
+
+    {{ include('document/_form.html.twig') }}
+
+    <a href="{{ path('document_index') }}">back to list</a>
+{% endblock %}
+
+{% block content %}
+    <link href="{{ app.request.getBaseURL()  }}/css/select2.min.css" rel="stylesheet" />
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil|trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+
+                    <a href="{{ path('document_evaluation_choice') }}/{{ idEval }}/{{ idDoc }}/rapport_edit">{{ traduction.documents|trans }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.renommer_le_document | trans}}</li>
+            </ol>
+            <h1>{{ traduction.renommer_le_document | trans}}</h1>
+            <div class="ml-5 col-md-8 mb-5">
+                <div id="docCard" class="row">
+                    <div class="col-md-12">
+                        {{ form_start(form) }}
+                        {{ form_errors(form) }}
+                        <div class="form-group">
+                            <div class="label-custom">{{ traduction.nom | trans }}</div>
+                            <div class="row"> {{ form_widget(form.nom, {'attr' : { 'placeholder' : 'Nom du document'}}) }} </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="label-custom">{{ traduction.evaluations |trans }}</div>
+                            <div class="row"> {{ form_widget(form.evaluations) }} </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="label-custom">{{ traduction.systeme_de_droit | trans}}</div>
+                            <div class="row"> {{ form_widget(form.id_SystemDroit) }} </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="label-custom"> {{ traduction.date_de_mise_a_dispotition | trans }}</div>
+                            <div class="row"> {{ form_widget(form.date_mad) }} </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="label-custom">{{ traduction.date_d_echeance | trans }}</div>
+                            <div class="row"> {{ form_widget(form.deadline) }} </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-10"></div>
+                            {{ form_widget(form.save, { 'label': traduction.enregister|trans } ) }}
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ app.request.getBaseURL()  }}/js/select2.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            $('.select2').select2();
+        });
+    </script>
+{% endblock %}

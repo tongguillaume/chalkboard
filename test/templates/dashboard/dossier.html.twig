@@ -1,0 +1,144 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+        {% for label, flashes in app.session.flashbag.all %}
+            {% for flash in flashes %}
+                {% if ( label == 'success' ) %}
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        {{ flash }}
+                    </div>
+                {% elseif ( label == 'error' ) %}
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        {{ flash }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item active">{{ traduction.tableau_de_bord |trans }} {{ evaluation.nom }}</li>
+            </ol>
+            <div class="row">
+                <div class="col-md-11 mx-auto">
+                    {# TODO voir si on met miniscule ? #}
+                    <h3>{{ traduction.tableau_de_bord |trans }} {{ evaluation.nom }}</h3>
+{#                    {% if hasAccess == true %}#}
+{#                        {% if ordre == null or ordre == "asc" %}#}
+{#                            <a href="{{ path("dashboard_dossier_ordre", { id : id, ordre : "desc" }) }}" class="btn dropdown-button-custom col-3 ml-auto" style="color:#000;font-weight:bold">#}
+{#                                {{ traduction.tri_par_ordre_decroissant | trans }}#}
+{#                            </a>#}
+{#                        {% elseif ordre == "desc" %}#}
+{#                            <a href="{{ path("dashboard_dossier_ordre", { id : id, ordre : "asc" }) }}" class="btn dropdown-button-custom col-3 ml-auto" style="color:#000;font-weight:bold">#}
+{#                                {{ traduction.tri_par_ordre_croissant | trans }}#}
+{#                            </a>#}
+{#                        {% endif %}#}
+{#                    {% endif %}#}
+                    {% for document in documents %}
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <div class="row">
+                                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_edit" style="color: black;">
+                                        <u class="list-group-item-heading overflow-panel-title-bloc">{{ document.nom }}</u>
+                                    </a>
+{#                                    {% if hasAccess == true %}#}
+                                    <div class="col-md-3 ml-auto">
+                                        <div class="row">
+                                            <div class="col-9 progress progress-custom">
+                                                <div class="progress-bar progress-bar-custom" role="progressbar" style="width: {{ document.percent }}%">
+                                                </div>
+                                            </div>
+                                            <div class="col-3 ml-auto percent-custom">{{ document.percent }}
+                                                %
+                                            </div>
+                                        </div>
+                                    </div>
+{#                                    {% endif %}#}
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-md-12 col-xl-8 list-group-item-text pl-0">
+                                        {{ traduction.statut |trans }} :
+                                        {% if document.percent <= 60 %}
+                                            <span class="badge badge-pill badge-pill-custom mt-2 custom-validation">{% if document.fluxname is null %}En édition{% else %}{{ document.fluxname }}{% endif %}</span>
+                                        {% elseif document.percent > 60 and document.percent < 75 %}
+                                            <span class="badge badge-pill badge-pill-custom mt-2 custom-edition">{% if document.fluxname is null %}En édition{% else %}{{ document.fluxname }}{% endif %}</span>
+                                        {% elseif document.percent >= 75 %}
+                                            <span class="badge badge-pill badge-pill-custom mt-2 custom-publication">{% if document.fluxname is null %}En édition{% else %}{{ document.fluxname }}{% endif %}</span>
+                                        {% endif %}
+                                        <br>
+                                        {{ traduction.cree_le |trans }} : {{ document.date_creation }}
+                                        {%  if document.date_modification is not null %}
+                                            <br>
+                                            {{ traduction.derniere_modification_le |trans }} : {{ document.date_modification }}
+                                        {% endif %}
+                                        <br>
+                                        {{ traduction.date_cible |trans }} : {%  if document.deadline is not null %}{{ document.deadline }}{% else %}{{ traduction.aucune_date_cible |trans }}{% endif %}
+                                    </div>
+                                    <div class="col-12 col-md-12 col-xl-4" style="text-align: right;">
+                                        <div class="mt-4 btn-group report-controls">
+                                            <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_edit">
+                                                <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.modifier_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/rapport_edit.svg" width="40" height="40">
+                                            </a>
+
+                                            <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}">
+                                                <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.afficher_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/apercu-du-doc.svg" width="40" height="40">
+                                            </a>
+                                            <a href="{{ path('api_create_file_document') }}/{{ document.id }}">
+                                                <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.telecharger_le_document|trans }}" src="{{ app.request.getBaseURL() }}/images/telecharger.svg" width="40" height="40"/>
+                                            </a>
+                                            <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/dashboard_document"
+                                            >
+                                                <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.voir_le_tableau_de_bord|trans }}" src="{{ app.request.getBaseURL() }}/images/tableau-de-bord.svg" width="40" height="40"/>
+                                            </a>
+                                            {% if hasAccess %}
+
+
+                                            <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_flux">
+                                            <img data-toggle="tooltip" data-placement="bottom" title="{{ traduction.acceder_flux_de_travail|trans }}" src="{{ app.request.getBaseURL() }}/images/flux-de-travail.svg" width="40" height="40"/>
+                                            </a>
+                                            <div class="other-menu">
+                                            <a class="" id="extend_menu_hceres_custom" href="#" onclick="toggle_hceres('{{ document.id }}');event.preventDefault(); this.classList.toggle(`open-other-menu`);" role="tab" aria-selected="true">
+                                                <img data-toggle="tooltip" data-placement="bottom" src="{{ app.request.getBaseURL() }}/images/autres.svg" title="{{ traduction.autre |trans }}" width="40" height="40">
+                                            </a>
+                                            <div class="mt-2 tab-content dropdown-menu-hceres" id="nav-tabContent-{{ document.id }}">
+                                                <div class="" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                                                    <a href="/document/{{ evaluation.id }}/{{ document.id }}/edit"
+                                                       class="dropdown-item">{{ traduction.renommer_le_document|trans }}</a>
+                                                    <a href="{{ path('document_duplicate') }}/{{ document.id }}"
+                                                       class="dropdown-item">{{ traduction.dupliquer_le_document|trans }}</a>
+                                                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/gestion_user_attribution"
+                                                       class="dropdown-item">{{ traduction.gerer_les_droits_des_contributeurs|trans }}</a>
+                                                    <a href="{{ path('document_evaluation_choice') }}/{{ evaluation.id }}/{{ document.id }}/rapport_template"
+                                                       class="dropdown-item">{{ traduction.modifier_le_template|trans }}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Sticky Footer -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

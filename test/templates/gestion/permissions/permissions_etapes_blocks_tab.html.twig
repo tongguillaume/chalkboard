@@ -1,0 +1,111 @@
+{% extends 'home/base.html.twig' %}
+
+{% block content %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil |trans }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ app.request.getBaseURL() }}/dashboard/dossier/{{ app.session.get("evaluation_id") }}">{{ app.session.get("evaluation") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom">
+                    <a href="{{ path('document_evaluation_choice', {'idEval': app.session.get("evaluation_id"), 'idDoc': app.session.get("document_id"),'page' : 'dashboard_document'}) }}">{{ app.session.get("document") }}</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-item-custom"><a href="{{ app.request.getBaseURL()  }}/gestion/permissions">{{ traduction.permissions | trans}}</a></li>
+                <li class="breadcrumb-item breadcrumb-item-custom"><a href="{{ app.request.getBaseURL()  }}/gestion/permissions/etapes">{{ traduction.etapes | trans }}</a></li>
+                <li class="breadcrumb-item breadcrumb-item-custom"><a href="{{ app.request.getBaseURL()  }}/gestion/permissions/etapes/blocks/{{ flux.id }}">{{ traduction.blocs | trans }}</a></li>
+                <li class="breadcrumb-item active">{{ traduction.paragraph | trans }} 1</li>
+            </ol>
+
+
+            <h3>{{ traduction.permissions_pour_l_etape | trans }} {{ flux.name }} sur {{ block.name }}</h3>
+
+            <form method="post" action="{{ path('permissions_manage_blocks') }}">
+                <table class="table table-sm mt-5" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th scope="col">{{ traduction.roles |trans }}</th>
+                        <th scope="col">{{ flux.name }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for role in roles %}
+                        <tr>
+                            <th scope="row"><a href="#">{{ role.nomAbrege }}</a></th>
+                            <td>
+                                <div class="input-group mb">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <input value="false" name="{{ role.id }}_{{ flux.id }}_visu_{{ block.id }}" type="hidden">
+                                            <input {% for perm in permissions %}{% if perm.idFlux.id == flux.id and perm.idRole.id == role.id %}{% if perm.idDroit.visualisation == true %}checked{% endif %}{% endif %}{% endfor %} id="{{ role.id }}_{{ flux.id }}_visu_{{ block.id }}" value="true" name="{{ role.id }}_{{ flux.id }}_visu_{{ block.id }}" type="checkbox" aria-label="Checkbox for following text input">
+                                        </div>
+                                    </div>
+                                    <input value="Visualisation" type="text" disabled class="form-control" aria-label="Text input with checkbox">
+                                </div>
+                                <div class="input-group mb">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <input value="false" name="{{ role.id }}_{{ flux.id }}_ecri_{{ block.id }}" type="hidden">
+                                            <input {% for perm in permissions %}{% if perm.idFlux.id == flux.id and perm.idRole.id == role.id %}{% if perm.idDroit.ecriture == true %}checked{% endif %}{% endif %}{% endfor %} id="{{ role.id }}_{{ flux.id }}_ecri_{{ block.id }}" value="true" name="{{ role.id }}_{{ flux.id }}_ecri_{{ block.id }}" type="checkbox" aria-label="Checkbox for following text input">
+                                        </div>
+                                    </div>
+                                    <input value="Écriture" type="text" disabled class="form-control" aria-label="Text input with checkbox">
+                                </div>
+                                <div class="input-group mb">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <input value="false" name="{{ role.id }}_{{ flux.id }}_comm_{{ block.id }}" type="hidden">
+                                            <input {% for perm in permissions %}{% if perm.idFlux.id == flux.id and perm.idRole.id == role.id %}{% if perm.idDroit.commentaire == true %}checked{% endif %}{% endif %}{% endfor %} id="{{ role.id }}_{{ flux.id }}_comm_{{ block.id }}" value="true" name="{{ role.id }}_{{ flux.id }}_comm_{{ block.id }}" type="checkbox" aria-label="Checkbox for following text input">
+                                        </div>
+                                    </div>
+                                    <input value="Commentaire" type="text" disabled class="form-control" aria-label="Text input with checkbox">
+                                </div>
+                                <div class="input-group mb">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <input value="false" name="{{ role.id }}_{{ flux.id }}_note_{{ block.id }}" type="hidden">
+                                            <input {% for perm in permissions %}{% if perm.idFlux.id == flux.id and perm.idRole.id == role.id %}{% if perm.idDroit.notes == true %}checked{% endif %}{% endif %}{% endfor %} id="{{ role.id }}_{{ flux.id }}_note_{{ block.id }}" value="true" name="{{ role.id }}_{{ flux.id }}_note_{{ block.id }}" type="checkbox" aria-label="Checkbox for following text input">
+                                        </div>
+                                    </div>
+                                    <input value="Notes" type="text" disabled class="form-control" aria-label="Text input with checkbox">
+                                </div>
+                                <div class="input-group mb">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <input value="false" name="{{ role.id }}_{{ flux.id }}_etat_{{ block.id }}" type="hidden">
+                                            <input {% for perm in permissions %}{% if perm.idFlux.id == flux.id and perm.idRole.id == role.id %}{% if perm.idDroit.modificationEtat == true %}checked{% endif %}{% endif %}{% endfor %} id="{{ role.id }}_{{ flux.id }}_etat_{{ block.id }}" value="true" name="{{ role.id }}_{{ flux.id }}_etat_{{ block.id }}" type="checkbox" aria-label="Checkbox for following text input">
+                                        </div>
+                                    </div>
+                                    <input value="Modification etat" type="text" disabled class="form-control" aria-label="Text input with checkbox">
+                                </div>
+                                <div class="input-group mb">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <input value="false" name="{{ role.id }}_{{ flux.id }}_gest_{{ block.id }}" type="hidden">
+                                            <input {% for perm in permissions %}{% if perm.idFlux.id == flux.id and perm.idRole.id == role.id %}{% if perm.idDroit.gestion == true %}checked{% endif %}{% endif %}{% endfor %} id="{{ role.id }}_{{ flux.id }}_gest_{{ block.id }}" value="true" name="{{ role.id }}_{{ flux.id }}_gest_{{ block.id }}" type="checkbox" aria-label="Checkbox for following text input">
+                                        </div>
+                                    </div>
+                                    <input value="Gestion" type="text" disabled class="form-control" aria-label="Text input with checkbox">
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <button id="submitPermission" class="btn btn-custom-hceres float-right mt-5 mr-1" type="submit"><i class="fas fa-fw fa-save"></i> {{ traduction.enregister | trans }}</button>
+
+            </form>
+
+
+            <!-- Sticky Footer -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+{% endblock %}

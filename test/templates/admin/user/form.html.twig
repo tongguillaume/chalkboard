@@ -1,0 +1,72 @@
+{% extends "home/base.html.twig" %}
+
+{% block title %}
+    {{ 'user.form.title' | trans | desc('User') }} - {{ parent() }}
+{% endblock %}
+
+{% block page_title_text %}
+    {{ 'user.form.page_title' | trans | desc('User') }}
+{% endblock %}
+
+{% block content %}
+<div id="content-wrapper">
+
+    <div class="container-fluid">
+
+        <!-- Breadcrumbs-->
+        <ol class="breadcrumb breadcrumb-custom" style="padding-left: 6px">
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ app.request.getBaseURL()  }}/">{{ traduction.accueil|trans }}</a>
+            </li>
+            <li class="breadcrumb-item breadcrumb-item-custom">
+                <a href="{{ app.request.getBaseURL()  }}/admin/users">{{ traduction.administration|trans }}</a>
+            </li>
+            <li class="breadcrumb-item active">{{ traduction.editions|trans }}</li>
+        </ol>
+
+
+        <div class="py-3 col-lg-8">
+            <div class="row">
+                <div class="col-md-12">
+                    {{ form_start(form) }}
+                    {{ form_errors(form) }}
+                    <div class="form-group">
+                        <div class="label-custom">{{ traduction.username|trans }}</div>
+                        <div class="row"> {{ form_widget(form.username) }} </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-custom">Email</div>
+                        <div class="row"> {{ form_widget(form.email) }} </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-custom">{{ traduction.prenom|trans }}</div>
+                        <div class="row"> {{ form_widget(form.firstname) }} </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-custom">{{ traduction.nom|trans }}</div>
+                        <div class="row"> {{ form_widget(form.lastname) }} </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-custom">{{ traduction.roles|trans }}</div>
+                        <div class="row"> {{ form_widget(form.roles) }} </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-custom">{{ traduction.departement_hceres|trans }}</div>
+                        <div class="row"> {{ form_widget(form.departementHceres) }} </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-10"></div>
+                        {{ form_widget(form.save, { 'label': traduction.enregister|trans } ) }}
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Footer -->
+    </div>
+    <!-- /.content-wrapper -->
+
+</div>
+    <!-- /#wrapper -->
+{% endblock %}

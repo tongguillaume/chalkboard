@@ -1,0 +1,69 @@
+{% extends 'home/base.html.twig' %}
+
+{% block title %}Flux{% endblock %}
+
+{% block content %}
+<div id="content-wrapper">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 style="color: #ED145B" class="mb-0">
+                    Flux {{ flux.name }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Id</th>
+                            <td>{{ flux.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.nom | trans }}</th>
+                            <td>{{ flux.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.ordre | trans }}</th>
+                            <td>{{ flux.ordre }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.description | trans }}</th>
+                            <td>{{ flux.description }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.date_de_creation | trans }}</th>
+                            <td>{{ flux.dateCreation ? flux.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ traduction.date_de_modification | trans }}</th>
+                            <td>{{ flux.dateModification ? flux.dateModification|date('Y-m-d H:i:s') : '' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Mail</th>
+                            <td>{% if flux.mail == 1 %}
+                                Activé{% else %} Désactivé{% endif %}
+                                </td>
+                        </tr>
+                        <tr>
+                            <th>Notification</th>
+                            <td>{% if flux.notification == 1 %}
+                                    Activé{% else %} Désactivé{% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <div class="row justify-content-center">
+                    <form method="post" class="ml-0" action="{{ path('flux_delete', {'id': flux.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                        <a href="{{ path('flux_edit', {'id': flux.id}) }}" style="color: #0069d9;"> <span class="fas fa-fw fa-edit"></span></a>
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ flux.id) }}">
+                        <button style="color: red; background: transparent" class="btn" type="submit"><i class="fas fa-fw fa-trash"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
