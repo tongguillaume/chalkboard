@@ -74,7 +74,6 @@ class Limestone
             $line = self::deletePartOfLine($line, "}}", false);
             $line = self::deletePartOfLine($line, "%}", false);
             $line = self::deletePartOfLine($line, "{%", true);
-
             $line = str_replace("%}", "", $line);
             $line = str_replace("}} ) }}", "", $line);
             $line = str_replace("}}) }}", "", $line);
@@ -99,16 +98,9 @@ class Limestone
      ');
         foreach ($array as $key =>$arrayline ) {
             foreach ($arrayline as $line) {
-                $strToWordTab = explode(' ',trim($line));
-                if (count($strToWordTab) == 1) {
-                    $keyWord = $strToWordTab[0];
-                } else if (count($strToWordTab) > 1) {
-                    $keyWord = $strToWordTab[0].'_'.$strToWordTab[1];
-                } else {
-                    $keyWord = "fin frero, tu es cringe";
-                }
-                file_put_contents("messages.fr.xml", '            <trans-unit id="'.$keyWord.'">'."\n",FILE_APPEND);
-                file_put_contents("messages.fr.xml", '                <source>'.$keyWord.'</source>'."\n",FILE_APPEND);
+                $keyWord = self::getKeyWord($line);
+                file_put_contents("messages.fr.xml", '            <trans-unit id="'.strtolower($keyWord).'">'."\n",FILE_APPEND);
+                file_put_contents("messages.fr.xml", '                <source>'.strtolower($keyWord).'</source>'."\n",FILE_APPEND);
                 file_put_contents("messages.fr.xml", '                <target>'.$line.'</target>'."\n",FILE_APPEND);
                 file_put_contents("messages.fr.xml", '             </trans-unit>'."\n",FILE_APPEND);
             }
@@ -118,16 +110,33 @@ class Limestone
    </file>
 </xliff>', FILE_APPEND
         );
+    }
 
+    public function getKeyWord($line)
+    {
+        $strToWordTab = explode(' ',trim($line));
+        if (count($strToWordTab) == 1) {
+            $keyWord = $strToWordTab[0];
+        } else if (count($strToWordTab) > 1) {
+            $keyWord = $strToWordTab[0].'_'.$strToWordTab[1];
+        } else {
+            $keyWord = "fin frero, tu es cringe";
+        }
 
-
+        return $keyWord;
     }
 
     public function htmlToYaml($array)
     {
         foreach ($array as $key => $arrayLine) {
-            foreach ($arrayLine as $key2 => $line) {
-                file_put_contents("messages.fr.yaml", $key2.$key .': '.$line. "\n", FILE_APPEND );
+            foreach ($arrayLine as  $line) {
+               $keyWord = self::getKeyWord($line);
+                //recreate the file
+                if ($key == 0) {
+                    file_put_contents("messages.fr.yaml", strtolower($keyWord) . ': ' . $line . "\n");
+                } else {
+                    file_put_contents("messages.fr.yaml", strtolower($keyWord) . ': ' . $line . "\n", FILE_APPEND);
+                }
             }
         }
     }
