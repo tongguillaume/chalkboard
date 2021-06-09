@@ -65,15 +65,19 @@ class Limestone
             $line = trim($line);
             $line = preg_replace("/{{.*?}}/", "", $line);
             $line = preg_replace("/{%.*?%}/", "", $line);
+            $line = preg_replace("/{#.*?#}/", "", $line);
             $line = preg_replace("/\[.*?\]/", "", $line);
             $line = preg_replace("/form_.*?\)/", "", $line);
             $line = str_replace(" __ ", "", $line);
             $line = str_replace("__", "", $line);
+            $line = str_replace("* ", "", $line);
             $line = self::deletePartOfLine($line, "{{", true);
             $line = self::deletePartOfLine($line, "form_", true);
+            $line = self::deletePartOfLine($line, "{#", true);
+            $line = self::deletePartOfLine($line, "{%", true);
             $line = self::deletePartOfLine($line, "}}", false);
             $line = self::deletePartOfLine($line, "%}", false);
-            $line = self::deletePartOfLine($line, "{%", true);
+            $line = self::deletePartOfLine($line, "#}", false);
             $line = str_replace("%}", "", $line);
             $line = str_replace("}} ) }}", "", $line);
             $line = str_replace("}}) }}", "", $line);
@@ -96,14 +100,12 @@ class Limestone
     <file source-language="en" datatype="plaintext" original="file.ext">
         <body>
      ');
-        foreach ($array as $key =>$arrayline ) {
-            foreach ($arrayline as $line) {
+        foreach ($array as $key => $line ) {
                 $keyWord = self::getKeyWord($line);
                 file_put_contents("messages.fr.xml", '            <trans-unit id="'.strtolower($keyWord).'">'."\n",FILE_APPEND);
                 file_put_contents("messages.fr.xml", '                <source>'.strtolower($keyWord).'</source>'."\n",FILE_APPEND);
                 file_put_contents("messages.fr.xml", '                <target>'.$line.'</target>'."\n",FILE_APPEND);
                 file_put_contents("messages.fr.xml", '             </trans-unit>'."\n",FILE_APPEND);
-            }
         }
 
         file_put_contents("messages.fr.xml",'        </body>
@@ -141,7 +143,7 @@ class Limestone
       return str_replace($a, $b, $str);
     }
 
-public function getKeyWord($line)
+    public function getKeyWord($line)
     {
         $strToWordTab = explode(' ',trim($line));
         if (count($strToWordTab) == 1) {
@@ -158,15 +160,21 @@ public function getKeyWord($line)
 
     public function htmlToYaml($array)
     {
-        foreach ($array as $key => $arrayLine) {
-            foreach ($arrayLine as  $line) {
-               $keyWord = self::getKeyWord($line);
-                //recreate the file
-                if ($key == 0) {
-                    file_put_contents("messages.fr.yaml", strtolower($keyWord) . ': ' . $line . "\n");
-                } else {
-                    file_put_contents("messages.fr.yaml", strtolower($keyWord) . ': ' . $line . "\n", FILE_APPEND);
-                }
+        $previousKeyword = [];
+        $cptKeyword = 0;
+        foreach ($array as $key => $line) {
+            $keyWord = strtolower(self::getKeyWord($line));
+            if (in_array($keyWord, $previousKeyword)) {
+                $keyWord = $keyWord . $cptKeyword;
+                $cptKeyword++;
+            }
+            $previousKeyword[] = $keyWord;
+            $line = str_replace("'", "", $line);
+            //recreate the file
+            if ($key == 0) {
+                file_put_contents("messages.fr.yaml", '"' . $keyWord . '": "' . $line . "\"\n");
+            } else {
+                file_put_contents("messages.fr.yaml", '"' . $keyWord . '": "' . $line . "\"\n", FILE_APPEND);
             }
         }
     }
