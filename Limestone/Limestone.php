@@ -55,6 +55,7 @@ class Limestone
 
         return $arrayRes;
     }
+
     public function deletePartOfLine($line, $elem, $lastOrFirst)
     {
         if (strstr($line, $elem) === false)
@@ -68,9 +69,14 @@ class Limestone
         $arrayRes = [];
         foreach ($arrayLine as $line) {
             $line = trim($line);
+            $line = preg_replace("/{{.*?}}/", "", $line);
+            $line = preg_replace("/{%.*?%}/", "", $line);
+            $line = preg_replace("/\[.*?\]/", "", $line);
+            $line = preg_replace("/form_.*?\)/", "", $line);
             $line = str_replace(" __ ", "", $line);
             $line = str_replace("__", "", $line);
             $line = self::deletePartOfLine($line, "{{", true);
+            $line = self::deletePartOfLine($line, "form_", true);
             $line = self::deletePartOfLine($line, "}}", false);
             $line = self::deletePartOfLine($line, "%}", false);
             $line = self::deletePartOfLine($line, "{%", true);
@@ -82,7 +88,7 @@ class Limestone
             $line = str_replace('"', "", $line);
             $line = trim($line);
 
-            if ($line != "") {
+            if ($line != "" && preg_match("/[a-zA-Z]/i", $line)) {
                 $arrayRes [] = $line;
             }
         }
