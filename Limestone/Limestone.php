@@ -178,4 +178,17 @@ class Limestone
             }
         }
     }
+
+
+    public function createXMLandYaml($path)
+    {
+        $allFiles = self::getFolderFiles($path);
+        $arrayLine = [];
+        foreach ($allFiles as $file) {
+            $arrayLine = array_merge($arrayLine, self::parseFile($file));
+        }
+        $arrayLine = array_intersect_key($arrayLine, array_unique(array_map('strtolower', $arrayLine)));
+        self::htmlToYaml($arrayLine);
+        self::htmlToXml($arrayLine);
+    }
 }
