@@ -5,7 +5,7 @@ include 'Chalkboard.php';
 
 
 $test = new Chalkboard();
-$mama = $test->getFolderFiles('../templates');
+$mama = $test->getFolderFiles('../test/templates');
 $arrayLine = [];
 foreach ($mama as $file) {
     $arrayLine = array_merge($arrayLine, $test->parseFile($file));
