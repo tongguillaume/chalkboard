@@ -1,5 +1,5 @@
 {
-  "name": "Chalkboard/Chalkboard",
+  "name": "chalkboard/chalkboard",
   "description": "Create file of traduction for project",
   "require": {
     "php": ">=7.1",
