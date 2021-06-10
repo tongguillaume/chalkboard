@@ -1,11 +1,10 @@
 <?php
 
-use Limestone\Limestone;
+use Chalkboard\Chalkboard;
+include 'Chalkboard.php';
 
-include 'Limestone.php';
 
-
-$test = new Limestone();
+$test = new Chalkboard();
 $mama = $test->getFolderFiles('../templates');
 $arrayLine = [];
 foreach ($mama as $file) {

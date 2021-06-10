@@ -1,11 +1,11 @@
 <?php
 
-namespace Limestone;
+namespace Chalkboard;
 require_once __DIR__ . '/../vendor/autoload.php';
 use Html2Text\Html2Text;
 
 
-class Limestone
+class Chalkboard
 {
     public function getFolderFiles($path)
     {
@@ -95,20 +95,20 @@ class Limestone
 
     public function htmlToXml($array)
     {
-        file_put_contents("messages.fr.xml",'<?xml version="1.0" encoding="UTF-8" ?>
+        file_put_contents("translate/messages.fr.xml",'<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" datatype="plaintext" original="file.ext">
         <body>
      ');
         foreach ($array as $key => $line ) {
                 $keyWord = self::getKeyWord($line);
-                file_put_contents("messages.fr.xml", '            <trans-unit id="'.strtolower($keyWord).'">'."\n",FILE_APPEND);
-                file_put_contents("messages.fr.xml", '                <source>'.strtolower($keyWord).'</source>'."\n",FILE_APPEND);
-                file_put_contents("messages.fr.xml", '                <target>'.$line.'</target>'."\n",FILE_APPEND);
-                file_put_contents("messages.fr.xml", '             </trans-unit>'."\n",FILE_APPEND);
+                file_put_contents("translate/messages.fr.xml", '            <trans-unit id="'.strtolower($keyWord).'">'."\n",FILE_APPEND);
+                file_put_contents("translate/messages.fr.xml", '                <source>'.strtolower($keyWord).'</source>'."\n",FILE_APPEND);
+                file_put_contents("translate/messages.fr.xml", '                <target>'.$line.'</target>'."\n",FILE_APPEND);
+                file_put_contents("translate/messages.fr.xml", '             </trans-unit>'."\n",FILE_APPEND);
         }
 
-        file_put_contents("messages.fr.xml",'        </body>
+        file_put_contents("translate/messages.fr.xml",'        </body>
    </file>
 </xliff>', FILE_APPEND
         );
@@ -172,9 +172,9 @@ class Limestone
             $line = str_replace("'", "", $line);
             //recreate the file
             if ($key == 0) {
-                file_put_contents("messages.fr.yaml", '"' . $keyWord . '": "' . $line . "\"\n");
+                file_put_contents("translate/messages.fr.yaml", '"' . $keyWord . '": "' . $line . "\"\n");
             } else {
-                file_put_contents("messages.fr.yaml", '"' . $keyWord . '": "' . $line . "\"\n", FILE_APPEND);
+                file_put_contents("translate/messages.fr.yaml", '"' . $keyWord . '": "' . $line . "\"\n", FILE_APPEND);
             }
         }
     }
