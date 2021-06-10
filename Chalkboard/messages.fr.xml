@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>
+             <trans-unit id="personne_recevant">
+                <source>personne_recevant</source>
+                <target>Personne reçevant le mail aujourd'hui</target>
+             </trans-unit>
+            <trans-unit id="visualisation_de">
+                <source>visualisation_de</source>
+                <target>VISUALISATION DE L'EMAIL</target>
+             </trans-unit>
+            <trans-unit id="objet:_invitation">
+                <source>objet:_invitation</source>
+                <target>OBJET: Invitation à la formation</target>
+             </trans-unit>
+            <trans-unit id="email:">
+                <source>email:</source>
+                <target>EMAIL:</target>
+             </trans-unit>
+            <trans-unit id="date:">
+                <source>date:</source>
+                <target>DATE:</target>
+             </trans-unit>
+            <trans-unit id="envoyer_le">
+                <source>envoyer_le</source>
+                <target>Envoyer le mail</target>
+             </trans-unit>
+            <trans-unit id="manuellement">
+                <source>manuellement</source>
+                <target>manuellement</target>
+             </trans-unit>
+            <trans-unit id="personne_recevant">
+                <source>personne_recevant</source>
+                <target>Personne reçevant le mail de suivi</target>
+             </trans-unit>
+            <trans-unit id="objet:_relance">
+                <source>objet:_relance</source>
+                <target>OBJET: Relance formation</target>
+             </trans-unit>
+            <trans-unit id="action">
+                <source>action</source>
+                <target>ACTION</target>
+             </trans-unit>
+            <trans-unit id="utilisateur">
+                <source>utilisateur</source>
+                <target>UTILISATEUR</target>
+             </trans-unit>
+            <trans-unit id="date">
+                <source>date</source>
+                <target>DATE</target>
+             </trans-unit>
+            <trans-unit id="fichier">
+                <source>fichier</source>
+                <target>Fichier</target>
+             </trans-unit>
+            <trans-unit id="prenom">
+                <source>prenom</source>
+                <target>PRENOM</target>
+             </trans-unit>
+            <trans-unit id="nom">
+                <source>nom</source>
+                <target>NOM</target>
+             </trans-unit>
+            <trans-unit id="email">
+                <source>email</source>
+                <target>EMAIL</target>
+             </trans-unit>
+            <trans-unit id="disponibilite">
+                <source>disponibilite</source>
+                <target>DISPONIBILITÉ</target>
+             </trans-unit>
+            <trans-unit id="__mail">
+                <source>__mail</source>
+                <target>_ mail _</target>
+             </trans-unit>
+            <trans-unit id="mail_personnalise">
+                <source>mail_personnalise</source>
+                <target>Mail personnalisé à</target>
+             </trans-unit>
+            <trans-unit id="objet_:">
+                <source>objet_:</source>
+                <target>Objet : Contenu du mail : Envoyer</target>
+             </trans-unit>
+            <trans-unit id="fermer">
+                <source>fermer</source>
+                <target>Fermer</target>
+             </trans-unit>
+            <trans-unit id="nom_du">
+                <source>nom_du</source>
+                <target>NOM DU FICHIER</target>
+             </trans-unit>
+            <trans-unit id="importer_un">
+                <source>importer_un</source>
+                <target>IMPORTER UN CSV</target>
+             </trans-unit>
+            <trans-unit id="__arrow_drop_down_circle">
+                <source>__arrow_drop_down_circle</source>
+                <target>_ arrow_drop_down_circle _</target>
+             </trans-unit>
+            <trans-unit id="importer_un">
+                <source>importer_un</source>
+                <target>Importer un fichier CSV</target>
+             </trans-unit>
+            <trans-unit id="etat_de">
+                <source>etat_de</source>
+                <target>ETAT DE LA FORMATION</target>
+             </trans-unit>
+            <trans-unit id="mail">
+                <source>mail</source>
+                <target>MAIL</target>
+             </trans-unit>
+            <trans-unit id="ausybot">
+                <source>ausybot</source>
+                <target>AusyBot</target>
+             </trans-unit>
+            <trans-unit id="_settings_">
+                <source>_settings_</source>
+                <target>_settings_</target>
+             </trans-unit>
+            <trans-unit id="parametres">
+                <source>parametres</source>
+                <target>PARAMÈTRES</target>
+             </trans-unit>
+            <trans-unit id="manuel_d'utilisation">
+                <source>manuel_d'utilisation</source>
+                <target>MANUEL D'UTILISATION</target>
+             </trans-unit>
+            <trans-unit id="se_deconnecter">
+                <source>se_deconnecter</source>
+                <target>SE DÉCONNECTER</target>
+             </trans-unit>
+            <trans-unit id="dashboard_one">
+                <source>dashboard_one</source>
+                <target>Dashboard One</target>
+             </trans-unit>
+            <trans-unit id="dashboard_two">
+                <source>dashboard_two</source>
+                <target>Dashboard Two</target>
+             </trans-unit>
+            <trans-unit id="dashboard_three">
+                <source>dashboard_three</source>
+                <target>Dashboard Three</target>
+             </trans-unit>
+            <trans-unit id="dashboard_four">
+                <source>dashboard_four</source>
+                <target>Dashboard Four</target>
+             </trans-unit>
+            <trans-unit id="analytics">
+                <source>analytics</source>
+                <target>Analytics</target>
+             </trans-unit>
+            <trans-unit id="widgets">
+                <source>widgets</source>
+                <target>Widgets</target>
+             </trans-unit>
+            <trans-unit id="__home">
+                <source>__home</source>
+                <target>_ home _Accueil</target>
+             </trans-unit>
+            <trans-unit id="_email__gestionnaire">
+                <source>_email__gestionnaire</source>
+                <target>_email_ Gestionnaire</target>
+             </trans-unit>
+            <trans-unit id="liste_des">
+                <source>liste_des</source>
+                <target>Liste des utilisateurs</target>
+             </trans-unit>
+            <trans-unit id="liste_des">
+                <source>liste_des</source>
+                <target>Liste des suivis de formation</target>
+             </trans-unit>
+            <trans-unit id="historique_des">
+                <source>historique_des</source>
+                <target>Historique des actions</target>
+             </trans-unit>
+            <trans-unit id="invitation">
+                <source>invitation</source>
+                <target>Invitation</target>
+             </trans-unit>
+            <trans-unit id="relance">
+                <source>relance</source>
+                <target>Relance</target>
+             </trans-unit>
+            <trans-unit id="csv">
+                <source>csv</source>
+                <target>CSV</target>
+             </trans-unit>
+            <trans-unit id="ausybot_�">
+                <source>ausybot_�</source>
+                <target>AusyBot © 2020. All rights reserved.</target>
+             </trans-unit>
+            <trans-unit id="dashboard">
+                <source>dashboard</source>
+                <target>DASHBOARD</target>
+             </trans-unit>
+            <trans-unit id="area_chart">
+                <source>area_chart</source>
+                <target>Area Chart Example</target>
+             </trans-unit>
+            <trans-unit id="bar_chart">
+                <source>bar_chart</source>
+                <target>Bar Chart Example</target>
+             </trans-unit>
+            <trans-unit id="datatable_example">
+                <source>datatable_example</source>
+                <target>DataTable Example</target>
+             </trans-unit>
+            <trans-unit id="name">
+                <source>name</source>
+                <target>NAME</target>
+             </trans-unit>
+            <trans-unit id="position">
+                <source>position</source>
+                <target>POSITION</target>
+             </trans-unit>
+            <trans-unit id="office">
+                <source>office</source>
+                <target>OFFICE</target>
+             </trans-unit>
+            <trans-unit id="age">
+                <source>age</source>
+                <target>AGE</target>
+             </trans-unit>
+            <trans-unit id="start_date">
+                <source>start_date</source>
+                <target>START DATE</target>
+             </trans-unit>
+            <trans-unit id="salary">
+                <source>salary</source>
+                <target>SALARY</target>
+             </trans-unit>
+            <trans-unit id="tiger_nixon">
+                <source>tiger_nixon</source>
+                <target>Tiger Nixon</target>
+             </trans-unit>
+            <trans-unit id="system_architect">
+                <source>system_architect</source>
+                <target>System Architect</target>
+             </trans-unit>
+            <trans-unit id="edinburgh">
+                <source>edinburgh</source>
+                <target>Edinburgh</target>
+             </trans-unit>
+            <trans-unit id="garrett_winters">
+                <source>garrett_winters</source>
+                <target>Garrett Winters</target>
+             </trans-unit>
+            <trans-unit id="accountant">
+                <source>accountant</source>
+                <target>Accountant</target>
+             </trans-unit>
+            <trans-unit id="tokyo">
+                <source>tokyo</source>
+                <target>Tokyo</target>
+             </trans-unit>
+            <trans-unit id="bonjour_vous">
+                <source>bonjour_vous</source>
+                <target>Bonjour vous êtes invité à suivre votre formation obligatoire Plan</target>
+             </trans-unit>
+            <trans-unit id="d’integration_innovation">
+                <source>d’integration_innovation</source>
+                <target>d’intégration Innovation</target>
+             </trans-unit>
+            <trans-unit id="presente_sur">
+                <source>presente_sur</source>
+                <target>Présente sur le site dédié aux formations AUSY</target>
+             </trans-unit>
+            <trans-unit id="bonjour_vous">
+                <source>bonjour_vous</source>
+                <target>Bonjour vous n'avez pas encore commencé votre formation obligatoire</target>
+             </trans-unit>
+            <trans-unit id="plan_d'integration">
+                <source>plan_d'integration</source>
+                <target>Plan d'intégration Innovation</target>
+             </trans-unit>
+            <trans-unit id="index">
+                <source>index</source>
+                <target>Index</target>
+             </trans-unit>
+            <trans-unit id="bienvenue_sur">
+                <source>bienvenue_sur</source>
+                <target>BIENVENUE SUR LA PLATEFORME</target>
+             </trans-unit>
+            <trans-unit id="site_de">
+                <source>site_de</source>
+                <target>Site de formation d'Ausy</target>
+             </trans-unit>
+            <trans-unit id="inscription">
+                <source>inscription</source>
+                <target>Inscription</target>
+             </trans-unit>
+            <trans-unit id="deja_inscrit">
+                <source>deja_inscrit</source>
+                <target>Déjà inscrit ?</target>
+             </trans-unit>
+            <trans-unit id="authentification">
+                <source>authentification</source>
+                <target>Authentification</target>
+             </trans-unit>
+            <trans-unit id="connexion">
+                <source>connexion</source>
+                <target>Connexion</target>
+             </trans-unit>
+            <trans-unit id="pas_encore">
+                <source>pas_encore</source>
+                <target>Pas encore inscrit ?</target>
+             </trans-unit>
+        </body>
+   </file>
+</xliff>

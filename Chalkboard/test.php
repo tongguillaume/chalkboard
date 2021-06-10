@@ -6,7 +6,7 @@ include 'Limestone.php';
 
 
 $test = new Limestone();
-$mama = $test->getFolderFiles('../test/templates');
+$mama = $test->getFolderFiles('../templates');
 $arrayLine = [];
 foreach ($mama as $file) {
     $arrayLine = array_merge($arrayLine, $test->parseFile($file));
