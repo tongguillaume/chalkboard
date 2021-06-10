@@ -5,6 +5,10 @@ include 'Chalkboard.php';
 
 
 $test = new Chalkboard();
+
+// mes tests
+var_dump($test->parseFile("jesaispas")); die();
+
 $mama = $test->getFolderFiles('../templates');
 $arrayLine = [];
 foreach ($mama as $file) {

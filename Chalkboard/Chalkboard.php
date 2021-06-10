@@ -10,16 +10,18 @@ class Chalkboard
     public function getFolderFiles($path)
     {
         $arrayRes = [];
-        $scanned_directory = array_diff(scandir($path), array('..', '.'));
-        foreach ($scanned_directory as $filename) {
-            if(is_dir($path . "/" .$filename)) {
-                $testRecursion = $this->getFolderFiles($path . "/" .$filename);
-                $arrayRes = array_merge($arrayRes, $testRecursion);
-            } else {
-                $arrayRes[] = $path . "/" . $filename;
+
+        if (is_dir($path)) {
+            $scanned_directory = array_diff(scandir($path), array('..', '.'));
+            foreach ($scanned_directory as $filename) {
+                if(is_dir($path . "/" .$filename)) {
+                    $testRecursion = $this->getFolderFiles($path . "/" .$filename);
+                    $arrayRes = array_merge($arrayRes, $testRecursion);
+                } else {
+                    $arrayRes[] = $path . "/" . $filename;
+                }
             }
         }
-
 
         return $arrayRes;
     }
