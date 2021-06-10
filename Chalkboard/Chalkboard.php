@@ -3,6 +3,7 @@
 namespace Chalkboard;
 require_once __DIR__ . '/../vendor/autoload.php';
 use Html2Text\Html2Text;
+use PHPUnit\Util\Exception;
 
 
 class Chalkboard
@@ -10,44 +11,51 @@ class Chalkboard
     public function getFolderFiles($path)
     {
         $arrayRes = [];
-        $scanned_directory = array_diff(scandir($path), array('..', '.'));
-        foreach ($scanned_directory as $filename) {
-            if(is_dir($path . "/" .$filename)) {
-                $testRecursion = $this->getFolderFiles($path . "/" .$filename);
-                $arrayRes = array_merge($arrayRes, $testRecursion);
-            } else {
-                $arrayRes[] = $path . "/" . $filename;
+
+        if (is_dir($path)) {
+            $scanned_directory = array_diff(scandir($path), array('..', '.'));
+            foreach ($scanned_directory as $filename) {
+                if(is_dir($path . "/" .$filename)) {
+                    $testRecursion = $this->getFolderFiles($path . "/" .$filename);
+                    $arrayRes = array_merge($arrayRes, $testRecursion);
+                } else {
+                    $arrayRes[] = $path . "/" . $filename;
+                }
             }
         }
-
 
         return $arrayRes;
     }
 
     public function parseFile($path) //
     {
-        $fileContent = file_get_contents($path);
-        $content = new Html2Text($fileContent);
-        $arrayContent = explode("\n", $content->getText());
         $arrayRes = [];
-        $stringLine = "";
 
-        foreach ($arrayContent as $line) {
-            if ($line != "") {
-                if ($stringLine != "") {
+        if (file_exists($path)) {
+            $fileContent = file_get_contents($path);
+
+            $content = new Html2Text($fileContent);
+            $arrayContent = explode("\n", $content->getText());
+            $stringLine = "";
+
+            foreach ($arrayContent as $line) {
+                if ($line != "") {
+                    if ($stringLine != "") {
+                        $arrayRes[] = $stringLine;
+                        $stringLine = "";
+                    }
+                    $stringLine .= $line;
+                } else {
                     $arrayRes[] = $stringLine;
                     $stringLine = "";
                 }
-                $stringLine .= $line;
-            } else {
-                $arrayRes[] = $stringLine;
-                $stringLine = "";
             }
-        }
-        $arrayRes[] = $stringLine;
-        $arrayRes = self::parseLine($arrayRes);
+            $arrayRes[] = $stringLine;
+            $arrayRes = self::parseLine($arrayRes);
 
+        }
         return $arrayRes;
+
     }
 
     public function deletePartOfLine($line, $elem, $lastOrFirst)
