@@ -1,5 +1,5 @@
 {
-  "name": "Limestone/Limestone",
+  "name": "Chalkboard/Chalkboard",
   "description": "Create file of traduction for project",
   "require": {
     "php": ">=7.1",
