@@ -159,7 +159,7 @@ class Chalkboard
         } else if (count($strToWordTab) > 1) {
             $keyWord = $strToWordTab[0].'_'.$strToWordTab[1];
         } else {
-            $keyWord = "fin frero, tu es cringe";
+            $keyWord = "";
         }
 
         $keyWord = self::remove_accent($keyWord);
